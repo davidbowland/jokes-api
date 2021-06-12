@@ -6,19 +6,19 @@ import status from './status'
 
 // /v1/jokes/random
 
-const performIndexAvoid = (index: number, choiceCount: number, avoids: string[]): number => {
+export const performIndexAvoid = (index: number, choiceCount: number, avoids: string[]): number => {
   const avoidIndex = avoids.indexOf(`${index}`) + 1
-  return avoidIndex == 0 ? index : performIndexAvoid(choiceCount + avoidIndex, choiceCount, avoids)
+  return avoidIndex == 0 ? index : exports.performIndexAvoid(choiceCount + avoidIndex, choiceCount, avoids)
 }
 
-const getRandomIndex = (maxIndex: number, avoids: string[]): number => {
+export const getRandomIndex = (maxIndex: number, avoids: string[]): number => {
   const choiceCount = maxIndex - avoids.length
   const randomIndex = Math.floor(Math.random() * choiceCount + 1)
 
-  return performIndexAvoid(randomIndex, choiceCount, avoids)
+  return exports.performIndexAvoid(randomIndex, choiceCount, avoids)
 }
 
-const getRandom = async (
+export const getRandom = async (
   referenceInfo: ReferenceInfo,
   count: number,
   avoids: string[]
@@ -30,7 +30,7 @@ const getRandom = async (
   const fetchCount = Math.min(count, fetchCountMaximum, referenceInfo.count)
   const { indexes } = Array.from({ length: fetchCount }).reduce(
     ({ avoids, indexes, maxIndex }) => {
-      const randomIndex = getRandomIndex(maxIndex, avoids)
+      const randomIndex = exports.getRandomIndex(maxIndex, avoids)
       return {
         avoids: avoids.length < maxIndex - 1 ? avoids + [`${randomIndex}`] : [],
         indexes: indexes.concat([randomIndex]),
@@ -48,9 +48,7 @@ const getRandom = async (
   return { ...status.OK, body: JSON.stringify(batchJokes) }
 }
 
-export const processRandom: APIGatewayEventHander = async (
-  event: APIGatewayEvent
-): Promise<APIGatewayEventResult> => {
+export const processRandom: APIGatewayEventHander = async (event: APIGatewayEvent): Promise<APIGatewayEventResult> => {
   const referenceInfo: ReferenceInfo = {
     count: 0,
     ...(await getDataByIndex(jokeTableReferenceIndex)),
@@ -58,7 +56,7 @@ export const processRandom: APIGatewayEventHander = async (
 
   switch (event.httpMethod) {
   case 'GET':
-    return await getRandom(
+    return await exports.getRandom(
       referenceInfo,
         getIntFromParameter(event, 'count', { default: 1 }) as number,
         getListFromParameter(event, 'avoid')

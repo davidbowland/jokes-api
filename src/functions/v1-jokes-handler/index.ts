@@ -13,11 +13,11 @@ export interface APIGatewayEventResult extends Omit<APIGatewayProxyResult, 'body
   body?: string
 }
 
-export type APIGatewayEventHander = (event: APIGatewayEvent) => Promise<APIGatewayEventResult>
+export interface APIGatewayEventHander {
+  (event: APIGatewayEvent): Promise<APIGatewayEventResult>
+}
 
-const processRequest: APIGatewayEventHander = async (
-  event: APIGatewayEvent
-): Promise<APIGatewayEventResult> => {
+export const processRequest: APIGatewayEventHander = async (event: APIGatewayEvent): Promise<APIGatewayEventResult> => {
   try {
     if (event.httpMethod == 'OPTIONS') {
       return status.OK
@@ -39,12 +39,10 @@ const processRequest: APIGatewayEventHander = async (
   }
 }
 
-export const handler: APIGatewayEventHander = async (
-  event: APIGatewayEvent
-): Promise<APIGatewayEventResult> => {
+export const handler: APIGatewayEventHander = async (event: APIGatewayEvent): Promise<APIGatewayEventResult> => {
   try {
     const corsHeaders = getCorsHeadersFromEvent(event)
-    const result: APIGatewayEventResult = await processRequest(event)
+    const result: APIGatewayEventResult = await exports.processRequest(event)
     return { headers: corsHeaders, ...result }
   } catch (error) {
     console.error(error)

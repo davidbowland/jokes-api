@@ -17,7 +17,7 @@ export interface ReferenceInfo {
 }
 
 export const getDataByIndex = async (index: number): Promise<Joke | ReferenceInfo> => {
-  const params = {
+  const params: DynamoDB.Types.GetItemInput = {
     Key: {
       Index: {
         N: `${index}`,
@@ -27,7 +27,7 @@ export const getDataByIndex = async (index: number): Promise<Joke | ReferenceInf
   }
   const item = await dynamodb.getItem(params).promise()
   try {
-    return JSON.parse(item?.Item?.Data?.S as string)
+    return JSON.parse(item?.Item?.Data.S as string)
   } catch (error) {
     console.error(error)
     return {}
@@ -35,7 +35,7 @@ export const getDataByIndex = async (index: number): Promise<Joke | ReferenceInf
 }
 
 export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch> => {
-  const params = {
+  const params: DynamoDB.Types.BatchGetItemInput = {
     RequestItems: {
       [dynamodbTableName]: {
         Keys: indexes.map((index) => ({
@@ -48,7 +48,8 @@ export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch>
   }
   const items = await dynamodb.batchGetItem(params).promise()
   const responses = items?.Responses ?? {}
-  return responses[dynamodbTableName].reduce((result, item) => {
+  const results = responses[dynamodbTableName] ?? []
+  return results.reduce((result, item) => {
     try {
       result[item.Index.N as string] = JSON.parse(item.Data.S as string)
     } catch (error) {
@@ -59,7 +60,7 @@ export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch>
 }
 
 export const setDataByIndex = async (index: number, data: Joke | ReferenceInfo): Promise<void> => {
-  const params = {
+  const params: DynamoDB.Types.PutItemInput = {
     Item: {
       Index: {
         N: `${index}`,
@@ -74,7 +75,7 @@ export const setDataByIndex = async (index: number, data: Joke | ReferenceInfo):
 }
 
 export const deleteDataByIndex = async (index: number): Promise<void> => {
-  const params = {
+  const params: DynamoDB.Types.DeleteItemInput = {
     Key: {
       Index: {
         N: `${index}`,

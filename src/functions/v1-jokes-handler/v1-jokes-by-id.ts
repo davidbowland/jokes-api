@@ -6,7 +6,7 @@ import status from './status'
 
 // /v1/jokes/{jokeId}
 
-const getById = async (requestJokeId: number) => {
+export const getById = async (requestJokeId: number): Promise<APIGatewayEventResult> => {
   const jokeInfo = (await getDataByIndex(requestJokeId)) as Joke
   if (jokeInfo.joke === undefined) {
     return status.NOT_FOUND
@@ -15,7 +15,7 @@ const getById = async (requestJokeId: number) => {
   return { ...status.OK, body: JSON.stringify(jokeInfo) }
 }
 
-const putById = async (requestJokeId: number, jokeInfo: Joke): Promise<APIGatewayEventResult> => {
+export const putById = async (requestJokeId: number, jokeInfo: Joke): Promise<APIGatewayEventResult> => {
   if (!jokeInfo.joke) {
     return status.BAD_REQUEST
   }
@@ -23,7 +23,7 @@ const putById = async (requestJokeId: number, jokeInfo: Joke): Promise<APIGatewa
   return status.NO_CONTENT
 }
 
-const deleteById = async (
+export const deleteById = async (
   requestJokeId: number,
   referenceInfo: ReferenceInfo
 ): Promise<APIGatewayEventResult> => {
@@ -41,9 +41,7 @@ const deleteById = async (
   return status.NO_CONTENT
 }
 
-export const processById: APIGatewayEventHander = async (
-  event: APIGatewayEvent
-): Promise<APIGatewayEventResult> => {
+export const processById: APIGatewayEventHander = async (event: APIGatewayEvent): Promise<APIGatewayEventResult> => {
   const requestJokeId = parseInt(event.pathParameters?.jokeId as string, 10)
   if (isNaN(requestJokeId) || requestJokeId < 0 || requestJokeId == jokeTableReferenceIndex) {
     return status.BAD_REQUEST
@@ -59,11 +57,11 @@ export const processById: APIGatewayEventHander = async (
 
   switch (event.httpMethod) {
   case 'GET':
-    return await getById(requestJokeId)
+    return await exports.getById(requestJokeId)
   case 'PUT':
-    return await putById(requestJokeId, getPayloadFromEvent(event))
+    return await exports.putById(requestJokeId, getPayloadFromEvent(event))
   case 'DELETE':
-    return await deleteById(requestJokeId, referenceInfo)
+    return await exports.deleteById(requestJokeId, referenceInfo)
   default:
     console.error(`processById received unexpected method ${event.httpMethod}`)
   }

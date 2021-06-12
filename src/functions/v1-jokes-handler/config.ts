@@ -2,10 +2,7 @@
 
 export const dynamodbTableName = process.env.DYNAMODB_TABLE_NAME as string
 export const fetchCountMaximum = parseInt(process.env.FETCH_COUNT_MAXIMUM as string, 10)
-export const jokeTableReferenceIndex = parseInt(
-  process.env.JOKE_TABLE_REFERENCE_INDEX as string,
-  10
-)
+export const jokeTableReferenceIndex = parseInt(process.env.JOKE_TABLE_REFERENCE_INDEX as string, 10)
 
 // Resources
 

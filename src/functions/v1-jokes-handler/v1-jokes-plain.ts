@@ -1,19 +1,12 @@
 import { fetchCountMaximum, jokeTableReferenceIndex } from './config'
-import {
-  getDataByIndex,
-  getDataByIndexBatch,
-  Joke,
-  JokeBatch,
-  ReferenceInfo,
-  setDataByIndex,
-} from './dynamodb'
+import { getDataByIndex, getDataByIndexBatch, Joke, JokeBatch, ReferenceInfo, setDataByIndex } from './dynamodb'
 import { getIntFromParameter, getPayloadFromEvent } from './event-processing'
 import { APIGatewayEvent, APIGatewayEventHander, APIGatewayEventResult } from './index'
 import status from './status'
 
 // /v1/jokes
 
-const getPlain = async (
+export const getPlain = async (
   referenceInfo: ReferenceInfo,
   offset: number,
   limit: number
@@ -31,10 +24,7 @@ const getPlain = async (
   return { ...status.OK, body: JSON.stringify(batchJokes) }
 }
 
-const postPlain = async (
-  referenceInfo: ReferenceInfo,
-  jokeInfo: Joke
-): Promise<APIGatewayEventResult> => {
+export const postPlain = async (referenceInfo: ReferenceInfo, jokeInfo: Joke): Promise<APIGatewayEventResult> => {
   if (!jokeInfo.joke) {
     return status.BAD_REQUEST
   }
@@ -47,9 +37,7 @@ const postPlain = async (
   return { ...status.CREATED, body: JSON.stringify({ id: newIndex }) }
 }
 
-export const processPlain: APIGatewayEventHander = async (
-  event: APIGatewayEvent
-): Promise<APIGatewayEventResult> => {
+export const processPlain: APIGatewayEventHander = async (event: APIGatewayEvent): Promise<APIGatewayEventResult> => {
   const referenceInfo: ReferenceInfo = {
     count: 0,
     ...(await getDataByIndex(jokeTableReferenceIndex)),
@@ -57,13 +45,13 @@ export const processPlain: APIGatewayEventHander = async (
 
   switch (event.httpMethod) {
   case 'GET':
-    return await getPlain(
+    return await exports.getPlain(
       referenceInfo,
         getIntFromParameter(event, 'offset', { default: 1 }) as number,
         getIntFromParameter(event, 'limit', { default: fetchCountMaximum }) as number
     )
   case 'POST':
-    return await postPlain(referenceInfo, getPayloadFromEvent(event))
+    return await exports.postPlain(referenceInfo, getPayloadFromEvent(event))
   default:
     console.error(`processPlain received unexpected method ${event.httpMethod}`)
   }
