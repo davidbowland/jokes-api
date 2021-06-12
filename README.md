@@ -1,6 +1,6 @@
-# dbowland.com Jokes Infrastructure
+# dbowland.com Jokes Lambdas
 
-Infrastructure as Code for dbowland.com resources for jokes.
+Lambdas for dbowland.com, copied to S3 then deployed via the `dbowland-pulumi-jokes` project.
 
 ## Setup
 
@@ -8,7 +8,7 @@ The `developer` role is required to deploy this project.
 
 ### Node / NPM
 
-1. [Node 16](https://nodejs.org/en/)
+1. [Node 14](https://nodejs.org/en/)
 1. [NPM 7+](https://www.npmjs.com/)
 
 ### AWS Credentials
@@ -48,50 +48,40 @@ aws iam list-mfa-devices --query 'MFADevices[].SerialNumber' --output text
 
 ## Developing Locally
 
-When writing code from scratch, it can be useful to consult the [Pulumi AWS package reference](https://www.pulumi.com/docs/reference/pkg/aws/).
+### Unit Tests
 
-### Preview Changes
+[Jest](https://jestjs.io/) tests are run automatically on commit and push. If the test coverage threshold is not met, the push will fail. See `jest.config.ts` for coverage threshold.
 
-Preview the changes the local code will make with:
+Manually run tests with:
 
 ```bash
-npm run preview
+npm run test
 ```
 
-If the `administrator` profile is not available, this command will fail.
+### Prettier / Linter
+
+Both [Prettier](https://prettier.io/) and [ESLint](https://eslint.org/) are executed on commit. Manually prettify and lint code with:
+
+```bash
+npm run lint
+```
 
 ### Deploying to Production
 
-A preview will execute when a pull request is created to `master`. When the pull request is merged into `master`, the infrastructure will be automatically deployed to production.
+When a pull request is merged into `master`, the Lambdas are transpiled to commonjs, zipped, and then copied to S3. Project `dbowland-pulumi-jokes` is required to update Lambdas based on the new code in S3.
 
-In extreme cases, code can be deployed locally with:
+In extreme cases, Lambdas can be transpiled, zipped, and uploaded locally with:
 
 ```bash
 npm run deploy
 ```
 
-### Refreshing State with Infrastructure
-
-If the state files becomes desynchronized from the infrastructure, it can be refreshed with:
-
-```bash
-npm run refresh
-```
-
 ## Additional Documentation
-
-- [AWS API Gateway](https://aws.amazon.com/api-gateway/)
-
-- [AWS CLI](https://aws.amazon.com/cli/)
-
-- [AWS credentials](https://docs.aws.amazon.com/general/latest/gr/aws-sec-cred-types.html)
-
-- [AWS DynamoDB](https://aws.amazon.com/dynamodb/)
 
 - [AWS Lambda](https://aws.amazon.com/lambda/)
 
-- [Pulumi AWS package reference](https://www.pulumi.com/docs/reference/pkg/aws/)
+- [ESLint](https://eslint.org/)
 
-- [Pulumi CLI](https://www.pulumi.com/docs/reference/cli/)
+- [Jest](https://jestjs.io/)
 
-- [Pulumi refresh](https://www.pulumi.com/docs/reference/cli/pulumi_refresh/)
+- [Prettier](https://prettier.io/)

@@ -1,0 +1,53 @@
+# Build latest lambda code and push it in a zip to S3
+name: Deploy dbowland.com
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      # Checkout latest code
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0 # otherwise, you will failed to push refs to dest repo
+      # Install Node 14
+      - uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      # Install NPM 7
+      - name: Install NPM 7
+        run: npm install -g npm@7
+      # Set up git commit author
+      - name: Set git name and email
+        run: |
+          git config --local user.email "dbowland1+bot@gmail.com"
+          git config --local user.name "github-actions[bot]"
+      # Run tests
+      - name: Install packages and run tests
+        run: npm ci && npm run test
+        env:
+          NODE_ENV: test
+      # Set up AWS credentials
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      # Build and deploy the project
+      - name: Build code and bump version
+        run: |
+          npm version minor
+          npm run deploy ci
+        env:
+          NODE_ENV: production
+      # Push tag created by version bump
+      - name: Push changes
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}
