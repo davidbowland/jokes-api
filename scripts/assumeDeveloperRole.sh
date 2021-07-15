@@ -1,3 +1,8 @@
+#!/bin/sh
+
+# Stop immediately on error
+set -e
+
 # Assume developer role to apply changes
 # This renders an MFA prompt, if necessary
 ROLE_JSON=$(aws sts assume-role --role-arn "arn:aws:iam::494887012091:role/developer" --role-session-name Developer --profile developer)

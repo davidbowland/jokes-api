@@ -7,19 +7,18 @@ on:
       - master
 
 jobs:
-  build:
+  run_tests:
+    name: Run test on lambdas
     runs-on: ubuntu-latest
     steps:
-      # Checkout latest code
-      - uses: actions/checkout@v2
-      # Install Node 14
-      - uses: actions/setup-node@v2
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+      - name: Install Node 14
+        uses: actions/setup-node@v2
         with:
           node-version: 14.x
-      # Install NPM 7
       - name: Install NPM 7
         run: npm install -g npm@7
-      # Run tests
       - name: Install packages and run tests
         run: npm ci && npm run test
         env:

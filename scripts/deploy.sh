@@ -1,3 +1,8 @@
+#!/bin/sh
+
+# Stop immediately on error
+set -e
+
 if [[ -z "$1" ]]; then
   ./scripts/assumeDeveloperRole.sh
 fi
@@ -14,4 +19,4 @@ do
   zip -j ./build/zips/${zipName}.zip ${dir}*
 done
 
-aws s3 cp ./build/zips/* s3://dbowland-lambda-source/
+aws s3 cp ./build/zips/* s3://joke-lambda-source/

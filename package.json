@@ -13,6 +13,7 @@
     "build": "npm run clean && tsc",
     "deploy": "npm run build && ./scripts/deploy.sh",
     "lint": "prettier --write . && eslint --fix .",
+    "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
     "test": "jest --colors"
   },
   "husky": {
@@ -55,7 +56,7 @@
     "babel-jest": "^27.0.2",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
-    "husky": "^4.3.8",
+    "husky": "^7.0.1",
     "jest": "^27.0.4",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.1"
