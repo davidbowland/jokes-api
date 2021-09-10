@@ -4,19 +4,21 @@
 set -e
 
 if [[ -z "$1" ]]; then
-  ./scripts/assumeDeveloperRole.sh
+  $(./scripts/assumeDeveloperRole.sh)
 fi
 
 # Ensure output directory exists
-mkdir -p ./build/zips/
+mkdir -p ./build/
 
-for dir in ./build/src/functions/**/
+# Build zip files
+for dir in ./build/src/**/
 do
   # Extract the folder name
   zipName=${dir%*/} # Remove the trailing /
   zipName=${zipName##*/} # Remove everything up to the /
 
-  zip -j ./build/zips/${zipName}.zip ${dir}*
+  zip -j ./build/${zipName}.zip ${dir}*
 done
 
-aws s3 cp ./build/zips/* s3://joke-lambda-source/
+# Upload zips to S3
+aws s3 cp ./build/* s3://joke-lambda-source/
