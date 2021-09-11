@@ -1,6 +1,6 @@
 {
   "name": "lambda-jokes-handler",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "private": true,
   "description": "Lambda for /v1/jokes endpoint",
   "author": "David Bowland",
