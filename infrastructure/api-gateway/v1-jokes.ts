@@ -9,7 +9,7 @@ const cognito_authorizer = awsx.apigateway.getCognitoAuthorizer({
   providerARNs: [cognitoUserPoolArn],
 })
 
-export const jokes_handler_api = new awsx.apigateway.API('lambda-jokes-handler-api', {
+export const jokes_handler_api = new awsx.apigateway.API('lambda-jokes-handler-api-v1', {
   stageName: 'v1',
   routes: [
     // By ID
