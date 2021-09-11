@@ -1,0 +1,3 @@
+name: lambda-jokes-handler
+runtime: nodejs
+description: Infrastructure for lambda-jokes-handler

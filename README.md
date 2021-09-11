@@ -34,7 +34,7 @@ Add a `developer` profile to the same credentials file:
 
 ```toml
 [developer]
-role_arn=arn:aws:iam::494887012091:role/developer
+role_arn=arn:aws:iam::<account number>:role/developer
 source_profile=default
 mfa_serial=<YOUR_MFA_ARN>
 region=us-east-2

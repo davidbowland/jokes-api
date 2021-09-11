@@ -23,3 +23,38 @@ jobs:
         run: npm ci && npm run test
         env:
           NODE_ENV: test
+  preview:
+    name: Preview infrastructure changes
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Install Pulumi CLI
+        uses: pulumi/setup-pulumi@v2
+        with:
+          pulumi-version: ^3.4.0
+      - name: Install Node dependencies
+        run: npm ci
+        env:
+          NODE_ENV: production
+        working-directory: ./infrastructure/
+      - name: Execute Pulumi preview
+        uses: pulumi/actions@v3
+        with:
+          command: preview
+          stack-name: dev
+          work-dir: ./infrastructure/
+        env:
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}

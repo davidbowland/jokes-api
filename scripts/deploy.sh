@@ -7,18 +7,25 @@ if [[ -z "$1" ]]; then
   $(./scripts/assumeDeveloperRole.sh)
 fi
 
-# Ensure output directory exists
-mkdir -p ./build/
+### Zips to S3
 
-# Build zip files
-for dir in ./build/src/**/
-do
-  # Extract the folder name
-  zipName=${dir%*/} # Remove the trailing /
-  zipName=${zipName##*/} # Remove everything up to the /
+./copyZipsToS3.sh skipAssumeRole
 
-  zip -j ./build/${zipName}.zip ${dir}*
-done
+### Infrastructure
 
-# Upload zips to S3
-aws s3 cp ./build/* s3://joke-lambda-source/
+cd infrastructure/
+
+# Remember current node version
+CURRENT_NODE=$(node --version)
+
+# We need Node 16 for infrastructure
+nvm use v16
+
+# Ensure dependencies are installed
+NODE_ENV=production npm ci
+
+# Use pulumi to deploy project
+../scripts/infrastructure/deployInfrastructure.sh
+
+# Go back to Node version active when script ran
+nvm use $CURRENT_NODE

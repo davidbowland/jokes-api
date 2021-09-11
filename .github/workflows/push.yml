@@ -23,7 +23,7 @@ jobs:
         run: npm ci && npm run test
         env:
           NODE_ENV: test
-  deploy:
+  build:
     name: Generate and zip lambdas then deploy to S3
     needs: run_tests
     runs-on: ubuntu-latest
@@ -40,7 +40,7 @@ jobs:
         run: |
           git config --local user.email "dbowland1+bot@gmail.com"
           git config --local user.name "github-actions[bot]"
-      - name: Build the lambdas from Typescript
+      - name: Build lambdas from Typescript
         run: npm run build
         env:
           NODE_ENV: production
@@ -52,10 +52,53 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
-      - name: Deploy the lambdas to S3
-        run: ./scripts/deploy.sh
+      - name: Copy lambdas to S3
+        run: ./scripts/copyZipsToS3.sh production
       - name: Push tag created by version bump
         uses: ad-m/github-push-action@master
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
           branch: ${{ github.ref }}
+  deploy:
+    name: Deploy infrastructure changes
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - name: Install Node 16
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16.x
+      - name: Set git name and email
+        run: |
+          git config --local user.email "dbowland1+bot@gmail.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+      - name: Install Pulumi CLI
+        uses: pulumi/setup-pulumi@v2
+        with:
+          pulumi-version: ^3.4.0
+      - name: Install Node dependencies
+        run: npm ci
+        env:
+          NODE_ENV: production
+        working-directory: ./infrastructure/
+      - name: Execute Pulumi push
+        uses: pulumi/actions@v3
+        with:
+          command: up
+          stack-name: dev
+          work-dir: ./infrastructure/
+        env:
+          AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
+          AWS_ACCOUNT_NUMBER: ${{ secrets.AWS_ACCOUNT_NUMBER }}
+          AWS_REGION: ${{ secrets.AWS_REGION }}
+          PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
