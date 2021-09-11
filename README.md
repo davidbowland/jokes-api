@@ -1,6 +1,6 @@
-# dbowland.com Jokes Lambdas
+# Lambdas for Jokes API
 
-Lambdas for dbowland.com, copied to S3 then deployed via the `dbowland-pulumi-jokes` project.
+Lambdas for jokes API, which is the back-end for joke-ui.
 
 ## Setup
 
@@ -68,13 +68,17 @@ npm run lint
 
 ### Deploying to Production
 
-When a pull request is merged into `master`, the Lambdas are transpiled to commonjs, zipped, and then copied to S3. Project `dbowland-pulumi-jokes` is required to update Lambdas based on the new code in S3.
+When a pull request is merged into `master`, the lambda code is transpiled to commonjs, zipped, and then copied to S3. Afterwards, the infrastructure portion of the project is deployed, which picks up the new versions in S3 and updates each lambda.
 
-In extreme cases, Lambdas can be transpiled, zipped, and uploaded locally with:
+In extreme cases, lambdas can be transpiled, zipped, and uploaded locally with:
 
 ```bash
 npm run deploy
 ```
+
+## Infrastructure
+
+See `infrastructure` folder for information on updating infrastructure.
 
 ## Additional Documentation
 
