@@ -36,16 +36,10 @@ jobs:
           node-version: 14.x
       - name: Install NPM 7
         run: npm install -g npm@7
-      - name: Set git name and email
-        run: |
-          git config --local user.email "dbowland1+bot@gmail.com"
-          git config --local user.name "github-actions[bot]"
       - name: Build lambdas from Typescript
         run: npm run build
         env:
           NODE_ENV: production
-      - name: Bump the minor version
-        run: npm version minor
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -54,11 +48,6 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
       - name: Copy lambdas to S3
         run: ./scripts/copyZipsToS3.sh production
-      - name: Push tag created by version bump
-        uses: ad-m/github-push-action@master
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          branch: ${{ github.ref }}
   deploy:
     name: Deploy infrastructure changes
     needs: build
@@ -72,10 +61,6 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 16.x
-      - name: Set git name and email
-        run: |
-          git config --local user.email "dbowland1+bot@gmail.com"
-          git config --local user.name "github-actions[bot]"
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
@@ -99,6 +84,29 @@ jobs:
           work-dir: ./infrastructure/
         env:
           AWS_ACCOUNT_ID: ${{ secrets.AWS_ACCOUNT_ID }}
-          AWS_ACCOUNT_NUMBER: ${{ secrets.AWS_ACCOUNT_NUMBER }}
           AWS_REGION: ${{ secrets.AWS_REGION }}
           PULUMI_ACCESS_TOKEN: ${{ secrets.PULUMI_ACCESS_TOKEN }}
+  bump:
+    name: Bump the version number and tag the commit
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout latest code
+        uses: actions/checkout@v2
+      - name: Install Node 14
+        uses: actions/setup-node@v2
+        with:
+          node-version: 14.x
+      - name: Install NPM 7
+        run: npm install -g npm@7
+      - name: Set git name and email
+        run: |
+          git config --local user.email "dbowland1+bot@gmail.com"
+          git config --local user.name "github-actions[bot]"
+      - name: Bump the minor version
+        run: npm version minor
+      - name: Push tag created by version bump
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: ${{ github.ref }}

@@ -21,4 +21,4 @@ do
 done
 
 # Upload zips to S3
-aws s3 cp ./build/zips/* s3://joke-lambda-source/jokes-handler/
+aws s3 cp ./build/zips/* s3://jokes-lambda-source/jokes-handler/

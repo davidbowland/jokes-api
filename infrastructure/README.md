@@ -4,7 +4,7 @@ Infrastructure as Code for lambda-jokes-handler
 
 ## Setup
 
-The `developer` role is required to deploy this project.
+The `developer` role is required to deploy this project. Additionally, the `AWS_ACCOUNT_ID` environment variable must be present and correct.
 
 ### Node / NPM
 
@@ -42,7 +42,7 @@ Add a `developer` profile to the same credentials file:
 
 ```toml
 [developer]
-role_arn=arn:aws:iam::<account number>:role/developer
+role_arn=arn:aws:iam::<AWS_ACCOUNT_ID>:role/developer
 source_profile=default
 mfa_serial=<YOUR_MFA_ARN>
 region=us-east-2
