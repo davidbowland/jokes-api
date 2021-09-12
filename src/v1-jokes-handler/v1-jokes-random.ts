@@ -23,11 +23,11 @@ export const getRandom = async (
   count: number,
   avoids: string[]
 ): Promise<APIGatewayEventResult> => {
-  if (count < 1 || count > referenceInfo.count) {
+  const fetchCount = Math.min(count, fetchCountMaximum, referenceInfo.count)
+  if (fetchCount < 1) {
     return status.BAD_REQUEST
   }
 
-  const fetchCount = Math.min(count, fetchCountMaximum, referenceInfo.count)
   const { indexes } = Array.from({ length: fetchCount }).reduce(
     ({ avoids, indexes, maxIndex }) => {
       const randomIndex = exports.getRandomIndex(maxIndex, avoids)

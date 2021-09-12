@@ -64,7 +64,7 @@ describe('v1-jokes-random', () => {
       }
     )
 
-    test.each([-1, 0, finalIndex + 1])('expect status.BAD_REQUEST when count is bad %s', async (tempCount: number) => {
+    test.each([-1, 0])('expect status.BAD_REQUEST when count is bad %s', async (tempCount: number) => {
       const result = await getRandom(referenceInfo, tempCount, avoids)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
