@@ -12,7 +12,7 @@ export const resourceRandom = `${resourcePlain}/random`
 export const createdBy = 'lambda-jokes-handler'
 export const createdFor = 'dbowland-jokes'
 
-export const cognitoUserPoolArn = `arn:aws:cognito-idp:us-east-2:${awsAccountId}:userpool/us-east-2_qLm8nyPfO`
+export const cognitoUserPoolArn = `arn:aws:cognito-idp:us-east-2:${awsAccountId}:userpool/us-east-2_hoNYcwUSA`
 export const environmentVariableKmsArn = 'arn:aws:kms:*:*:key/aws/lambda'
 export const lambdaSourceBucket = 'jokes-lambda-source'
 

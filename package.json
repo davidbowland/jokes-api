@@ -1,8 +1,8 @@
 {
-  "name": "lambda-jokes-handler",
-  "version": "1.5.0",
+  "name": "jokes-api",
+  "version": "1.0.0",
   "private": true,
-  "description": "Lambda for /v1/jokes endpoint",
+  "description": "Lambda jokes API",
   "author": "David Bowland",
   "engines": {
     "node": "^14.0.0"
@@ -34,12 +34,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/davidbowland/lambda-jokes-handler.git"
+    "url": "git+https://github.com/davidbowland/jokes-api.git"
   },
   "bugs": {
-    "url": "https://github.com/davidbowland/lambda-jokes-handler/issues"
+    "url": "https://github.com/davidbowland/jokes-api/issues"
   },
-  "homepage": "https://github.com/davidbowland/lambda-jokes-handler#readme",
+  "homepage": "https://github.com/davidbowland/jokes-api#readme",
   "dependencies": {
     "@types/aws-lambda": "^8.10.77",
     "@types/node": "^15.12.2",
