@@ -1,6 +1,6 @@
-# Infrastructure for lambda-jokes-handler
+# Infrastructure for jokes-api
 
-Infrastructure as Code for lambda-jokes-handler
+Infrastructure as Code for jokes-api
 
 ## Setup
 
