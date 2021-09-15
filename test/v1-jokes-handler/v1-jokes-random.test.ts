@@ -18,7 +18,6 @@ describe('v1-jokes-random', () => {
     1: joke,
     2: { joke: 'congress' },
   }
-  const finalIndex = referenceInfo.count
 
   beforeAll(() => {
     ;(getDataByIndex as jest.Mock).mockImplementation(async (key: number) => {
