@@ -16,6 +16,10 @@ export interface APIGatewayEventResult extends Omit<APIGatewayProxyResult, 'body
 }
 
 export interface APIGatewayEventHander {
+  (event: APIGatewayEvent): Promise<APIGatewayEventResult>
+}
+
+export interface APIGatewayReferenceEventHander {
   (referenceInfoPromise: Promise<ReferenceInfo>, event: APIGatewayEvent): Promise<APIGatewayEventResult>
 }
 
