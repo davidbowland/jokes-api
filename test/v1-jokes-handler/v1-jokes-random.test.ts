@@ -7,6 +7,9 @@ import * as v1JokesRandom from '@v1-jokes-handler/v1-jokes-random'
 import { getRandom, processRandom } from '@v1-jokes-handler/v1-jokes-random'
 
 jest.mock('@v1-jokes-handler/dynamodb')
+jest.mock('@v1-jokes-handler/error-handling', () => ({
+  handleErrorWithDefault: (value) => () => value,
+}))
 jest.mock('@v1-jokes-handler/event-processing')
 jest.mock('@v1-jokes-handler/index')
 

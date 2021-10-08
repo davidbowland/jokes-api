@@ -7,6 +7,9 @@ import * as v1JokesById from '@v1-jokes-handler/v1-jokes-by-id'
 import { deleteById, getById, processById, putById } from '@v1-jokes-handler/v1-jokes-by-id'
 
 jest.mock('@v1-jokes-handler/dynamodb')
+jest.mock('@v1-jokes-handler/error-handling', () => ({
+  handleErrorWithDefault: (value) => () => value,
+}))
 jest.mock('@v1-jokes-handler/event-processing')
 jest.mock('@v1-jokes-handler/index')
 
@@ -41,7 +44,7 @@ describe('v1-jokes-by-id', () => {
 
     test('expect status.NOT_FOUND when no joke is found', async () => {
       const index = 4
-      ;(getDataByIndex as jest.Mock).mockReturnValueOnce({})
+      ;(getDataByIndex as jest.Mock).mockResolvedValueOnce({})
 
       const result = await getById(index)
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))

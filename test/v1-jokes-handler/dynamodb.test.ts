@@ -26,6 +26,10 @@ jest.mock('aws-sdk', () => ({
   })),
 }))
 
+jest.mock('@v1-jokes-handler/error-handling', () => ({
+  handleErrorWithDefault: (value) => () => value,
+}))
+
 describe('DynamoDB', () => {
   const joke: Joke = {
     joke: 'lolol',

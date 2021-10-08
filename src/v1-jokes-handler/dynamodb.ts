@@ -1,6 +1,7 @@
 import { DynamoDB } from 'aws-sdk'
 
 import { dynamodbTableName } from './config'
+import { handleErrorWithDefault } from './error-handling'
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' })
 
@@ -16,72 +17,83 @@ export interface ReferenceInfo {
   count: number
 }
 
-export const getDataByIndex = async (index: number): Promise<Joke | ReferenceInfo> => {
-  const params: DynamoDB.Types.GetItemInput = {
-    Key: {
-      Index: {
-        N: `${index}`,
-      },
-    },
-    TableName: dynamodbTableName,
-  }
-  const item = await dynamodb.getItem(params).promise()
-  try {
-    return JSON.parse(item?.Item?.Data.S as string)
-  } catch (error) {
-    console.error(error)
-    return {}
-  }
-}
+/* Get single item */
 
-export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch> => {
-  const params: DynamoDB.Types.BatchGetItemInput = {
-    RequestItems: {
-      [dynamodbTableName]: {
-        Keys: indexes.map((index) => ({
-          Index: {
-            N: `${index}`,
-          },
-        })),
-      },
-    },
-  }
-  const items = await dynamodb.batchGetItem(params).promise()
-  const responses = items?.Responses ?? {}
-  const results = responses[dynamodbTableName] ?? []
-  return results.reduce((result, item) => {
-    try {
-      result[item.Index.N as string] = JSON.parse(item.Data.S as string)
-    } catch (error) {
-      console.error(error)
-    }
-    return result
-  }, {} as JokeBatch)
-}
+const parseResponseJson = (response: DynamoDB.Types.GetItemOutput): Joke | ReferenceInfo =>
+  JSON.parse(response?.Item?.Data.S as string)
 
-export const setDataByIndex = async (index: number, data: Joke | ReferenceInfo): Promise<void> => {
-  const params: DynamoDB.Types.PutItemInput = {
-    Item: {
-      Index: {
-        N: `${index}`,
+export const getDataByIndex = (index: number): Promise<Joke | ReferenceInfo> =>
+  dynamodb
+    .getItem({
+      Key: {
+        Index: {
+          N: `${index}`,
+        },
       },
-      Data: {
-        S: JSON.stringify(data),
-      },
-    },
-    TableName: dynamodbTableName,
-  }
-  await dynamodb.putItem(params).promise()
-}
+      TableName: dynamodbTableName,
+    })
+    .promise()
+    .then(parseResponseJson)
+    .catch(handleErrorWithDefault({}))
 
-export const deleteDataByIndex = async (index: number): Promise<void> => {
-  const params: DynamoDB.Types.DeleteItemInput = {
-    Key: {
-      Index: {
-        N: `${index}`,
+/* Batch get items */
+
+const extractItemsFromResponse = (response: DynamoDB.Types.BatchGetItemOutput): DynamoDB.Types.AttributeMap[] =>
+  response && response.Responses ? response.Responses[dynamodbTableName] : []
+
+const collectParsedJokes = (result: JokeBatch, item: DynamoDB.Types.AttributeMap): JokeBatch => ({
+  ...result,
+  [item.Index.N as string]: JSON.parse(item.Data.S as string),
+})
+
+const convertBatchItemsIntoJokes = (items: DynamoDB.Types.AttributeMap[]) =>
+  items.reduce(collectParsedJokes, {} as JokeBatch)
+
+export const getDataByIndexBatch = (indexes: number[]): Promise<JokeBatch> =>
+  dynamodb
+    .batchGetItem({
+      RequestItems: {
+        [dynamodbTableName]: {
+          Keys: indexes.map((index: number) => ({
+            Index: {
+              N: `${index}`,
+            },
+          })),
+        },
       },
-    },
-    TableName: dynamodbTableName,
-  }
-  await dynamodb.deleteItem(params).promise()
-}
+    })
+    .promise()
+    .then(extractItemsFromResponse)
+    .then(convertBatchItemsIntoJokes)
+    .catch(handleErrorWithDefault({} as JokeBatch))
+
+/* Set item */
+
+export const setDataByIndex = (index: number, data: Joke | ReferenceInfo): Promise<DynamoDB.Types.PutItemOutput> =>
+  dynamodb
+    .putItem({
+      Item: {
+        Index: {
+          N: `${index}`,
+        },
+        Data: {
+          S: JSON.stringify(data),
+        },
+      },
+      TableName: dynamodbTableName,
+    })
+    .promise()
+
+/* Delete item */
+
+export const deleteDataByIndex = (index: number): Promise<DynamoDB.Types.DeleteItemOutput> =>
+  dynamodb
+    .deleteItem({
+      Key: {
+        Index: {
+          N: `${index}`,
+        },
+      },
+      TableName: dynamodbTableName,
+    })
+    .promise()

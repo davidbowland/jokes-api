@@ -7,6 +7,9 @@ import * as v1JokesPlain from '@v1-jokes-handler/v1-jokes-plain'
 import { getPlain, postPlain, processPlain } from '@v1-jokes-handler/v1-jokes-plain'
 
 jest.mock('@v1-jokes-handler/dynamodb')
+jest.mock('@v1-jokes-handler/error-handling', () => ({
+  handleErrorWithDefault: (value) => () => value,
+}))
 jest.mock('@v1-jokes-handler/event-processing')
 jest.mock('@v1-jokes-handler/index')
 
@@ -126,9 +129,9 @@ describe('v1-jokes-plain', () => {
     const limit = 10
 
     beforeAll(() => {
-      ;(getPayloadFromEvent as jest.Mock).mockReturnValue(joke)
+      ;(getPayloadFromEvent as jest.Mock).mockResolvedValue(joke)
       ;(getIntFromParameter as jest.Mock).mockImplementation(
-        (event: APIGatewayEvent, parameterName: string, options?: Options) => {
+        async (event: APIGatewayEvent, parameterName: string, options?: Options) => {
           if (parameterName === 'offset') {
             if (options?.default !== 1) {
               throw `getIntFromParameter for ${parameterName} didn't have expected default value 1 (default=${options?.default})`
