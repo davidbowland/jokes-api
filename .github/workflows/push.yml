@@ -1,5 +1,5 @@
 # Build latest lambda code and push it in a zip to S3
-name: Deploy dbowland.com
+name: Deploy joke API lambda and API gateway
 
 on:
   push:
