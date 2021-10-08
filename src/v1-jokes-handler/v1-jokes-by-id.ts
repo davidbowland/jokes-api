@@ -47,12 +47,6 @@ export const deleteById = (requestJokeId: number, referenceInfo: ReferenceInfo):
 
 /* Processing */
 
-const getReferenceInfo = (): Promise<ReferenceInfo> =>
-  getDataByIndex(jokeTableReferenceIndex).then((referenceInfo) => ({
-    count: 0,
-    ...referenceInfo,
-  }))
-
 const processBadId = (requestJokeId: number): APIGatewayEventResult | undefined =>
   isNaN(requestJokeId) || requestJokeId < 0 || requestJokeId == jokeTableReferenceIndex ? status.BAD_REQUEST : undefined
 
@@ -75,8 +69,11 @@ const processDeleteById = (
 const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`processById received unexpected method ${event.httpMethod}`))
 
-export const processById: APIGatewayEventHander = (event: APIGatewayEvent): Promise<APIGatewayEventResult> =>
-  getReferenceInfo()
+export const processById: APIGatewayEventHander = (
+  referenceInfoPromise: Promise<ReferenceInfo>,
+  event: APIGatewayEvent
+): Promise<APIGatewayEventResult> =>
+  referenceInfoPromise
     .then((referenceInfo) => ({ referenceInfo, requestJokeId: parseInt(event.pathParameters?.jokeId as string, 10) }))
     .then(({ referenceInfo, requestJokeId }) =>
       Promise.resolve(processBadId(requestJokeId))

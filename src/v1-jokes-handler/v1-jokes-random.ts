@@ -1,5 +1,5 @@
-import { fetchCountMaximum, jokeTableReferenceIndex } from './config'
-import { getDataByIndex, getDataByIndexBatch, ReferenceInfo } from './dynamodb'
+import { fetchCountMaximum } from './config'
+import { getDataByIndexBatch, ReferenceInfo } from './dynamodb'
 import { handleErrorWithDefault } from './error-handling'
 import { getIntFromParameter, getListFromParameter } from './event-processing'
 import { APIGatewayEvent, APIGatewayEventHander, APIGatewayEventResult } from './index'
@@ -71,12 +71,6 @@ export const getRandom = (
 
 /* Processing */
 
-const getReferenceInfo = (): Promise<ReferenceInfo> =>
-  getDataByIndex(jokeTableReferenceIndex).then((referenceInfo) => ({
-    count: 0,
-    ...referenceInfo,
-  }))
-
 const processGetWithParameters = (
   event: APIGatewayEvent,
   referenceInfo: ReferenceInfo
@@ -91,7 +85,10 @@ const processGet = (event: APIGatewayEvent, referenceInfo: ReferenceInfo): Promi
 const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`processRandom received unexpected method ${event.httpMethod}`))
 
-export const processRandom: APIGatewayEventHander = (event: APIGatewayEvent): Promise<APIGatewayEventResult> =>
-  getReferenceInfo().then((referenceInfo) =>
+export const processRandom: APIGatewayEventHander = (
+  referenceInfoPromise: Promise<ReferenceInfo>,
+  event: APIGatewayEvent
+): Promise<APIGatewayEventResult> =>
+  referenceInfoPromise.then((referenceInfo) =>
     Promise.resolve(processGet(event, referenceInfo)).then((response) => response ?? processUnknownRequest(event))
   )
