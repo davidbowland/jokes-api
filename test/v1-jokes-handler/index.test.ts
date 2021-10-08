@@ -14,6 +14,12 @@ import { processById } from '@v1-jokes-handler/v1-jokes-by-id'
 import { processPlain } from '@v1-jokes-handler/v1-jokes-plain'
 import { processRandom } from '@v1-jokes-handler/v1-jokes-random'
 
+jest.mock('@v1-jokes-handler/dynamodb', () => ({
+  getDataByIndex: () => Promise.resolve({}),
+}))
+jest.mock('@v1-jokes-handler/error-handling', () => ({
+  handleErrorWithDefault: (value) => () => value,
+}))
 jest.mock('@v1-jokes-handler/event-processing')
 jest.mock('@v1-jokes-handler/v1-jokes-by-id')
 jest.mock('@v1-jokes-handler/v1-jokes-plain')

@@ -7,6 +7,9 @@ import * as v1JokesRandom from '@v1-jokes-handler/v1-jokes-random'
 import { getRandom, processRandom } from '@v1-jokes-handler/v1-jokes-random'
 
 jest.mock('@v1-jokes-handler/dynamodb')
+jest.mock('@v1-jokes-handler/error-handling', () => ({
+  handleErrorWithDefault: (value) => () => value,
+}))
 jest.mock('@v1-jokes-handler/event-processing')
 jest.mock('@v1-jokes-handler/index')
 
@@ -109,14 +112,14 @@ describe('v1-jokes-random', () => {
       const httpMethod = 'GET'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processRandom(tempEvent)
+      const result = await processRandom(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(getReturnValue)
       expect(getRandom).toHaveBeenCalledTimes(1)
     })
 
     test('expect status.BAD_REQUEST when httpMethod is unknown', async () => {
       const tempEvent = { ...event, httpMethod: 'FNORD' } as unknown as APIGatewayEvent
-      const result = await processRandom(tempEvent)
+      const result = await processRandom(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
   })

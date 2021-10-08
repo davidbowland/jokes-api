@@ -7,6 +7,9 @@ import * as v1JokesById from '@v1-jokes-handler/v1-jokes-by-id'
 import { deleteById, getById, processById, putById } from '@v1-jokes-handler/v1-jokes-by-id'
 
 jest.mock('@v1-jokes-handler/dynamodb')
+jest.mock('@v1-jokes-handler/error-handling', () => ({
+  handleErrorWithDefault: (value) => () => value,
+}))
 jest.mock('@v1-jokes-handler/event-processing')
 jest.mock('@v1-jokes-handler/index')
 
@@ -41,7 +44,7 @@ describe('v1-jokes-by-id', () => {
 
     test('expect status.NOT_FOUND when no joke is found', async () => {
       const index = 4
-      ;(getDataByIndex as jest.Mock).mockReturnValueOnce({})
+      ;(getDataByIndex as jest.Mock).mockResolvedValueOnce({})
 
       const result = await getById(index)
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
@@ -158,7 +161,7 @@ describe('v1-jokes-by-id', () => {
       const httpMethod = 'GET'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processById(tempEvent)
+      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(getReturnValue)
       expect(getById).toHaveBeenCalledTimes(1)
     })
@@ -167,7 +170,7 @@ describe('v1-jokes-by-id', () => {
       const httpMethod = 'PUT'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processById(tempEvent)
+      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(putReturnValue)
       expect(putById).toHaveBeenCalledTimes(1)
     })
@@ -176,14 +179,14 @@ describe('v1-jokes-by-id', () => {
       const httpMethod = 'DELETE'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processById(tempEvent)
+      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(deleteReturnValue)
       expect(deleteById).toHaveBeenCalledTimes(1)
     })
 
     test('expect status.BAD_REQUEST when httpMethod is unknown', async () => {
       const tempEvent = { ...event, httpMethod: 'FNORD' } as unknown as APIGatewayEvent
-      const result = await processById(tempEvent)
+      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
@@ -191,20 +194,20 @@ describe('v1-jokes-by-id', () => {
       'expect status.BAD_REQUEST when jokeId is bad, less than zero, or the reference index',
       async (jokeId: string) => {
         const tempEvent = { ...event, pathParameters: { jokeId } } as unknown as APIGatewayEvent
-        const result = await processById(tempEvent)
+        const result = await processById(Promise.resolve(referenceInfo), tempEvent)
         expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
       }
     )
 
     test('expect status.BAD_REQUEST when path parameters are omitted', async () => {
       const tempEvent = {} as unknown as APIGatewayEvent
-      const result = await processById(tempEvent)
+      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
     test('expect status.NOT_FOUND when jokeId is greater than the final index', async () => {
       const tempEvent = { ...event, pathParameters: { jokeId: `${finalIndex + 1}` } } as unknown as APIGatewayEvent
-      const result = await processById(tempEvent)
+      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
   })
