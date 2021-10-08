@@ -2,7 +2,7 @@ import { fetchCountMaximum, jokeTableReferenceIndex } from './config'
 import { getDataByIndexBatch, Joke, ReferenceInfo, setDataByIndex } from './dynamodb'
 import { handleErrorWithDefault } from './error-handling'
 import { getIntFromParameter, getPayloadFromEvent } from './event-processing'
-import { APIGatewayEvent, APIGatewayEventHander, APIGatewayEventResult } from './index'
+import { APIGatewayEvent, APIGatewayEventResult, APIGatewayReferenceEventHander } from './index'
 import status from './status'
 
 // /v1/jokes
@@ -79,7 +79,7 @@ const processPost = (
 const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`processPlain received unexpected method ${event.httpMethod}`))
 
-export const processPlain: APIGatewayEventHander = (
+export const processPlain: APIGatewayReferenceEventHander = (
   referenceInfoPromise: Promise<ReferenceInfo>,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult> =>

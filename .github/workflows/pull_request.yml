@@ -1,5 +1,4 @@
-# Run tests for joke lambdas
-name: Run tests for dbowland.com joke lambdas
+name: Run tests for joke API lambda
 
 on:
   pull_request:
