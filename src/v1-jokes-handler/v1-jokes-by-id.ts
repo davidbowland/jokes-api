@@ -2,7 +2,7 @@ import { jokeTableReferenceIndex } from './config'
 import { deleteDataByIndex, getDataByIndex, Joke, ReferenceInfo, setDataByIndex } from './dynamodb'
 import { handleErrorWithDefault } from './error-handling'
 import { getPayloadFromEvent } from './event-processing'
-import { APIGatewayEvent, APIGatewayEventHander, APIGatewayEventResult } from './index'
+import { APIGatewayEvent, APIGatewayEventResult, APIGatewayReferenceEventHander } from './index'
 import status from './status'
 
 // /v1/jokes/{jokeId}
@@ -69,7 +69,7 @@ const processDeleteById = (
 const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`processById received unexpected method ${event.httpMethod}`))
 
-export const processById: APIGatewayEventHander = (
+export const processById: APIGatewayReferenceEventHander = (
   referenceInfoPromise: Promise<ReferenceInfo>,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult> =>

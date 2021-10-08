@@ -2,7 +2,7 @@ import { fetchCountMaximum } from './config'
 import { getDataByIndexBatch, ReferenceInfo } from './dynamodb'
 import { handleErrorWithDefault } from './error-handling'
 import { getIntFromParameter, getListFromParameter } from './event-processing'
-import { APIGatewayEvent, APIGatewayEventHander, APIGatewayEventResult } from './index'
+import { APIGatewayEvent, APIGatewayEventResult, APIGatewayReferenceEventHander } from './index'
 import status from './status'
 
 export interface IndexList {
@@ -85,7 +85,7 @@ const processGet = (event: APIGatewayEvent, referenceInfo: ReferenceInfo): Promi
 const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`processRandom received unexpected method ${event.httpMethod}`))
 
-export const processRandom: APIGatewayEventHander = (
+export const processRandom: APIGatewayReferenceEventHander = (
   referenceInfoPromise: Promise<ReferenceInfo>,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult> =>
