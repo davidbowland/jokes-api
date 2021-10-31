@@ -16,12 +16,6 @@
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
     "test": "jest --colors"
   },
-  "husky": {
-    "hooks": {
-      "pre-commit": "lint-staged",
-      "pre-push": "eslint --fix . && jest --colors"
-    }
-  },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "prettier --write --ignore-unknown",
