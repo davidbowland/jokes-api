@@ -24,9 +24,7 @@ describe('v1-jokes-by-id', () => {
   const finalIndex = referenceInfo.count
 
   beforeAll(() => {
-    ;(getDataByIndex as jest.Mock).mockImplementation(async (key: number) => {
-      return jokeTable[key] ?? {}
-    })
+    ;(getDataByIndex as jest.Mock).mockImplementation(async (key: number) => jokeTable[key] ?? {})
   })
 
   describe('getById', () => {
