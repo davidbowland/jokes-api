@@ -8,10 +8,10 @@
     "node": "^16.0.0"
   },
   "scripts": {
-    "deploy": "../scripts/infrastructure/deploy.sh",
-    "preview": "../scripts/infrastructure/preview.sh",
+    "deploy": "./scripts/deploy.sh",
+    "preview": "./scripts/preview.sh",
     "lint": "prettier --write . && eslint --fix .",
-    "refresh": "../scripts/infrastructure/refresh.sh"
+    "refresh": "./scripts/refresh.sh"
   },
   "dependencies": {
     "@pulumi/aws": "^4.0.0",

@@ -23,9 +23,7 @@ describe('v1-jokes-random', () => {
   }
 
   beforeAll(() => {
-    ;(getDataByIndex as jest.Mock).mockImplementation(async (key: number) => {
-      return jokeTable[key] ?? {}
-    })
+    ;(getDataByIndex as jest.Mock).mockImplementation(async (key: number) => jokeTable[key] ?? {})
 
     const mockMath = Object.create(global.Math)
     mockMath.random = () => 0
