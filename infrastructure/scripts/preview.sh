@@ -1,10 +1,10 @@
-#!/bin/sh
+#!/usr/bin/env bash
 
 # Stop immediately on error
 set -e
 
-if [ -z "$1" ]; then
-  $(../../scripts/assumeDeveloperRole.sh)
+if [[ -z "$1" ]]; then
+  $(../scripts/assumeDeveloperRole.sh)
 fi
 
 ### Preview infrastructure
