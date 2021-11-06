@@ -1,7 +1,7 @@
 import * as awsx from '@pulumi/awsx'
 
-import { zip_v1_jokes_handler } from '../lambda/functions'
-import { cognitoUserPoolArn, resourceById, resourcePlain, resourceRandom } from '../vars'
+import { zip_v1_jokes_handler } from '../../lambda/functions'
+import { cognitoUserPoolArn, resourceById, resourcePlain, resourceRandom } from '../../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/nodejs/pulumi/awsx/apigateway/
 

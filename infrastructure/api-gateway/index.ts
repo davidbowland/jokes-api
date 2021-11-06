@@ -1,1 +1,1 @@
-import './v1-jokes'
+import './apis/v1-jokes'
