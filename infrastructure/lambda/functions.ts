@@ -1,8 +1,8 @@
 import * as aws from '@pulumi/aws'
 
 import { getMostRecentLambdaVersion } from '../aws-vars'
-import { lambda_role } from '../iam/roles'
-import { jokes_table } from '../dynamodb/tables'
+import { lambdaRole } from '../iam/roles'
+import { jokesTable } from '../dynamodb/tables'
 import {
   createdBy,
   createdFor,
@@ -21,12 +21,12 @@ import {
 
 const s3Key = 'jokes-handler/v1-jokes-handler.zip'
 
-export const zip_v1_jokes_handler = new aws.lambda.Function('zip-v1-jokes-handler', {
+export const zipV1JokesHandler = new aws.lambda.Function('zip-v1-jokes-handler', {
   environment: {
     variables: {
       CORS_ORIGINS: corsOrigins,
       DEFAULT_ORIGIN: defaultOrigin,
-      DYNAMODB_TABLE_NAME: jokes_table.name,
+      DYNAMODB_TABLE_NAME: jokesTable.name,
       FETCH_COUNT_MAXIMUM: fetchCountMaximum,
       JOKE_TABLE_REFERENCE_INDEX: jokeTableReferenceIndex,
       RESOURCE_BY_ID: resourceById,
@@ -36,7 +36,7 @@ export const zip_v1_jokes_handler = new aws.lambda.Function('zip-v1-jokes-handle
   },
   handler: 'index.handler',
   name: 'v1-jokes-handler',
-  role: lambda_role.arn,
+  role: lambdaRole.arn,
   runtime: aws.lambda.Runtime.NodeJS14dX,
   s3Bucket: lambdaSourceBucket,
   s3Key,

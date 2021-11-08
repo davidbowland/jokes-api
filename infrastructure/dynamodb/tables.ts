@@ -4,7 +4,7 @@ import { createdBy, createdFor } from '../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/dynamodb/table/
 
-export const jokes_table = new aws.dynamodb.Table('dynamodb-table', {
+export const jokesTable = new aws.dynamodb.Table('dynamodb-table', {
   attributes: [
     {
       name: 'Index',
