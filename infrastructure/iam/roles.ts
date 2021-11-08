@@ -4,7 +4,7 @@ import { createdBy, createdFor } from '../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/iam/role/
 
-export const lambda_role = new aws.iam.Role('lambda-role', {
+export const lambdaRole = new aws.iam.Role('lambda-role', {
   assumeRolePolicy: JSON.stringify({
     Version: '2012-10-17',
     Statement: [
@@ -26,7 +26,7 @@ export const lambda_role = new aws.iam.Role('lambda-role', {
   },
 })
 
-export const cloudwatch_log_role = new aws.iam.Role('cloudwatch-log-role', {
+export const cloudwatchLogRole = new aws.iam.Role('cloudwatch-log-role', {
   assumeRolePolicy: JSON.stringify({
     Version: '2012-10-17',
     Statement: [

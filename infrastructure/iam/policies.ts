@@ -1,14 +1,14 @@
 import * as aws from '@pulumi/aws'
 
-import { jokes_table } from '../dynamodb/tables'
+import { jokesTable } from '../dynamodb/tables'
 import { createdBy, createdFor, environmentVariableKmsArn } from '../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/iam/policy/
 
-export const joke_access_dynamodb_policy = new aws.iam.Policy('dynamodb-access', {
+export const accessDynamodbPolicy = new aws.iam.Policy('dynamodb-access', {
   path: '/',
   description: 'Full access to joke table in DynamoDB',
-  policy: jokes_table.name.apply((jokesTableName) =>
+  policy: jokesTable.name.apply((jokesTableName) =>
     JSON.stringify({
       Version: '2012-10-17',
       Statement: [
@@ -51,7 +51,7 @@ export const joke_access_dynamodb_policy = new aws.iam.Policy('dynamodb-access',
   },
 })
 
-export const lambda_kms_access_policy = new aws.iam.Policy('kms-access', {
+export const lambdaKmsAccessPolicy = new aws.iam.Policy('kms-access', {
   path: '/',
   description: 'Access to KMS for Lambdas to decrypt environment variables',
   policy: JSON.stringify({

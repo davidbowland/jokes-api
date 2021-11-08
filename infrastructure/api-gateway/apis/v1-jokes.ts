@@ -1,69 +1,66 @@
 import * as awsx from '@pulumi/awsx'
 
-import { zip_v1_jokes_handler } from '../../lambda/functions'
-import { cognitoUserPoolArn, resourceById, resourcePlain, resourceRandom } from '../../vars'
+import { cognitoAuthorizer } from '../authorizers'
+import { zipV1JokesHandler } from '../../lambda/functions'
+import { resourceById, resourcePlain, resourceRandom } from '../../vars'
 
 // https://www.pulumi.com/docs/reference/pkg/nodejs/pulumi/awsx/apigateway/
 
-const cognito_authorizer = awsx.apigateway.getCognitoAuthorizer({
-  providerARNs: [cognitoUserPoolArn],
-})
-
-export const jokes_handler_api = new awsx.apigateway.API('lambda-jokes-handler-api-v1', {
+export const jokesHandlerApi = new awsx.apigateway.API('lambda-jokes-handler-api-v1', {
   stageName: 'v1',
   routes: [
     // By ID
     {
-      authorizers: [cognito_authorizer],
+      authorizers: [cognitoAuthorizer],
       path: resourceById,
       method: 'GET',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     {
-      authorizers: [cognito_authorizer],
+      authorizers: [cognitoAuthorizer],
       path: resourceById,
       method: 'PUT',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     {
-      authorizers: [cognito_authorizer],
+      authorizers: [cognitoAuthorizer],
       path: resourceById,
       method: 'DELETE',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     {
       path: resourceById,
       method: 'OPTIONS',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     // Plain
     {
-      authorizers: [cognito_authorizer],
+      authorizers: [cognitoAuthorizer],
       path: resourcePlain,
       method: 'GET',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     {
-      authorizers: [cognito_authorizer],
+      authorizers: [cognitoAuthorizer],
       path: resourcePlain,
       method: 'POST',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     {
       path: resourcePlain,
       method: 'OPTIONS',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     // Random
     {
       path: resourceRandom,
       method: 'GET',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
     {
       path: resourceRandom,
       method: 'OPTIONS',
-      eventHandler: zip_v1_jokes_handler,
+      eventHandler: zipV1JokesHandler,
     },
   ],
   gatewayResponses: {
