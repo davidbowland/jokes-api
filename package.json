@@ -9,8 +9,8 @@
   },
   "license": "ISC",
   "scripts": {
-    "clean": "rm -rf build coverage && npm ci",
     "build": "npm run clean && tsc",
+    "clean": "rm -rf build coverage && npm ci",
     "deploy": "npm run build && ./scripts/deploy.sh",
     "lint": "prettier --write . && eslint --fix .",
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
