@@ -1,7 +1,7 @@
 import * as aws from '@pulumi/aws'
 
-import { jokesTable } from '../dynamodb/tables'
-import { createdBy, createdFor, environmentVariableKmsArn } from '../vars'
+import { jokesTable } from '@dynamodb/tables'
+import { createdBy, createdFor, environmentVariableKmsArn } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/iam/policy/
 

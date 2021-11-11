@@ -1,8 +1,8 @@
 import * as aws from '@pulumi/aws'
 
-import { getMostRecentLambdaVersion } from '../aws-vars'
-import { lambdaRole } from '../iam/roles'
-import { jokesTable } from '../dynamodb/tables'
+import { getMostRecentLambdaVersion } from '@aws-vars'
+import { lambdaRole } from '@iam/roles'
+import { jokesTable } from '@dynamodb/tables'
 import {
   createdBy,
   createdFor,
@@ -15,7 +15,7 @@ import {
   resourceById,
   resourcePlain,
   resourceRandom,
-} from '../vars'
+} from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/lambda/function/
 

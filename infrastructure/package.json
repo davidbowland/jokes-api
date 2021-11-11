@@ -10,7 +10,7 @@
   "scripts": {
     "deploy": "./scripts/deploy.sh",
     "preview": "./scripts/preview.sh",
-    "lint": "prettier --write . && eslint --fix .",
+    "lint": "prettier --write . && eslint --fix . --resolve-plugins-relative-to .",
     "refresh": "./scripts/refresh.sh"
   },
   "dependencies": {
@@ -18,7 +18,8 @@
     "@pulumi/awsx": "^0.30.0",
     "@pulumi/pulumi": "^3.0.0",
     "@types/node": "^15.6.1",
-    "aws-sdk": "^2.912.0"
+    "aws-sdk": "^2.912.0",
+    "tsconfig-paths": "^3.11.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.24.0",
