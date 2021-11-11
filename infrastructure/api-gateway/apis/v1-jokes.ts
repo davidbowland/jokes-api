@@ -1,8 +1,8 @@
 import * as awsx from '@pulumi/awsx'
 
-import { cognitoAuthorizer } from '../authorizers'
-import { zipV1JokesHandler } from '../../lambda/functions'
-import { resourceById, resourcePlain, resourceRandom } from '../../vars'
+import { cognitoAuthorizer } from '@api-gateway/authorizers'
+import { zipV1JokesHandler } from '@lambda/functions'
+import { resourceById, resourcePlain, resourceRandom } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/nodejs/pulumi/awsx/apigateway/
 

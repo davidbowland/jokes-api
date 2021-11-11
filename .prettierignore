@@ -1,6 +1,7 @@
 __snapshots__/
 build/
 coverage/
+infrastructure/
 node_modules/
 *.min.*
 package-lock.json

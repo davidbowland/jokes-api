@@ -44,10 +44,14 @@
 
     /* Module Resolution Options */
     "moduleResolution": "node" /* Specify module resolution strategy: 'node' (Node.js) or 'classic' (TypeScript pre-1.6). */,
-    "baseUrl": "infrastructure/" /* Base directory to resolve non-absolute module names. */,
+    "baseUrl": "." /* Base directory to resolve non-absolute module names. */,
     "paths": {
-      "@infrastructure/*": ["*"]
-      //   "@vars/*": ["vars/*"]
+      "@api-gateway/*": ["api-gateway/*"],
+      "@aws-vars": ["aws-vars"],
+      "@dynamodb/*": ["dynamodb/*"],
+      "@iam/*": ["iam/*"],
+      "@lambda/*": ["lambda/*"],
+      "@vars": ["vars"]
     } /* A series of entries which re-map imports to lookup locations relative to the 'baseUrl'. */,
     // "rootDirs": [],                              /* List of root folders whose combined content represents the structure of the project at runtime. */
     // "typeRoots": [],                             /* List of folders to include type definitions from. */
