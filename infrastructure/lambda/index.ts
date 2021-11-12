@@ -1,1 +1,1 @@
-import './functions'
+export * from './functions'

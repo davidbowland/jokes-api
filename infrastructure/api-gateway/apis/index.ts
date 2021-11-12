@@ -1,1 +1,1 @@
-import './v1-jokes'
+export * from './v1-jokes'
