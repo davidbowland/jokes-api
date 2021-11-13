@@ -1,1 +1,1 @@
-import './tables'
+export * from './tables'

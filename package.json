@@ -12,14 +12,14 @@
     "build": "npm run clean && tsc",
     "clean": "rm -rf build coverage && npm ci",
     "deploy": "npm run build && ./scripts/deploy.sh",
-    "lint": "prettier --write . && eslint --fix .",
+    "lint": "prettier --write . && eslint --fix . --resolve-plugins-relative-to .",
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
     "test": "jest --colors"
   },
   "lint-staged": {
     "**/*.{js,jsx,ts,tsx}": [
       "prettier --write --ignore-unknown",
-      "eslint --fix",
+      "eslint --resolve-plugins-relative-to . --fix",
       "jest --colors --findRelatedTests --coverageThreshold '{}'"
     ],
     "**/*": [
