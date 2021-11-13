@@ -9,5 +9,8 @@ fi
 
 ### Refresh infrastructure
 
-# Refresh state with infrastructure
-pulumi refresh -s dev
+# Clear any pending operations on the stack
+pulumi stack -s dev export | jq ".deployment.pending_operations=[]" | pulumi stack -s dev import
+
+# Refresh infrastructure state with no prompt
+pulumi refresh -s dev -y
