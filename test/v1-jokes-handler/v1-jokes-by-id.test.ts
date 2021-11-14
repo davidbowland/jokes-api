@@ -63,9 +63,10 @@ describe('v1-jokes-by-id', () => {
       })
     })
 
-    test('expect status.NO_CONTENT when data is valid', async () => {
+    test('expect status.OK and body when data is valid', async () => {
       const result = await putById(index, joke)
-      expect(result).toEqual(expect.objectContaining(status.NO_CONTENT))
+      expect(result).toEqual(expect.objectContaining(status.OK))
+      expect(JSON.parse(result.body)).toEqual({ id: index, ...joke })
     })
 
     test('expect setDataByIndex called with passed data', async () => {

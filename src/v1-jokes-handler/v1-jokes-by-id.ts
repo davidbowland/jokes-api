@@ -18,7 +18,10 @@ export const getById = (requestJokeId: number): Promise<APIGatewayEventResult> =
 /* Put */
 
 const putJokeFromData = (requestJokeId: number, jokeInfo: Joke): Promise<APIGatewayEventResult> =>
-  setDataByIndex(requestJokeId, { joke: jokeInfo.joke }).then(() => status.NO_CONTENT)
+  setDataByIndex(requestJokeId, { joke: jokeInfo.joke }).then(() => ({
+    ...status.OK,
+    body: JSON.stringify({ id: requestJokeId, joke: jokeInfo.joke }),
+  }))
 
 export const putById = (requestJokeId: number, jokeInfo: Joke): Promise<APIGatewayEventResult> =>
   jokeInfo.joke ? putJokeFromData(requestJokeId, jokeInfo) : Promise.resolve(status.BAD_REQUEST)
