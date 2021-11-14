@@ -6,6 +6,7 @@ export const jokeTableReferenceIndex = parseInt(process.env.JOKE_TABLE_REFERENCE
 
 // Resources
 
+export const apiUrl = process.env.API_URL as string
 export const resourceByID = process.env.RESOURCE_BY_ID as string
 export const resourcePlain = process.env.RESOURCE_PLAIN as string
 export const resourceRandom = process.env.RESOURCE_RANDOM as string

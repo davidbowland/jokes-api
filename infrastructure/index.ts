@@ -5,8 +5,9 @@ import './config'
 import { jokesHandlerApi } from '@api-gateway'
 import '@dynamodb'
 import '@iam'
-import '@lambda'
+import { zipV1JokesHandler } from '@lambda'
 
 // Outputs
 
 export const apiUrl = jokesHandlerApi.url
+export const lambdaV1JokesArn = zipV1JokesHandler.arn
