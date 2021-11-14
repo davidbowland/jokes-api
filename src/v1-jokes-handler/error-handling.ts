@@ -1,3 +1,3 @@
 // prettier-ignore
 export const handleErrorWithDefault =
-  <Type>(value: Type) => (error: Error): Type => (console.error(error), value)
+  <Type>(value: Type, logFunc=console.error) => (error: Error): Type => (logFunc(error), value)
