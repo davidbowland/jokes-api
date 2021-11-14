@@ -127,7 +127,8 @@ describe('v1-jokes-by-id', () => {
   })
 
   describe('processById', () => {
-    const event = { pathParameters: { jokeId: '1' }, httpMethod: 'GET' } as unknown as APIGatewayEvent
+    const index = 1
+    const event = { pathParameters: { jokeId: `${index}` }, httpMethod: 'GET' } as unknown as APIGatewayEvent
     const getById = jest.spyOn(v1JokesById, 'getById')
     const putById = jest.spyOn(v1JokesById, 'putById')
     const deleteById = jest.spyOn(v1JokesById, 'deleteById')
@@ -136,7 +137,7 @@ describe('v1-jokes-by-id', () => {
     const deleteReturnValue = { value: 'unique-deleteById-value714' } as unknown as APIGatewayEventResult
 
     beforeAll(() => {
-      ;(getPayloadFromEvent as jest.Mock).mockReturnValue(joke)
+      ;(getPayloadFromEvent as jest.Mock).mockResolvedValue(joke)
 
       getById.mockResolvedValue(getReturnValue)
       putById.mockImplementation(async (requestJokeId: number, jokeInfo: Joke) => {
@@ -161,7 +162,7 @@ describe('v1-jokes-by-id', () => {
 
       const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(getReturnValue)
-      expect(getById).toHaveBeenCalledTimes(1)
+      expect(getById).toHaveBeenCalledWith(index)
     })
 
     test('expect PUT to invoke putById', async () => {
@@ -170,7 +171,7 @@ describe('v1-jokes-by-id', () => {
 
       const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(putReturnValue)
-      expect(putById).toHaveBeenCalledTimes(1)
+      expect(putById).toHaveBeenCalledWith(index, joke)
     })
 
     test('expect DELETE to invoke deleteById', async () => {
@@ -179,7 +180,7 @@ describe('v1-jokes-by-id', () => {
 
       const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(deleteReturnValue)
-      expect(deleteById).toHaveBeenCalledTimes(1)
+      expect(deleteById).toHaveBeenCalledWith(index, referenceInfo)
     })
 
     test('expect status.BAD_REQUEST when httpMethod is unknown', async () => {

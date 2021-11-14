@@ -53,7 +53,7 @@ const processRandomRequest = (
 const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`handler received unexpected resource ${event.resource}`))
 
-export const processRequest: APIGatewayEventHander = async (event: APIGatewayEvent): Promise<APIGatewayEventResult> =>
+export const processRequest: APIGatewayEventHander = (event: APIGatewayEvent): Promise<APIGatewayEventResult> =>
   Promise.resolve(processOptionsRequest(event))
     .then((response) => response ?? processIdRequest(getReferenceInfo(), event))
     .then((response) => response ?? processPlainRequest(getReferenceInfo(), event))

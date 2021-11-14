@@ -21,9 +21,7 @@ const putJokeFromData = (requestJokeId: number, jokeInfo: Joke): Promise<APIGate
   setDataByIndex(requestJokeId, { joke: jokeInfo.joke }).then(() => status.NO_CONTENT)
 
 export const putById = (requestJokeId: number, jokeInfo: Joke): Promise<APIGatewayEventResult> =>
-  Promise.resolve(!jokeInfo.joke ? status.BAD_REQUEST : undefined).then(
-    (response) => response ?? putJokeFromData(requestJokeId, jokeInfo)
-  )
+  jokeInfo.joke ? putJokeFromData(requestJokeId, jokeInfo) : Promise.resolve(status.BAD_REQUEST)
 
 /* Delete */
 
@@ -57,7 +55,9 @@ const processGetById = (event: APIGatewayEvent, requestJokeId: number): Promise<
   event.httpMethod === 'GET' ? exports.getById(requestJokeId) : Promise.resolve(undefined)
 
 const processPutById = (event: APIGatewayEvent, requestJokeId: number): Promise<APIGatewayEventResult | undefined> =>
-  event.httpMethod === 'PUT' ? exports.putById(requestJokeId, getPayloadFromEvent(event)) : Promise.resolve(undefined)
+  event.httpMethod === 'PUT'
+    ? getPayloadFromEvent(event).then((payload) => exports.putById(requestJokeId, payload))
+    : Promise.resolve(undefined)
 
 const processDeleteById = (
   event: APIGatewayEvent,
