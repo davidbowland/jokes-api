@@ -1,10 +1,12 @@
+import { Operation } from 'fast-json-patch'
+
 import { jokeTableReferenceIndex } from '@v1-jokes-handler/config'
 import { deleteDataByIndex, getDataByIndex, Joke, ReferenceInfo, setDataByIndex } from '@v1-jokes-handler/dynamodb'
 import { getPayloadFromEvent } from '@v1-jokes-handler/event-processing'
 import { APIGatewayEvent, APIGatewayEventResult } from '@v1-jokes-handler/index'
 import status from '@v1-jokes-handler/status'
 import * as v1JokesById from '@v1-jokes-handler/v1-jokes-by-id'
-import { deleteById, getById, processById, putById } from '@v1-jokes-handler/v1-jokes-by-id'
+import { deleteById, getById, patchById, processById, putById } from '@v1-jokes-handler/v1-jokes-by-id'
 
 jest.mock('@v1-jokes-handler/dynamodb')
 jest.mock('@v1-jokes-handler/error-handling', () => ({
@@ -22,6 +24,13 @@ describe('v1-jokes-by-id', () => {
     2: { joke: 'congress' },
   }
   const finalIndex = referenceInfo.count
+  const patchJokeOneToTwo: Operation[] = [
+    {
+      op: 'replace',
+      path: '/joke',
+      value: jokeTable[2].joke,
+    },
+  ]
 
   beforeAll(() => {
     ;(getDataByIndex as jest.Mock).mockImplementation(async (key: number) => jokeTable[key] ?? {})
@@ -47,6 +56,40 @@ describe('v1-jokes-by-id', () => {
       const result = await getById(index)
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
+  })
+
+  describe('patchById', () => {
+    const index = 1
+
+    beforeAll(() => {
+      ;(setDataByIndex as jest.Mock).mockImplementation(async (key: number, data: Joke | ReferenceInfo) => {
+        if (
+          (key === jokeTableReferenceIndex && typeof (data as ReferenceInfo).count === 'undefined') ||
+          (key !== jokeTableReferenceIndex && typeof (data as Joke).joke === 'undefined')
+        ) {
+          throw `setDataByIndex called with invalid index ${key} and data ${JSON.stringify(data)}`
+        }
+      })
+    })
+
+    test('expect status.OK and body when data is valid', async () => {
+      const result = await patchById(index, patchJokeOneToTwo)
+      expect(result).toEqual(expect.objectContaining(status.OK))
+      expect(JSON.parse(result.body)).toEqual({ id: index, ...jokeTable[2] })
+    })
+
+    test('expect setDataByIndex called with updated joke', async () => {
+      await patchById(index, patchJokeOneToTwo)
+      expect(setDataByIndex).toHaveBeenCalledWith(index, jokeTable[2])
+    })
+
+    test.each([[{ op: 'none' }], { joke: 'something funny' }])(
+      'expect status.BAD_REQUEST when data is invalid (data=%s)',
+      async (data: unknown) => {
+        const result = await patchById(index, data)
+        expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
+      }
+    )
   })
 
   describe('putById', () => {
@@ -129,25 +172,41 @@ describe('v1-jokes-by-id', () => {
 
   describe('processById', () => {
     const index = 1
-    const event = { pathParameters: { jokeId: `${index}` }, httpMethod: 'GET' } as unknown as APIGatewayEvent
+    const event = {
+      pathParameters: { jokeId: `${index}` },
+      httpMethod: 'GET',
+      body: JSON.stringify(joke),
+    } as unknown as APIGatewayEvent
     const getById = jest.spyOn(v1JokesById, 'getById')
+    const patchById = jest.spyOn(v1JokesById, 'patchById')
     const putById = jest.spyOn(v1JokesById, 'putById')
     const deleteById = jest.spyOn(v1JokesById, 'deleteById')
     const getReturnValue = { value: 'unique-getById-value025' } as unknown as APIGatewayEventResult
+    const patchReturnValue = { value: 'unique-patchById-value601' } as unknown as APIGatewayEventResult
     const putReturnValue = { value: 'unique-putById-value389' } as unknown as APIGatewayEventResult
     const deleteReturnValue = { value: 'unique-deleteById-value714' } as unknown as APIGatewayEventResult
 
     beforeAll(() => {
-      ;(getPayloadFromEvent as jest.Mock).mockResolvedValue(joke)
+      ;(getPayloadFromEvent as jest.Mock).mockImplementation(async (event: APIGatewayEventResult) =>
+        JSON.parse(event.body)
+      )
 
       getById.mockResolvedValue(getReturnValue)
-      putById.mockImplementation(async (requestJokeId: number, jokeInfo: Joke) => {
+      patchById.mockImplementation((_: unknown, jsonPatch: unknown) => {
+        if (JSON.stringify(jsonPatch) !== JSON.stringify(patchJokeOneToTwo)) {
+          throw `patchById received jsonPatch ${JSON.stringify(jsonPatch)} but expected ${JSON.stringify(
+            patchJokeOneToTwo
+          )}`
+        }
+        return patchReturnValue
+      })
+      putById.mockImplementation((_: unknown, jokeInfo: Joke) => {
         if (jokeInfo.joke !== joke.joke) {
           throw `putById received joke ${JSON.stringify(jokeInfo)} but expected ${JSON.stringify(joke)}`
         }
         return putReturnValue
       })
-      deleteById.mockImplementation(async (requestJokeId: number, deleteReferenceInfo: ReferenceInfo) => {
+      deleteById.mockImplementation((_: unknown, deleteReferenceInfo: ReferenceInfo) => {
         if (deleteReferenceInfo.count !== referenceInfo.count) {
           throw `deleteById received info ${JSON.stringify(deleteReferenceInfo)} but expected ${JSON.stringify(
             referenceInfo
@@ -164,6 +223,16 @@ describe('v1-jokes-by-id', () => {
       const result = await processById(referenceInfo, tempEvent)
       expect(result).toEqual(getReturnValue)
       expect(getById).toHaveBeenCalledWith(index)
+    })
+
+    test('expect PATCH to invoke patchById', async () => {
+      const httpMethod = 'PATCH'
+      const body = JSON.stringify(patchJokeOneToTwo)
+      const tempEvent = { ...event, httpMethod, body } as unknown as APIGatewayEvent
+
+      const result = await processById(referenceInfo, tempEvent)
+      expect(result).toEqual(patchReturnValue)
+      expect(patchById).toHaveBeenCalledWith(index, patchJokeOneToTwo)
     })
 
     test('expect PUT to invoke putById', async () => {
