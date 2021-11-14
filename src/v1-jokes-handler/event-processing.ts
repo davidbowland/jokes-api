@@ -38,12 +38,12 @@ export const getCorsHeadersFromEvent = (event: APIGatewayProxyEvent): Promise<Pa
 
 /* Body */
 
-const parseEventBody = (event: APIGatewayProxyEvent): Payload =>
+const parseEventBody = (event: APIGatewayProxyEvent): Payload | Payload[] =>
   JSON.parse(
     event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string)
   )
 
-export const getPayloadFromEvent = (event: APIGatewayProxyEvent): Promise<Payload> =>
+export const getPayloadFromEvent = (event: APIGatewayProxyEvent): Promise<Payload | Payload[]> =>
   Promise.resolve(event).then(parseEventBody).catch(handleErrorWithDefault({}))
 
 /* Query string parameters */

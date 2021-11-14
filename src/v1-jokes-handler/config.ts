@@ -15,7 +15,7 @@ export const resourceRandom = process.env.RESOURCE_RANDOM as string
 export const corsOrigins = (process.env.CORS_ORIGINS as string).split(',')
 export const defaultOrigin = process.env.DEFAULT_ORIGIN as string
 export const corsMethods = {
-  [resourceByID]: 'OPTIONS,GET,PUT,DELETE',
+  [resourceByID]: 'OPTIONS,GET,PATCH,PUT,DELETE',
   [resourcePlain]: 'OPTIONS,GET,POST',
   [resourceRandom]: 'OPTIONS,GET',
 }

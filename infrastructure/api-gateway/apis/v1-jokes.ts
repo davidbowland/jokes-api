@@ -19,6 +19,12 @@ export const jokesHandlerApi = new awsx.apigateway.API('lambda-jokes-handler-api
     {
       authorizers: [cognitoAuthorizer],
       path: resourceById,
+      method: 'PATCH',
+      eventHandler: zipV1JokesHandler,
+    },
+    {
+      authorizers: [cognitoAuthorizer],
+      path: resourceById,
       method: 'PUT',
       eventHandler: zipV1JokesHandler,
     },
@@ -73,7 +79,7 @@ export const jokesHandlerApi = new awsx.apigateway.API('lambda-jokes-handler-api
         'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
         'gatewayresponse.header.Access-Control-Allow-Headers':
           "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-        'gatewayresponse.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PUT,DELETE'",
+        'gatewayresponse.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PATCH,PUT,DELETE'",
         'gatewayresponse.header.Access-Control-Allow-Credentials': "'*'",
       },
     },

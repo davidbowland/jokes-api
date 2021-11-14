@@ -1,7 +1,9 @@
+import { applyPatch, Operation } from 'fast-json-patch'
+
 import { jokeTableReferenceIndex } from './config'
 import { deleteDataByIndex, getDataByIndex, Joke, ReferenceInfo, setDataByIndex } from './dynamodb'
 import { handleErrorWithDefault } from './error-handling'
-import { getPayloadFromEvent } from './event-processing'
+import { getPayloadFromEvent, Payload } from './event-processing'
 import { APIGatewayEvent, APIGatewayEventResult, APIGatewayReferenceEventHander } from './index'
 import status from './status'
 
@@ -14,6 +16,19 @@ const extractJokeFromData = (jokeInfo: Joke | ReferenceInfo): APIGatewayEventRes
 
 export const getById = (requestJokeId: number): Promise<APIGatewayEventResult> =>
   getDataByIndex(requestJokeId).then(extractJokeFromData)
+
+/* Patch */
+
+const throwOnInvalidJsonPatch = true
+const mutateObjectOnJsonPatch = false
+export const patchById = (requestJokeId: number, patchOperation: Operation[]): Promise<APIGatewayEventResult> =>
+  getDataByIndex(requestJokeId)
+    .then(
+      (joke: Joke | ReferenceInfo) =>
+        applyPatch(joke as Joke, patchOperation, throwOnInvalidJsonPatch, mutateObjectOnJsonPatch).newDocument
+    )
+    .then((updatedJoke: Joke) => exports.putById(requestJokeId, updatedJoke))
+    .catch(handleErrorWithDefault(status.BAD_REQUEST))
 
 /* Put */
 
@@ -57,9 +72,14 @@ const processNotFoundId = (requestJokeId: number, referenceInfo: ReferenceInfo):
 const processGetById = (event: APIGatewayEvent, requestJokeId: number): Promise<APIGatewayEventResult | undefined> =>
   event.httpMethod === 'GET' ? exports.getById(requestJokeId) : Promise.resolve(undefined)
 
+const processPatchById = (event: APIGatewayEvent, requestJokeId: number): Promise<APIGatewayEventResult | undefined> =>
+  event.httpMethod === 'PATCH'
+    ? getPayloadFromEvent(event).then((payload: Payload | Payload[]) => exports.patchById(requestJokeId, payload))
+    : Promise.resolve(undefined)
+
 const processPutById = (event: APIGatewayEvent, requestJokeId: number): Promise<APIGatewayEventResult | undefined> =>
   event.httpMethod === 'PUT'
-    ? getPayloadFromEvent(event).then((payload) => exports.putById(requestJokeId, payload))
+    ? getPayloadFromEvent(event).then((payload: Payload | Payload[]) => exports.putById(requestJokeId, payload))
     : Promise.resolve(undefined)
 
 const processDeleteById = (
@@ -80,6 +100,7 @@ export const processById: APIGatewayReferenceEventHander = (
     Promise.resolve(processBadId(requestJokeId))
       .then((response) => response ?? processNotFoundId(requestJokeId, referenceInfo))
       .then((response) => response ?? processGetById(event, requestJokeId))
+      .then((response) => response ?? processPatchById(event, requestJokeId))
       .then((response) => response ?? processPutById(event, requestJokeId))
       .then((response) => response ?? processDeleteById(event, requestJokeId, referenceInfo))
       .then((response) => response ?? processUnknownRequest(event))
