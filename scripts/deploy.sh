@@ -29,7 +29,7 @@ nvm use v16
 NODE_ENV=production npm ci
 
 # Use pulumi to deploy project
-../scripts/infrastructure/deploy.sh
+./scripts/deploy.sh
 
 # Go back to Node version active when script ran
 nvm use $CURRENT_NODE
