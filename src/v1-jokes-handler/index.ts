@@ -54,18 +54,27 @@ const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`handler received unexpected resource ${event.resource}`))
 
 export const processRequest: APIGatewayEventHander = (event: APIGatewayEvent): Promise<APIGatewayEventResult> =>
-  Promise.resolve(processOptionsRequest(event))
-    .then((response) => response ?? getReferenceInfo().then((referenceInfo) => processIdRequest(referenceInfo, event)))
-    .then(
-      (response) => response ?? getReferenceInfo().then((referenceInfo) => processPlainRequest(referenceInfo, event))
-    )
-    .then(
-      (response) => response ?? getReferenceInfo().then((referenceInfo) => processRandomRequest(referenceInfo, event))
+  getReferenceInfo()
+    .then((referenceInfo) =>
+      Promise.resolve(processOptionsRequest(event))
+        .then((response) => response ?? processIdRequest(referenceInfo, event))
+        .then((response) => response ?? processPlainRequest(referenceInfo, event))
+        .then((response) => response ?? processRandomRequest(referenceInfo, event))
     )
     .then((response) => response ?? processUnknownRequest(event))
     .catch(handleErrorWithDefault(status.INTERNAL_SERVER_ERROR))
 
 export const handler: APIGatewayEventHander = (event: APIGatewayEvent): Promise<APIGatewayEventResult> =>
-  Promise.all([getCorsHeadersFromEvent(event), exports.processRequest(event)])
-    .then(([corsHeaders, result]) => ({ headers: corsHeaders, ...result }))
+  Promise.resolve({ headers: {} })
+    .then((handlerResult) =>
+      exports
+        .processRequest(event)
+        .then((requestResult: APIGatewayEventResult) => ({ ...handlerResult, ...requestResult }))
+    )
+    .then((handlerResult) =>
+      getCorsHeadersFromEvent(event).then((headerResult) => ({
+        ...handlerResult,
+        headers: { ...handlerResult.headers, ...headerResult },
+      }))
+    )
     .catch(handleErrorWithDefault(status.INTERNAL_SERVER_ERROR))

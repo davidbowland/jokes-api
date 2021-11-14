@@ -80,7 +80,7 @@ describe('index', () => {
 
     beforeAll(() => {
       processRequest.mockResolvedValue(status.OK)
-      ;(getCorsHeadersFromEvent as jest.Mock).mockReturnValue(corsHeaders)
+      ;(getCorsHeadersFromEvent as jest.Mock).mockResolvedValue(corsHeaders)
     })
 
     afterAll(() => {
@@ -102,9 +102,17 @@ describe('index', () => {
       }
     )
 
-    test('expect CORS header is correct', async () => {
+    test('expect CORS headers are correct', async () => {
       const result = await handler(event)
-      expect(result).toEqual(expect.objectContaining({ headers: corsHeaders }))
+      expect(result.headers).toEqual(expect.objectContaining(corsHeaders))
+    })
+
+    test('expect non-CORS headers are correct', async () => {
+      const testHeaders = { Location: 'https://domain.com/path/to/id' }
+      processRequest.mockResolvedValueOnce({ headers: testHeaders, ...status.NO_CONTENT })
+
+      const result = await handler(event)
+      expect(result.headers).toEqual(expect.objectContaining(testHeaders))
     })
 
     test('expect error returns status.INTERNAL_SERVER_ERROR', async () => {
