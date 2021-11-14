@@ -161,7 +161,7 @@ describe('v1-jokes-by-id', () => {
       const httpMethod = 'GET'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processById(referenceInfo, tempEvent)
       expect(result).toEqual(getReturnValue)
       expect(getById).toHaveBeenCalledWith(index)
     })
@@ -170,7 +170,7 @@ describe('v1-jokes-by-id', () => {
       const httpMethod = 'PUT'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processById(referenceInfo, tempEvent)
       expect(result).toEqual(putReturnValue)
       expect(putById).toHaveBeenCalledWith(index, joke)
     })
@@ -179,14 +179,14 @@ describe('v1-jokes-by-id', () => {
       const httpMethod = 'DELETE'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processById(referenceInfo, tempEvent)
       expect(result).toEqual(deleteReturnValue)
       expect(deleteById).toHaveBeenCalledWith(index, referenceInfo)
     })
 
     test('expect status.BAD_REQUEST when httpMethod is unknown', async () => {
       const tempEvent = { ...event, httpMethod: 'FNORD' } as unknown as APIGatewayEvent
-      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processById(referenceInfo, tempEvent)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
@@ -194,20 +194,20 @@ describe('v1-jokes-by-id', () => {
       'expect status.BAD_REQUEST when jokeId is bad, less than zero, or the reference index',
       async (jokeId: string) => {
         const tempEvent = { ...event, pathParameters: { jokeId } } as unknown as APIGatewayEvent
-        const result = await processById(Promise.resolve(referenceInfo), tempEvent)
+        const result = await processById(referenceInfo, tempEvent)
         expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
       }
     )
 
     test('expect status.BAD_REQUEST when path parameters are omitted', async () => {
       const tempEvent = {} as unknown as APIGatewayEvent
-      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processById(referenceInfo, tempEvent)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
     test('expect status.NOT_FOUND when jokeId is greater than the final index', async () => {
       const tempEvent = { ...event, pathParameters: { jokeId: `${finalIndex + 1}` } } as unknown as APIGatewayEvent
-      const result = await processById(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processById(referenceInfo, tempEvent)
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
   })

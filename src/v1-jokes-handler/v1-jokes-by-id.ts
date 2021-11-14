@@ -73,16 +73,14 @@ const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`processById received unexpected method ${event.httpMethod}`))
 
 export const processById: APIGatewayReferenceEventHander = (
-  referenceInfoPromise: Promise<ReferenceInfo>,
+  referenceInfo: ReferenceInfo,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult> =>
-  referenceInfoPromise
-    .then((referenceInfo) => ({ referenceInfo, requestJokeId: parseInt(event.pathParameters?.jokeId as string, 10) }))
-    .then(({ referenceInfo, requestJokeId }) =>
-      Promise.resolve(processBadId(requestJokeId))
-        .then((response) => response ?? processNotFoundId(requestJokeId, referenceInfo))
-        .then((response) => response ?? processGetById(event, requestJokeId))
-        .then((response) => response ?? processPutById(event, requestJokeId))
-        .then((response) => response ?? processDeleteById(event, requestJokeId, referenceInfo))
-        .then((response) => response ?? processUnknownRequest(event))
-    )
+  Promise.resolve(parseInt(event.pathParameters?.jokeId as string, 10)).then((requestJokeId) =>
+    Promise.resolve(processBadId(requestJokeId))
+      .then((response) => response ?? processNotFoundId(requestJokeId, referenceInfo))
+      .then((response) => response ?? processGetById(event, requestJokeId))
+      .then((response) => response ?? processPutById(event, requestJokeId))
+      .then((response) => response ?? processDeleteById(event, requestJokeId, referenceInfo))
+      .then((response) => response ?? processUnknownRequest(event))
+  )
