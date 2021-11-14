@@ -4,9 +4,10 @@ process.env.JOKE_TABLE_REFERENCE_INDEX = '0'
 
 // Resources
 
-process.env.RESOURCE_BY_ID = '/v1/jokes/{id}'
-process.env.RESOURCE_PLAIN = '/v1/jokes'
-process.env.RESOURCE_RANDOM = '/v1/jokes/random'
+process.env.API_URL = 'https://dbowland.com/v1/'
+process.env.RESOURCE_BY_ID = '/jokes/{id}'
+process.env.RESOURCE_PLAIN = '/jokes'
+process.env.RESOURCE_RANDOM = '/jokes/random'
 
 // CORS
 

@@ -11,3 +11,6 @@ fi
 
 # Use pulumi to deploy project
 pulumi up -s dev
+
+# Add new API URL to lambda environment variables
+./scripts/setEnvironmentVariables.sh
