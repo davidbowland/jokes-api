@@ -162,7 +162,7 @@ describe('v1-jokes-by-id', () => {
 
       const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(getReturnValue)
-      expect(getById).toHaveBeenCalledTimes(1)
+      expect(getById).toHaveBeenCalledWith(index)
     })
 
     test('expect PUT to invoke putById', async () => {
@@ -171,7 +171,7 @@ describe('v1-jokes-by-id', () => {
 
       const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(putReturnValue)
-      expect(putById).toHaveBeenCalledTimes(1)
+      expect(putById).toHaveBeenCalledWith(index, joke)
     })
 
     test('expect DELETE to invoke deleteById', async () => {
@@ -180,7 +180,7 @@ describe('v1-jokes-by-id', () => {
 
       const result = await processById(Promise.resolve(referenceInfo), tempEvent)
       expect(result).toEqual(deleteReturnValue)
-      expect(deleteById).toHaveBeenCalledTimes(1)
+      expect(deleteById).toHaveBeenCalledWith(index, referenceInfo)
     })
 
     test('expect status.BAD_REQUEST when httpMethod is unknown', async () => {
