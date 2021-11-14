@@ -80,11 +80,9 @@ const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
   handleErrorWithDefault(status.BAD_REQUEST)(new Error(`processPlain received unexpected method ${event.httpMethod}`))
 
 export const processPlain: APIGatewayReferenceEventHander = (
-  referenceInfoPromise: Promise<ReferenceInfo>,
+  referenceInfo: ReferenceInfo,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult> =>
-  referenceInfoPromise.then((referenceInfo) =>
-    processGet(referenceInfo, event)
-      .then((response) => response ?? processPost(referenceInfo, event))
-      .then((response) => response ?? processUnknownRequest(event))
-  )
+  processGet(referenceInfo, event)
+    .then((response) => response ?? processPost(referenceInfo, event))
+    .then((response) => response ?? processUnknownRequest(event))

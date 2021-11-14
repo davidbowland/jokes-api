@@ -20,7 +20,7 @@ export interface APIGatewayEventHander {
 }
 
 export interface APIGatewayReferenceEventHander {
-  (referenceInfoPromise: Promise<ReferenceInfo>, event: APIGatewayEvent): Promise<APIGatewayEventResult>
+  (referenceInfo: ReferenceInfo, event: APIGatewayEvent): Promise<APIGatewayEventResult>
 }
 
 const getReferenceInfo = (): Promise<ReferenceInfo> =>
@@ -33,19 +33,19 @@ const processOptionsRequest = (event: APIGatewayEvent): APIGatewayEventResult | 
   event.httpMethod == 'OPTIONS' ? status.OK : undefined
 
 const processIdRequest = (
-  referenceInfo: Promise<ReferenceInfo>,
+  referenceInfo: ReferenceInfo,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult | undefined> =>
   event.resource == resourceByID ? processById(referenceInfo, event) : Promise.resolve(undefined)
 
 const processPlainRequest = (
-  referenceInfo: Promise<ReferenceInfo>,
+  referenceInfo: ReferenceInfo,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult | undefined> =>
   event.resource == resourcePlain ? processPlain(referenceInfo, event) : Promise.resolve(undefined)
 
 const processRandomRequest = (
-  referenceInfo: Promise<ReferenceInfo>,
+  referenceInfo: ReferenceInfo,
   event: APIGatewayEvent
 ): Promise<APIGatewayEventResult | undefined> =>
   event.resource == resourceRandom ? processRandom(referenceInfo, event) : Promise.resolve(undefined)
@@ -55,9 +55,13 @@ const processUnknownRequest = (event: APIGatewayEvent): APIGatewayEventResult =>
 
 export const processRequest: APIGatewayEventHander = (event: APIGatewayEvent): Promise<APIGatewayEventResult> =>
   Promise.resolve(processOptionsRequest(event))
-    .then((response) => response ?? processIdRequest(getReferenceInfo(), event))
-    .then((response) => response ?? processPlainRequest(getReferenceInfo(), event))
-    .then((response) => response ?? processRandomRequest(getReferenceInfo(), event))
+    .then((response) => response ?? getReferenceInfo().then((referenceInfo) => processIdRequest(referenceInfo, event)))
+    .then(
+      (response) => response ?? getReferenceInfo().then((referenceInfo) => processPlainRequest(referenceInfo, event))
+    )
+    .then(
+      (response) => response ?? getReferenceInfo().then((referenceInfo) => processRandomRequest(referenceInfo, event))
+    )
     .then((response) => response ?? processUnknownRequest(event))
     .catch(handleErrorWithDefault(status.INTERNAL_SERVER_ERROR))
 

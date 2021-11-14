@@ -173,7 +173,7 @@ describe('v1-jokes-plain', () => {
       const httpMethod = 'GET'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processPlain(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processPlain(referenceInfo, tempEvent)
       expect(result).toEqual(getReturnValue)
       expect(getPlain).toHaveBeenCalledTimes(1)
     })
@@ -182,14 +182,14 @@ describe('v1-jokes-plain', () => {
       const httpMethod = 'POST'
       const tempEvent = { ...event, httpMethod } as unknown as APIGatewayEvent
 
-      const result = await processPlain(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processPlain(referenceInfo, tempEvent)
       expect(result).toEqual(postReturnValue)
       expect(postPlain).toHaveBeenCalledTimes(1)
     })
 
     test('expect status.BAD_REQUEST when httpMethod is unknown', async () => {
       const tempEvent = { ...event, httpMethod: 'FNORD' } as unknown as APIGatewayEvent
-      const result = await processPlain(Promise.resolve(referenceInfo), tempEvent)
+      const result = await processPlain(referenceInfo, tempEvent)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
   })
