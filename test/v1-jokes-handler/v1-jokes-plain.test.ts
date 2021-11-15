@@ -98,6 +98,13 @@ describe('v1-jokes-plain', () => {
     test('expect status.CREATED when data is valid', async () => {
       const result = await postPlain(referenceInfo, joke)
       expect(result).toEqual(expect.objectContaining(status.CREATED))
+      expect(result.body).toBeDefined()
+    })
+
+    test('expect Location header when data is valid', async () => {
+      const location = `https://dbowland.com/v1/jokes/${finalIndex + 1}`
+      const result = await postPlain(referenceInfo, joke)
+      expect(result.headers).toEqual(expect.objectContaining({ Location: location }))
     })
 
     test('expect setDataByIndex called with passed data', async () => {
