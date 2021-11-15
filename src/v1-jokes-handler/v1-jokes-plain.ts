@@ -1,4 +1,4 @@
-import { fetchCountMaximum, jokeTableReferenceIndex } from './config'
+import { apiUrl, fetchCountMaximum, jokeTableReferenceIndex, resourcePlain } from './config'
 import { getDataByIndexBatch, Joke, ReferenceInfo, setDataByIndex } from './dynamodb'
 import { handleErrorWithDefault } from './error-handling'
 import { getIntFromParameter, getPayloadFromEvent } from './event-processing'
@@ -50,7 +50,11 @@ const processPostJoke = (referenceInfo: ReferenceInfo, jokeInfo: Joke): Promise<
   Promise.resolve(incrementReferenceCount(referenceInfo)).then((newReferenceInfo) =>
     setDataByIndex(jokeTableReferenceIndex, newReferenceInfo)
       .then(() => setDataByIndex(newReferenceInfo.count, { joke: jokeInfo.joke }))
-      .then(() => ({ ...status.CREATED, body: JSON.stringify({ id: newReferenceInfo.count }) }))
+      .then(() => ({
+        ...status.CREATED,
+        body: JSON.stringify({ id: newReferenceInfo.count }),
+        headers: { Location: `${apiUrl}${resourcePlain.replace(/^\//, '')}/${newReferenceInfo.count}` },
+      }))
   )
 
 export const postPlain = (referenceInfo: ReferenceInfo, jokeInfo: Joke): Promise<APIGatewayEventResult> =>
