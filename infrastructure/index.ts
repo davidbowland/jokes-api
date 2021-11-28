@@ -1,13 +1,20 @@
+import * as pulumi from '@pulumi/pulumi'
+
 // Import Pulumi configuration
 import './config'
 
 // Import modules to create resources
-import { jokesHandlerApi } from '@api-gateway'
+import '@api-gateway'
 import '@dynamodb'
 import '@iam'
-import { zipV1JokesHandler } from '@lambda'
+import '@lambda'
+import '@route53'
 
 // Outputs
 
-export const apiUrl = jokesHandlerApi.url
+import { jokesHandlerApi } from '@api-gateway'
+import { zipV1JokesHandler } from '@lambda'
+import { domainName } from '@vars'
+
+export const lambdaV1JokesApiUrl = pulumi.interpolate`https://${domainName}/${jokesHandlerApi.stage.stageName}`
 export const lambdaV1JokesArn = zipV1JokesHandler.arn

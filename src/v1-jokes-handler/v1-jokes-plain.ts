@@ -53,7 +53,7 @@ const processPostJoke = (referenceInfo: ReferenceInfo, jokeInfo: Joke): Promise<
       .then(() => ({
         ...status.CREATED,
         body: JSON.stringify({ id: newReferenceInfo.count }),
-        headers: { Location: `${apiUrl}${resourcePlain.replace(/^\//, '')}/${newReferenceInfo.count}` },
+        headers: { Location: `${apiUrl}${resourcePlain}/${newReferenceInfo.count}` },
       }))
   )
 
