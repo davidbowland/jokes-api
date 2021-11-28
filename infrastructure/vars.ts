@@ -18,7 +18,7 @@ export const lambdaSourceBucket = 'jokes-lambda-source'
 
 /* Lambda */
 
-export const defaultOrigin = 'https://dbowland.com'
+export const defaultOrigin = 'https://jokes.bowland.link'
 export const corsOrigins = `${defaultOrigin},https://d8m2rj7f9egv3.cloudfront.net`
 export const fetchCountMaximum = '10'
 export const jokeTableReferenceIndex = '0'
