@@ -8,6 +8,7 @@ import {
   createdFor,
   corsOrigins,
   defaultOrigin,
+  domainName,
   fetchCountMaximum,
   jokeTableReferenceIndex,
   lambdaTimeoutInSeconds,
@@ -24,6 +25,7 @@ const s3Key = 'jokes-handler/v1-jokes-handler.zip'
 export const zipV1JokesHandler = new aws.lambda.Function('zip-v1-jokes-handler', {
   environment: {
     variables: {
+      API_URL: `https://${domainName}/v1`,
       CORS_ORIGINS: corsOrigins,
       DEFAULT_ORIGIN: defaultOrigin,
       DYNAMODB_TABLE_NAME: jokesTable.name,
