@@ -7,7 +7,21 @@ import { resourceById, resourcePlain, resourceRandom } from '@vars'
 // https://www.pulumi.com/docs/reference/pkg/nodejs/pulumi/awsx/apigateway/
 
 export const jokesHandlerApi = new awsx.apigateway.API('lambda-jokes-handler-api-v1', {
-  stageName: 'v1',
+  gatewayResponses: {
+    UNAUTHORIZED: {
+      statusCode: 401,
+      responseTemplates: {
+        'application/json': '{"message":$context.error.messageString}',
+      },
+      responseParameters: {
+        'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
+        'gatewayresponse.header.Access-Control-Allow-Headers':
+          "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        'gatewayresponse.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PATCH,PUT,DELETE'",
+        'gatewayresponse.header.Access-Control-Allow-Credentials': "'*'",
+      },
+    },
+  },
   routes: [
     // By ID
     {
@@ -69,19 +83,5 @@ export const jokesHandlerApi = new awsx.apigateway.API('lambda-jokes-handler-api
       eventHandler: zipV1JokesHandler,
     },
   ],
-  gatewayResponses: {
-    UNAUTHORIZED: {
-      statusCode: 401,
-      responseTemplates: {
-        'application/json': '{"message":$context.error.messageString}',
-      },
-      responseParameters: {
-        'gatewayresponse.header.Access-Control-Allow-Origin': "'*'",
-        'gatewayresponse.header.Access-Control-Allow-Headers':
-          "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
-        'gatewayresponse.header.Access-Control-Allow-Methods': "'OPTIONS,GET,POST,PATCH,PUT,DELETE'",
-        'gatewayresponse.header.Access-Control-Allow-Credentials': "'*'",
-      },
-    },
-  },
+  stageName: 'v1',
 })
