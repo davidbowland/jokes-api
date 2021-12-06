@@ -1,7 +1,8 @@
 import * as aws from '@pulumi/aws'
 
 import { apiDomain } from '@api-gateway'
-import { domainName, hostedZoneId } from '@vars'
+import { apiHostname } from '@vars'
+import { zone } from './zones'
 
 // https://www.pulumi.com/registry/packages/aws/api-docs/route53/record/
 
@@ -13,7 +14,7 @@ export const jokesBowlandLink = new aws.route53.Record('jokes-api-bowland-link',
       zoneId: apiDomain.cloudfrontZoneId,
     },
   ],
-  name: domainName,
+  name: apiHostname,
   type: 'A',
-  zoneId: hostedZoneId,
+  zoneId: zone.then((zone) => zone.id),
 })
