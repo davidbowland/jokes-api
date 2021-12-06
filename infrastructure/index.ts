@@ -14,7 +14,7 @@ import '@route53'
 
 import { jokesHandlerApi } from '@api-gateway'
 import { zipV1JokesHandler } from '@lambda'
-import { domainName } from '@vars'
+import { apiHostname } from '@vars'
 
-export const lambdaV1JokesApiUrl = pulumi.interpolate`https://${domainName}/${jokesHandlerApi.stage.stageName}`
+export const lambdaV1JokesApiUrl = pulumi.interpolate`https://${apiHostname}/${jokesHandlerApi.stage.stageName}`
 export const lambdaV1JokesArn = zipV1JokesHandler.arn

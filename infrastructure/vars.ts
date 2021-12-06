@@ -1,27 +1,27 @@
 /* General */
 
 export const awsAccountId = process.env.AWS_ACCOUNT_ID
-export const domainName = 'jokes-api.bowland.link'
+export const projectName = 'jokes'
+export const domainName = 'bowland.link'
+export const apiHostname = `${projectName}-api.${domainName}`
 
-export const lambdaTimeoutInSeconds = 15
-export const resourcePlain = '/jokes'
-export const resourceById = `${resourcePlain}/{jokeId}`
-export const resourceRandom = `${resourcePlain}/random`
+export const createdBy = `lambda-${projectName}-handler`
+export const createdFor = projectName
 
-/* Infrastructure */
-
-export const createdBy = 'lambda-jokes-handler'
-export const createdFor = 'dbowland-jokes'
+/* Route 53 */
 
 export const acmCertificateArn = `arn:aws:acm:us-east-1:${awsAccountId}:certificate/6a48cba7-feb9-4de5-8cbf-d383140fcdef`
 export const cognitoUserPoolArn = `arn:aws:cognito-idp:us-east-2:${awsAccountId}:userpool/us-east-2_JLHXqBLCP`
 export const environmentVariableKmsArn = 'arn:aws:kms:*:*:key/aws/lambda'
-export const hostedZoneId = 'Z01312547RGU1BYKIJXY'
-export const lambdaSourceBucket = 'jokes-lambda-source'
+export const lambdaSourceBucket = `${projectName}-lambda-source`
 
 /* Lambda */
 
-export const defaultOrigin = 'https://jokes.bowland.link'
-export const corsOrigins = `${defaultOrigin},https://d8m2rj7f9egv3.cloudfront.net`
+export const defaultOrigin = `https://${projectName}.${domainName}`
+export const corsOrigins = `${defaultOrigin}`
 export const fetchCountMaximum = '10'
 export const jokeTableReferenceIndex = '0'
+export const lambdaTimeoutInSeconds = 15
+export const resourcePlain = '/jokes'
+export const resourceById = `${resourcePlain}/{jokeId}`
+export const resourceRandom = `${resourcePlain}/random`
