@@ -1,50 +1,26 @@
 import * as aws from '@pulumi/aws'
 
 import { jokesTable } from '@dynamodb'
-import { createdBy, createdFor, environmentVariableKmsArn } from '@vars'
+import { createdBy, createdFor, environmentVariableKmsArn, projectName } from '@vars'
 
 // https://www.pulumi.com/docs/reference/pkg/aws/iam/policy/
 
 export const accessDynamodbPolicy = new aws.iam.Policy('dynamodb-access', {
   path: '/',
   description: 'Full access to joke table in DynamoDB',
-  policy: jokesTable.name.apply((jokesTableName) =>
+  policy: jokesTable.name.apply((dynamoTableName) =>
     JSON.stringify({
       Version: '2012-10-17',
       Statement: [
         {
-          Sid: 'ListAndDescribe',
           Effect: 'Allow',
-          Action: [
-            'dynamodb:List*',
-            'dynamodb:DescribeReservedCapacity*',
-            'dynamodb:DescribeLimits',
-            'dynamodb:DescribeTimeToLive',
-          ],
-          Resource: '*',
-        },
-        {
-          Sid: 'SpecificTable',
-          Effect: 'Allow',
-          Action: [
-            'dynamodb:BatchGet*',
-            'dynamodb:DescribeStream',
-            'dynamodb:DescribeTable',
-            'dynamodb:Get*',
-            'dynamodb:Query',
-            'dynamodb:Scan',
-            'dynamodb:BatchWrite*',
-            'dynamodb:CreateTable',
-            'dynamodb:Delete*',
-            'dynamodb:Update*',
-            'dynamodb:PutItem',
-          ],
-          Resource: `arn:aws:dynamodb:*:*:table/${jokesTableName}`,
+          Action: 'dynamodb:*',
+          Resource: `arn:aws:dynamodb:*:*:table/${dynamoTableName}`,
         },
       ],
     })
   ),
-  name: 'lambda-jokes-handler-dynamodb-access',
+  name: `lambda-${projectName}-handler-dynamodb-access`,
   tags: {
     'created-by': createdBy,
     'created-for': createdFor,
@@ -59,12 +35,12 @@ export const lambdaKmsAccessPolicy = new aws.iam.Policy('kms-access', {
     Statement: [
       {
         Effect: 'Allow',
-        Action: ['kms:Decrypt'],
-        Resource: [environmentVariableKmsArn],
+        Action: 'kms:Decrypt',
+        Resource: environmentVariableKmsArn,
       },
     ],
   }),
-  name: 'lambda-jokes-handler-kms-access',
+  name: `lambda-${projectName}-handler-kms-access`,
   tags: {
     'created-by': createdBy,
     'created-for': createdFor,
