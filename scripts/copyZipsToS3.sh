@@ -7,6 +7,9 @@ if [[ -z "$1" ]]; then
   $(./scripts/assumeDeveloperRole.sh)
 fi
 
+# Install only production dependencies
+NODE_ENV=production npm ci
+
 # Remember the base directory
 BASE_DIR=$PWD
 # Ensure output directory exists
@@ -20,7 +23,7 @@ do
   zipName=${zipName##*/} # Remove everything up to the /
 
   # Copy node_modules into each directory
-  cp -R node_modules $dir
+  cp -R $BASE_DIR/node_modules $dir
 
   # Zip the directory contents
   cd $dir
