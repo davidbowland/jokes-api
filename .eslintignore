@@ -1,6 +1,6 @@
 __mocks__/
 __snapshots__/
-build/
+dist/
 coverage/
 infrastructure/
 node_modules/

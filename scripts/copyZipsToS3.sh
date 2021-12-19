@@ -10,10 +10,10 @@ fi
 # Remember the base directory
 BASE_DIR=$PWD
 # Ensure output directory exists
-mkdir -p ./build/zips/
+mkdir -p ./dist/zips/
 
 # Build zip files
-for dir in ./build/src/**/
+for dir in $PWD/dist/src/**/
 do
   # Extract the folder name
   zipName=${dir%*/} # Remove the trailing /
@@ -24,8 +24,8 @@ do
 
   # Zip the directory contents
   cd $dir
-  zip -r $BASE_DIR/build/zips/${zipName}.zip .
+  zip -r $BASE_DIR/dist/zips/${zipName}.zip .
 done
 
 # Upload zips to S3
-aws s3 cp $BASE_DIR/build/zips/* s3://jokes-lambda-source/jokes-handler/
+aws s3 cp $BASE_DIR/dist/zips/ s3://jokes-lambda-source/jokes-handler/ --recursive
