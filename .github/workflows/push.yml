@@ -17,8 +17,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
-      - name: Install NPM 7
-        run: npm install -g npm@7
+      - name: Install NPM 8
+        run: npm install -g npm@8
       - name: Install packages and run tests
         run: npm ci && npm run test
         env:
@@ -34,8 +34,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
-      - name: Install NPM 7
-        run: npm install -g npm@7
+      - name: Install NPM 8
+        run: npm install -g npm@8
       - name: Build lambdas from Typescript
         run: npm run build
         env:
@@ -97,8 +97,8 @@ jobs:
         uses: actions/setup-node@v2
         with:
           node-version: 14.x
-      - name: Install NPM 7
-        run: npm install -g npm@7
+      - name: Install NPM 8
+        run: npm install -g npm@8
       - name: Set git name and email
         run: |
           git config --local user.email "dbowland1+bot@gmail.com"
