@@ -1,0 +1,5 @@
+{
+  "httpMethod": "PATCH",
+  "body": "[{\"op\":\"replace\",\"path\":\"/contents\",\"value\":\"LOL\"}]",
+  "messageId": "42"
+}

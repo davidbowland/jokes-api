@@ -10,10 +10,12 @@
   "license": "ISC",
   "scripts": {
     "build": "npm run clean && tsc",
-    "clean": "rm -rf build coverage && NODE_ENV=test npm ci",
+    "clean": "rm -rf dist coverage && NODE_ENV=test npm ci",
     "deploy": "npm run build && ./scripts/deploy.sh && npm ci",
     "lint": "prettier --write . && eslint --fix . --resolve-plugins-relative-to .",
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
+    "start": "npm run build && npm run quick-start",
+    "quick-start": "tsc && HUSKY=0 sam build && API_URL='https://jokes-api-test.bowland.link' DYNAMODB_TABLE_NAME=jokes-api-test sam local invoke --event events/post-item.json PostItemFunction",
     "test": "jest --colors"
   },
   "lint-staged": {
@@ -47,14 +49,14 @@
     "@types/node": "^15.12.2",
     "@typescript-eslint/eslint-plugin": "^4.26.0",
     "@typescript-eslint/parser": "^4.26.0",
-    "babel-jest": "^27.0.2",
+    "babel-jest": "^27.4.4",
     "eslint": "^7.28.0",
     "eslint-config-prettier": "^8.3.0",
     "husky": "^7.0.1",
-    "jest": "^27.0.4",
+    "jest": "^27.4.4",
     "lint-staged": "^11.0.0",
     "prettier": "^2.3.1",
     "ts-node": "^10.2.1",
-    "typescript": "^4.3.2"
+    "typescript": "^4.5.2"
   }
 }

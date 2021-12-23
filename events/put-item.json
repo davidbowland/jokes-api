@@ -1,0 +1,7 @@
+{
+  "httpMethod": "PUT",
+  "body": "{\"contents\":\"ROFL\"}",
+  "pathParameters": {
+    "index": "42"
+  }
+}
