@@ -26,7 +26,7 @@ export default {
   coverageDirectory: 'coverage',
 
   // An array of regexp pattern strings used to skip coverage collection
-  coveragePathIgnorePatterns: ['placeholder.ts'],
+  coveragePathIgnorePatterns: ['types.ts'],
 
   // Indicates which provider should be used to instrument code for coverage
   coverageProvider: 'v8',
@@ -86,8 +86,12 @@ export default {
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
-    '^@__mocks__/(.*)$': '<rootDir>/test/__mocks__/$1',
-    '^@v1-jokes-handler/(.*)$': '<rootDir>/src/v1-jokes-handler/$1',
+    '^@config$': '<rootDir>/src/config',
+    '^@events/(.*)$': '<rootDir>/events/$1',
+    '^@handlers/(.*)$': '<rootDir>/src/handlers/$1',
+    '^@services/(.*)$': '<rootDir>/src/services/$1',
+    '^@types$': '<rootDir>/src/types',
+    '^@utils/(.*)$': '<rootDir>/src/utils/$1',
   },
 
   // An array of regexp pattern strings, matched against all module paths before considered 'visible' to the module loader
@@ -159,9 +163,7 @@ export default {
   // ],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
-  // testPathIgnorePatterns: [
-  //   "/node_modules/"
-  // ],
+  testPathIgnorePatterns: ['__mocks__'],
 
   // The regexp pattern or array of patterns that Jest uses to detect test files
   // testRegex: [],

@@ -9,7 +9,7 @@ The `developer` role is required to deploy this project.
 ### Node / NPM
 
 1. [Node 14](https://nodejs.org/en/)
-1. [NPM 7+](https://www.npmjs.com/)
+1. [NPM 8+](https://www.npmjs.com/)
 
 ### AWS Credentials
 

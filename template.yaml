@@ -1,0 +1,333 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >-
+  jokes-api
+
+Transform:
+  - AWS::Serverless-2016-10-31
+
+Parameters:
+  AccountId:
+    Type: String
+    Description: AWS account ID
+  Environment:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - prod
+      - test
+    Description: Environment for deploy
+
+Mappings:
+  EnvironmentMap:
+    prod:
+      domain: jokes-api.bowland.link
+      table: jokes-api
+    test:
+      domain: jokes-api-test.bowland.link
+      table: jokes-api-test
+
+Resources:
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      Auth:
+        ApiKeyRequired: true # sets for all methods
+        UsagePlan:
+          CreateUsagePlan: PER_API
+          Description: Usage plan for emails-account-api
+      Domain:
+        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+        CertificateArn: !Sub 'arn:aws:acm:us-east-1:${AccountId}:certificate/7f4606f7-302c-40a8-ac9d-e63db9b7a712'
+        EndpointConfiguration: EDGE
+        Route53:
+          HostedZoneId: Z01312547RGU1BYKIJXY
+        BasePath:
+          - /v1
+
+  DeleteItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/delete-item.deleteByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api delete by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}
+            Method: delete
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+
+  DeleteItemLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: DeleteItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${DeleteItemFunction}
+      RetentionInDays: 30
+
+  GetAllItemsFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-all-items.getAllItemsHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api get all items
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes
+            Method: get
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+
+  GetAllItemsLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetAllItemsFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetAllItemsFunction}
+      RetentionInDays: 30
+
+  GetByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-by-id.getByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api get by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}
+            Method: get
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+
+  GetByIdLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetByIdFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetByIdFunction}
+      RetentionInDays: 30
+
+  GetRandomFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-random.getRandomHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api get by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          RANDOM_COUNT_MAXIMUM: 10
+      Events:
+        NoAuth:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/random
+            Method: get
+            Auth:
+              Authorizer: NONE
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+
+  GetRandomLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetRandomFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetRandomFunction}
+      RetentionInDays: 30
+
+  PatchItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/patch-item.patchItemHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api patch item
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}
+            Method: patch
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+
+  PatchLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PatchItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PatchItemFunction}
+      RetentionInDays: 30
+
+  PostItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/post-item.postItemHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api post item
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes
+            Method: post
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+
+  PostLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PostItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PostItemFunction}
+      RetentionInDays: 30
+
+  PutItemFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/put-item.putItemHandler
+      CodeUri: './dist'
+      Runtime: nodejs14.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api put item
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        Api:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}
+            Method: put
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+
+  PutLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: PutItemFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${PutItemFunction}
+      RetentionInDays: 30
+
+  JokesTable:
+    Type: AWS::Serverless::SimpleTable
+    Properties:
+      PrimaryKey:
+        Name: Index
+        Type: Number
+      TableName: !FindInMap [EnvironmentMap, !Ref Environment, table]
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
