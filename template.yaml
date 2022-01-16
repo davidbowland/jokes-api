@@ -20,11 +20,15 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
+      corsDomain: jokes.bowland.link
       domain: jokes-api.bowland.link
       table: jokes-api
+      userPool: us-east-2_JLHXqBLCP
     test:
+      corsDomain: jokes-test.bowland.link
       domain: jokes-api-test.bowland.link
       table: jokes-api-test
+      userPool: us-east-2_JLHXqBLCP
 
 Resources:
   Api:
@@ -32,10 +36,16 @@ Resources:
     Properties:
       StageName: v1
       Auth:
-        ApiKeyRequired: true # sets for all methods
-        UsagePlan:
-          CreateUsagePlan: PER_API
-          Description: Usage plan for emails-account-api
+        Authorizers:
+          CognitoAuth:
+            UserPoolArn: !Sub
+              - 'arn:aws:cognito-idp:us-east-2:${AccountId}:userpool/${UserPool}'
+              - UserPool: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
+            AuthType: 'COGNITO_USER_POOLS'
+        DefaultAuthorizer: CognitoAuth
+      Cors: !Sub
+        - "'${CorsDomain}'"
+        - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
       Domain:
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
         CertificateArn: !Sub 'arn:aws:acm:us-east-1:${AccountId}:certificate/7f4606f7-302c-40a8-ac9d-e63db9b7a712'
@@ -172,7 +182,7 @@ Resources:
         - x86_64
       MemorySize: 128
       Timeout: 30
-      Description: jokes-api get by ID
+      Description: jokes-api get random jokes
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:

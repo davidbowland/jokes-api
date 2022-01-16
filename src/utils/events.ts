@@ -20,10 +20,12 @@ const parseEventBody = (event: APIGatewayEvent): unknown =>
   )
 
 export const extractJokeFromEvent = (event: APIGatewayEvent): Promise<Joke> =>
-  Promise.resolve(parseEventBody(event)).then(formatJoke)
+  Promise.resolve(parseEventBody(event)).then((joke) => formatJoke(joke as Joke))
 
 export const extractJsonPatchFromEvent = (event: APIGatewayEvent): Promise<PatchOperation[]> =>
   Promise.resolve(parseEventBody(event) as PatchOperation[])
 
 export const getIdFromEvent = (event: APIGatewayEvent): Promise<number> =>
-  Promise.resolve(parseInt(event.pathParameters?.index, 10) || Promise.reject('Invalid joke index'))
+  Promise.resolve(parseInt(event.pathParameters?.index, 10)).then((value) =>
+    isNaN(value) ? Promise.reject('Invalid joke index') : value
+  )

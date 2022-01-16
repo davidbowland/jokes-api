@@ -11,8 +11,8 @@ env:
   PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   SAM_TEMPLATE: template.yaml
   TESTING_STACK_NAME: jokes-api-test
-  TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}::role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-Y757J1YTD92Z
-  TESTING_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}::role/aws-sam-cli-managed-jokes-CloudFormationExecutionR-1XHMBOACYCQ3P
+  TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-8AD8LSDW36YN
+  TESTING_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-CloudFormationExecutionR-DOLT3BOQ49B
   TESTING_ARTIFACTS_BUCKET: jokes-lambda-source
   # If there are functions with "Image" PackageType in your template,
   # uncomment the line below and add "--image-repository ${TESTING_IMAGE_REPOSITORY}" to
@@ -20,8 +20,8 @@ env:
   # TESTING_IMAGE_REPOSITORY = '0123456789.dkr.ecr.region.amazonaws.com/repository-name'
   TESTING_REGION: us-east-2
   PROD_STACK_NAME: jokes-api
-  PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}::role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-1FQQMKC00FYOS
-  PROD_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}::role/aws-sam-cli-managed-jokes-CloudFormationExecutionR-21KFBNZ7KG3W
+  PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-1NF6FBYEKJY5K
+  PROD_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-CloudFormationExecutionR-54DMJ3KYK91
   PROD_ARTIFACTS_BUCKET: jokes-lambda-source
   # If there are functions with "Image" PackageType in your template,
   # uncomment the line below and add "--image-repository ${PROD_IMAGE_REPOSITORY}" to
