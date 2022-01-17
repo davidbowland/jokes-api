@@ -1,6 +1,7 @@
 import { randomCountMaximum } from '../config'
 import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
 import { APIGatewayEvent, APIGatewayProxyResult, Joke, JokeBatch } from '../types'
+import { getCorsHeaders } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
@@ -26,12 +27,12 @@ export const getRandomHandler = async (event: APIGatewayEvent): Promise<APIGatew
         .map((_, index) => index)
         .filter((index) => filterList.every((avoid) => avoid !== index))
       const jokeList = await getRandomJoke(indexList, count - 1)
-      return { ...status.OK, body: JSON.stringify(jokeList) }
+      return { ...getCorsHeaders(event), ...status.OK, body: JSON.stringify(jokeList) }
     } catch (error) {
       logError(error)
-      return status.INTERNAL_SERVER_ERROR
+      return { ...getCorsHeaders(event), ...status.INTERNAL_SERVER_ERROR }
     }
   } catch {
-    return status.NOT_FOUND
+    return { ...getCorsHeaders(event), ...status.NOT_FOUND }
   }
 }

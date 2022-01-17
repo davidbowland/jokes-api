@@ -20,12 +20,12 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
-      corsDomain: jokes.bowland.link
+      corsDomain: https://jokes.bowland.link
       domain: jokes-api.bowland.link
       table: jokes-api
       userPool: us-east-2_JLHXqBLCP
     test:
-      corsDomain: jokes-test.bowland.link
+      corsDomain: https://jokes-test.bowland.link
       domain: jokes-api-test.bowland.link
       table: jokes-api-test
       userPool: us-east-2_JLHXqBLCP
@@ -75,6 +75,7 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -114,6 +115,7 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -153,6 +155,7 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -192,6 +195,7 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
           RANDOM_COUNT_MAXIMUM: 10
       Events:
@@ -234,6 +238,7 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -273,6 +278,7 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -312,6 +318,7 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:

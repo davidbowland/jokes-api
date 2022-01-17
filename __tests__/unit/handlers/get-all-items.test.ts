@@ -4,6 +4,7 @@ import { getAllItemsHandler } from '@handlers/get-all-items'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
 import { APIGatewayEvent } from '@types'
+import * as events from '@utils/events'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
@@ -15,6 +16,7 @@ describe('get-all-items', () => {
 
   beforeAll(() => {
     mocked(dynamodb).scanData.mockResolvedValue({ [index]: joke })
+    mocked(events).getCorsHeaders.mockResolvedValue({})
   })
 
   describe('getAllItemsHandler', () => {

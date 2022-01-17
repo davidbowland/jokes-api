@@ -1,6 +1,6 @@
 import { getDataByIndex } from '../services/dynamodb'
 import { APIGatewayEvent, APIGatewayProxyResult, Joke } from '../types'
-import { getIdFromEvent } from '../utils/events'
+import { getCorsHeaders, getIdFromEvent } from '../utils/events'
 import { log } from '../utils/logging'
 import status from '../utils/status'
 
@@ -17,8 +17,9 @@ export const getByIdHandler = async (event: APIGatewayEvent): Promise<APIGateway
   log('Received event', { ...event, body: undefined })
   try {
     const index = await getIdFromEvent(event)
-    return await fetchById(index)
+    const result = await fetchById(index)
+    return { ...getCorsHeaders(event), ...result }
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...getCorsHeaders(event), ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
   }
 }
