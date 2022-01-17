@@ -2,7 +2,7 @@ import { apiUrl } from '../config'
 import { getHighestIndex, setDataByIndex, setHighestIndex } from '../services/dynamodb'
 import status from '../utils/status'
 import { APIGatewayEvent, APIGatewayProxyResult } from '../types'
-import { extractJokeFromEvent } from '../utils/events'
+import { extractJokeFromEvent, getCorsHeaders } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
 const getNextIndex = async (): Promise<number> => getHighestIndex().then((value) => value + 1)
@@ -18,13 +18,13 @@ export const postItemHandler = async (event: APIGatewayEvent): Promise<APIGatewa
       return {
         ...status.CREATED,
         body: JSON.stringify({ ...joke, index }),
-        headers: { Location: `${apiUrl}/${index}` },
+        headers: { ...getCorsHeaders(event).headers, Location: `${apiUrl}/${index}` },
       }
     } catch (error) {
       logError(error)
-      return status.INTERNAL_SERVER_ERROR
+      return { ...getCorsHeaders(event), ...status.INTERNAL_SERVER_ERROR }
     }
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...getCorsHeaders(event), ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
   }
 }

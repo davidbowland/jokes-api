@@ -1,6 +1,7 @@
 // API
 
 export const apiUrl = process.env.API_URL as string
+export const corsDomain = process.env.CORS_DOMAIN as string
 
 // DynamoDB
 

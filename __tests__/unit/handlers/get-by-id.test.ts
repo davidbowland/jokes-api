@@ -16,6 +16,7 @@ describe('get-by-id', () => {
 
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(events).getCorsHeaders.mockResolvedValue({})
   })
 
   describe('getByIdHandler', () => {

@@ -4,7 +4,7 @@ import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
 import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
 import status from '../utils/status'
 import { APIGatewayEvent, APIGatewayProxyResult, PatchOperation, Joke } from '../types'
-import { extractJsonPatchFromEvent, getIdFromEvent } from '../utils/events'
+import { extractJsonPatchFromEvent, getCorsHeaders, getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
 const patchById = async (index: number, patchOperations: PatchOperation[]): Promise<APIGatewayProxyResult> => {
@@ -24,8 +24,9 @@ export const patchItemHandler = async (event: APIGatewayEvent): Promise<APIGatew
   try {
     const index = await getIdFromEvent(event)
     const patchOperations = await extractJsonPatchFromEvent(event)
-    return await patchById(index, patchOperations)
+    const result = await patchById(index, patchOperations)
+    return { ...getCorsHeaders(event), ...result }
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...getCorsHeaders(event), ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
   }
 }
