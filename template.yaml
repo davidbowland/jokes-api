@@ -42,10 +42,13 @@ Resources:
               - 'arn:aws:cognito-idp:us-east-2:${AccountId}:userpool/${UserPool}'
               - UserPool: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
             AuthType: 'COGNITO_USER_POOLS'
-        DefaultAuthorizer: CognitoAuth
-      Cors: !Sub
-        - "'${CorsDomain}'"
-        - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+      Cors:
+        AllowMethods: "'DELETE,GET,OPTIONS,PATCH,POST,PUT'"
+        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        AllowOrigin: !Sub
+          - "'${CorsDomain}'"
+          - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+        AllowCredentials: true
       Domain:
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
         CertificateArn: !Sub 'arn:aws:acm:us-east-1:${AccountId}:certificate/7f4606f7-302c-40a8-ac9d-e63db9b7a712'
@@ -54,6 +57,30 @@ Resources:
           HostedZoneId: Z01312547RGU1BYKIJXY
         BasePath:
           - /v1
+
+  Gateway400Response:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: !Sub
+          - "'${CorsDomain}'"
+          - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+        gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,GET,OPTIONS,PATCH,POST,PUT'"
+      ResponseType: DEFAULT_4XX
+      RestApiId: !Ref Api
+
+  Gateway500Response:
+    Type: AWS::ApiGateway::GatewayResponse
+    Properties:
+      ResponseParameters:
+        gatewayresponse.header.Access-Control-Allow-Origin: !Sub
+          - "'${CorsDomain}'"
+          - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+        gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+        gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,GET,OPTIONS,PATCH,POST,PUT'"
+      ResponseType: DEFAULT_5XX
+      RestApiId: !Ref Api
 
   DeleteItemFunction:
     Type: AWS::Serverless::Function
@@ -84,6 +111,8 @@ Resources:
             RestApiId: !Ref Api
             Path: /jokes/{index}
             Method: delete
+            Auth:
+              Authorizer: CognitoAuth
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -124,6 +153,8 @@ Resources:
             RestApiId: !Ref Api
             Path: /jokes
             Method: get
+            Auth:
+              Authorizer: CognitoAuth
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -164,6 +195,8 @@ Resources:
             RestApiId: !Ref Api
             Path: /jokes/{index}
             Method: get
+            Auth:
+              Authorizer: CognitoAuth
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -205,8 +238,6 @@ Resources:
             RestApiId: !Ref Api
             Path: /jokes/random
             Method: get
-            Auth:
-              Authorizer: NONE
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -247,6 +278,8 @@ Resources:
             RestApiId: !Ref Api
             Path: /jokes/{index}
             Method: patch
+            Auth:
+              Authorizer: CognitoAuth
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -287,6 +320,8 @@ Resources:
             RestApiId: !Ref Api
             Path: /jokes
             Method: post
+            Auth:
+              Authorizer: CognitoAuth
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -327,6 +362,8 @@ Resources:
             RestApiId: !Ref Api
             Path: /jokes/{index}
             Method: put
+            Auth:
+              Authorizer: CognitoAuth
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
