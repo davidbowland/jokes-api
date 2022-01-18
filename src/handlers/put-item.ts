@@ -4,16 +4,15 @@ import { APIGatewayEvent, APIGatewayProxyResult, Joke } from '../types'
 import { extractJokeFromEvent, getCorsHeaders, getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
-const getResponse = (index: number): Promise<{ statusCode: number }> =>
-  getDataByIndex(index)
-    .then(() => status.OK)
-    .catch(() => status.CREATED)
-
 const setJoke = async (index: number, joke: Joke): Promise<APIGatewayProxyResult> => {
-  const response = await getResponse(index)
+  try {
+    await getDataByIndex(index)
+  } catch {
+    return status.NOT_FOUND
+  }
   try {
     await setDataByIndex(index, joke)
-    return { ...response, body: JSON.stringify(joke) }
+    return { ...status.OK, body: JSON.stringify(joke) }
   } catch (error) {
     logError(error)
     return status.INTERNAL_SERVER_ERROR

@@ -35,6 +35,12 @@ describe('put-item', () => {
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
+    test("expect NOT_FOUND when joke doesn't exist", async () => {
+      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
+      const result = await putItemHandler(event)
+      expect(result).toEqual(status.NOT_FOUND)
+    })
+
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
       mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
       const result = await putItemHandler(event)
@@ -44,12 +50,6 @@ describe('put-item', () => {
     test('expect OK and body when joke already exists', async () => {
       const result = await putItemHandler(event)
       expect(result).toEqual(expect.objectContaining({ ...status.OK, body: JSON.stringify(joke) }))
-    })
-
-    test("expect CREATED and body when joke doesn't exist", async () => {
-      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
-      const result = await putItemHandler(event)
-      expect(result).toEqual(expect.objectContaining({ ...status.CREATED, body: JSON.stringify(joke) }))
     })
   })
 })
