@@ -9,13 +9,12 @@
   },
   "license": "ISC",
   "scripts": {
-    "build": "npm run clean && tsc",
+    "build": "npm run clean && tsc && cp package*.json dist/ && cd dist/ && HUSKY=0 NODE_ENV=production npm ci",
     "clean": "rm -rf dist coverage && NODE_ENV=test npm ci",
-    "deploy": "npm run build && ./scripts/deploy.sh && npm ci",
     "lint": "prettier --write . && eslint --fix . --resolve-plugins-relative-to .",
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
     "start": "npm run build && npm run quick-start",
-    "quick-start": "tsc && HUSKY=0 sam build && API_URL='https://jokes-api-test.bowland.link' DYNAMODB_TABLE_NAME=jokes-api-test sam local invoke --event events/post-item.json PostItemFunction",
+    "quick-start": "tsc && API_URL='https://jokes-api-test.bowland.link' DYNAMODB_TABLE_NAME=jokes-api-test sam local start-api --region=us-east-2",
     "test": "jest --colors"
   },
   "lint-staged": {
