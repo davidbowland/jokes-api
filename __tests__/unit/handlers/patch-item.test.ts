@@ -50,6 +50,11 @@ describe('patch-item', () => {
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
 
+    test('expect setDataByIndex called with updated object', async () => {
+      await patchItemHandler(event)
+      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, expectedResult)
+    })
+
     test('expect OK and body', async () => {
       const result = await patchItemHandler(event)
       expect(result).toEqual(expect.objectContaining({ ...status.OK, body: JSON.stringify(expectedResult) }))
