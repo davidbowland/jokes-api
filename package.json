@@ -11,6 +11,7 @@
   "scripts": {
     "build": "npm run clean && tsc && cp package*.json dist/ && cd dist/ && HUSKY=0 NODE_ENV=production npm ci",
     "clean": "rm -rf dist coverage && NODE_ENV=test npm ci",
+    "deploy": "npm run build && ./scripts/deploy.sh",
     "lint": "prettier --write . && eslint --fix . --resolve-plugins-relative-to .",
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
     "start": "npm run build && npm run quick-start",
