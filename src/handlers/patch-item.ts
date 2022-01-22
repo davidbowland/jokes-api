@@ -11,7 +11,7 @@ const patchById = async (index: number, patchOperations: PatchOperation[]): Prom
   const joke = (await getDataByIndex(index)) as Joke
   const updatedJoke = applyPatch(joke, patchOperations, throwOnInvalidJsonPatch, mutateObjectOnJsonPatch).newDocument
   try {
-    await setDataByIndex(index, joke)
+    await setDataByIndex(index, updatedJoke)
     return { ...status.OK, body: JSON.stringify(updatedJoke) }
   } catch (error) {
     logError(error)
