@@ -29,7 +29,7 @@ Mappings:
     test:
       certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
       corsDomain: https://jokes.bowland.link
-      domain: jokes-api-test.bowland.link
+      domain: jokes-api.bowland.link
       table: jokes-api-test
       userPool: us-east-2_JLHXqBLCP
       zoneId: Z01312547RGU1BYKIJXY
