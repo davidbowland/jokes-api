@@ -15,7 +15,7 @@
     "lint": "prettier --write . && eslint --fix . --resolve-plugins-relative-to .",
     "prepare": "if [ \"$NODE_ENV\" != \"production\" ]; then husky install ; fi",
     "start": "npm run build && npm run quick-start",
-    "quick-start": "tsc && API_URL='https://jokes-api-test.bowland.link' DYNAMODB_TABLE_NAME=jokes-api-test sam local start-api --region=us-east-2",
+    "quick-start": "tsc && ./scripts/runLocal.sh",
     "test": "jest --colors"
   },
   "lint-staged": {

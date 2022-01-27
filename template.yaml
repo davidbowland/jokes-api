@@ -20,15 +20,19 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
-      corsDomain: https://jokes.bowland.link
-      domain: jokes-api.bowland.link
+      certificate: adce1a21-90b4-4120-8548-111215e582f0
+      corsDomain: https://jokes.dbowland.com
+      domain: jokes-api.dbowland.com
       table: jokes-api
       userPool: us-east-2_JLHXqBLCP
+      zoneId: Z072422417XWM8PIXXSFA
     test:
-      corsDomain: https://jokes-test.bowland.link
+      certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
+      corsDomain: https://jokes.bowland.link
       domain: jokes-api-test.bowland.link
       table: jokes-api-test
       userPool: us-east-2_JLHXqBLCP
+      zoneId: Z01312547RGU1BYKIJXY
 
 Resources:
   Api:
@@ -51,10 +55,12 @@ Resources:
         AllowCredentials: true
       Domain:
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-        CertificateArn: !Sub 'arn:aws:acm:us-east-1:${AccountId}:certificate/7f4606f7-302c-40a8-ac9d-e63db9b7a712'
+        CertificateArn: !Sub
+          - 'arn:aws:acm:us-east-1:${AccountId}:certificate/${Certificate}'
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
         EndpointConfiguration: EDGE
         Route53:
-          HostedZoneId: Z01312547RGU1BYKIJXY
+          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
         BasePath:
           - /v1
 
