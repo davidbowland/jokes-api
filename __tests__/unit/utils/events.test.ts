@@ -3,7 +3,7 @@ import getEventJson from '@events/get-by-id.json'
 import patchEventJson from '@events/patch-item.json'
 import putEventJson from '@events/put-item.json'
 import { APIGatewayProxyEventV2 } from '@types'
-import { extractJokeFromEvent, extractJsonPatchFromEvent, getCorsHeaders, getIdFromEvent } from '@utils/events'
+import { extractJokeFromEvent, extractJsonPatchFromEvent, getIdFromEvent } from '@utils/events'
 
 describe('events', () => {
   describe('extractJokeFromEvent', () => {
@@ -61,19 +61,6 @@ describe('events', () => {
     test('expect reject on non-integer ID', async () => {
       const tempEvent = { pathParameters: { index: 'fnord' } } as unknown as APIGatewayProxyEventV2
       await expect(getIdFromEvent(tempEvent)).rejects.toBeDefined()
-    })
-  })
-
-  describe('getCorsHeaders', () => {
-    test('expect correct CORS headers from event', () => {
-      const result = getCorsHeaders(getEventJson as unknown as APIGatewayProxyEventV2)
-      expect(result).toEqual({
-        headers: {
-          'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-          'Access-Control-Allow-Origin': 'https://jokes.bowland.link',
-          'Access-Control-Allow-Methods': 'OPTIONS,GET',
-        },
-      })
     })
   })
 })

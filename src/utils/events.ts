@@ -1,4 +1,3 @@
-import { corsDomain } from '../config'
 import { APIGatewayProxyEventV2, Joke, PatchOperation } from '../types'
 
 /* Jokes */
@@ -30,13 +29,3 @@ export const getIdFromEvent = (event: APIGatewayProxyEventV2): Promise<number> =
   Promise.resolve(parseInt(event.pathParameters?.index, 10)).then((value) =>
     isNaN(value) ? Promise.reject('Invalid joke index') : value
   )
-
-/* CORS */
-
-export const getCorsHeaders = (event: APIGatewayProxyEventV2): { headers: any } => ({
-  headers: {
-    'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',
-    'Access-Control-Allow-Origin': corsDomain,
-    'Access-Control-Allow-Methods': `OPTIONS,${event.requestContext.http.method.toUpperCase()}`,
-  },
-})

@@ -18,7 +18,6 @@ describe('post-item', () => {
     mocked(dynamodb).getHighestIndex.mockResolvedValue(index - 1)
     mocked(dynamodb).setDataByIndex.mockResolvedValue(undefined)
     mocked(events).extractJokeFromEvent.mockResolvedValue(joke)
-    mocked(events).getCorsHeaders.mockResolvedValue({})
   })
 
   describe('postItemHandler', () => {

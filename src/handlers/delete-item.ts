@@ -6,7 +6,7 @@ import {
   setHighestIndex,
 } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
-import { getCorsHeaders, getIdFromEvent } from '../utils/events'
+import { getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
@@ -38,8 +38,8 @@ export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<
   try {
     const index = await getIdFromEvent(event)
     const result = await fetchDataThenDelete(index)
-    return { ...getCorsHeaders(event), ...result }
+    return result
   } catch (error) {
-    return { ...getCorsHeaders(event), ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
   }
 }
