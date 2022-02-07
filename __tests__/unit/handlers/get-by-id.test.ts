@@ -3,7 +3,7 @@ import eventJson from '@events/get-by-id.json'
 import { getByIdHandler } from '@handlers/get-by-id'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
-import { APIGatewayEvent } from '@types'
+import { APIGatewayProxyEventV2 } from '@types'
 import * as events from '@utils/events'
 import status from '@utils/status'
 
@@ -12,7 +12,7 @@ jest.mock('@utils/events')
 jest.mock('@utils/logging')
 
 describe('get-by-id', () => {
-  const event = eventJson as unknown as APIGatewayEvent
+  const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)

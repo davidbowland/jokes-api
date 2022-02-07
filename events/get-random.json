@@ -1,7 +1,12 @@
 {
-  "httpMethod": "GET",
   "queryStringParameters": {
     "avoid": "43,57",
     "count": "1"
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/v1/jokes/random"
+    }
   }
 }

@@ -1,10 +1,10 @@
 import { getDataByIndex } from '../services/dynamodb'
-import { APIGatewayEvent, APIGatewayProxyResult, Joke } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getCorsHeaders, getIdFromEvent } from '../utils/events'
 import { log } from '../utils/logging'
 import status from '../utils/status'
 
-const fetchById = async (index: number): Promise<APIGatewayProxyResult> => {
+const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     const data = (await getDataByIndex(index)) as Joke
     return { ...status.OK, body: JSON.stringify({ ...data, index }) }
@@ -13,7 +13,7 @@ const fetchById = async (index: number): Promise<APIGatewayProxyResult> => {
   }
 }
 
-export const getByIdHandler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const index = await getIdFromEvent(event)

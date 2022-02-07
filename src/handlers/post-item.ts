@@ -1,13 +1,13 @@
 import { apiUrl } from '../config'
 import { getHighestIndex, setDataByIndex, setHighestIndex } from '../services/dynamodb'
 import status from '../utils/status'
-import { APIGatewayEvent, APIGatewayProxyResult } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
 import { extractJokeFromEvent, getCorsHeaders } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
 const getNextIndex = async (): Promise<number> => getHighestIndex().then((value) => value + 1)
 
-export const postItemHandler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const joke = await extractJokeFromEvent(event)

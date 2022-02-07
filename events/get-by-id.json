@@ -1,6 +1,11 @@
 {
-  "httpMethod": "GET",
   "pathParameters": {
     "index": "42"
+  },
+  "requestContext": {
+    "http": {
+      "method": "GET",
+      "path": "/v1/jokes/random"
+    }
   }
 }

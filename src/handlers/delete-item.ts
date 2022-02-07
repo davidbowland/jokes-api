@@ -5,12 +5,12 @@ import {
   setDataByIndex,
   setHighestIndex,
 } from '../services/dynamodb'
-import { APIGatewayEvent, APIGatewayProxyResult, Joke } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getCorsHeaders, getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
-const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResult> => {
+const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     const data = (await getDataByIndex(index)) as Joke
     try {
@@ -33,7 +33,7 @@ const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResult
   }
 }
 
-export const deleteByIdHandler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const index = await getIdFromEvent(event)

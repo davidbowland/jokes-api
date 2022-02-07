@@ -2,12 +2,12 @@ import { index, joke, jsonPatchOperations } from '../__mocks__'
 import getEventJson from '@events/get-by-id.json'
 import patchEventJson from '@events/patch-item.json'
 import putEventJson from '@events/put-item.json'
-import { APIGatewayEvent } from '@types'
+import { APIGatewayProxyEventV2 } from '@types'
 import { extractJokeFromEvent, extractJsonPatchFromEvent, getCorsHeaders, getIdFromEvent } from '@utils/events'
 
 describe('events', () => {
   describe('extractJokeFromEvent', () => {
-    const event = putEventJson as unknown as APIGatewayEvent
+    const event = putEventJson as unknown as APIGatewayProxyEventV2
 
     test('expect email from event', async () => {
       const result = await extractJokeFromEvent(event)
@@ -19,13 +19,13 @@ describe('events', () => {
         ...event,
         body: Buffer.from(event.body).toString('base64'),
         isBase64Encoded: true,
-      } as unknown as APIGatewayEvent
+      } as unknown as APIGatewayProxyEventV2
       const result = await extractJokeFromEvent(tempEvent)
       expect(result).toEqual(joke)
     })
 
     test('expect reject on invalid event', async () => {
-      const tempEvent = { ...event, body: JSON.stringify({}) } as unknown as APIGatewayEvent
+      const tempEvent = { ...event, body: JSON.stringify({}) } as unknown as APIGatewayProxyEventV2
       await expect(extractJokeFromEvent(tempEvent)).rejects.toBeDefined()
     })
 
@@ -34,7 +34,7 @@ describe('events', () => {
         ...joke,
         foo: 'bar',
       }
-      const tempEvent = { ...event, body: JSON.stringify(tempEmail) } as unknown as APIGatewayEvent
+      const tempEvent = { ...event, body: JSON.stringify(tempEmail) } as unknown as APIGatewayProxyEventV2
       const result = await extractJokeFromEvent(tempEvent)
       expect(result).toEqual(joke)
     })
@@ -42,31 +42,31 @@ describe('events', () => {
 
   describe('extractJsonPatchFromEvent', () => {
     test('expect preference from event', async () => {
-      const result = await extractJsonPatchFromEvent(patchEventJson as unknown as APIGatewayEvent)
+      const result = await extractJsonPatchFromEvent(patchEventJson as unknown as APIGatewayProxyEventV2)
       expect(result).toEqual(jsonPatchOperations)
     })
   })
 
   describe('getIdFromEvent', () => {
     test('expect ID from event', async () => {
-      const result = await getIdFromEvent(getEventJson as unknown as APIGatewayEvent)
+      const result = await getIdFromEvent(getEventJson as unknown as APIGatewayProxyEventV2)
       expect(result).toEqual(index)
     })
 
     test('expect reject on invalid ID', async () => {
-      const tempEvent = {} as unknown as APIGatewayEvent
+      const tempEvent = {} as unknown as APIGatewayProxyEventV2
       await expect(getIdFromEvent(tempEvent)).rejects.toBeDefined()
     })
 
     test('expect reject on non-integer ID', async () => {
-      const tempEvent = { pathParameters: { index: 'fnord' } } as unknown as APIGatewayEvent
+      const tempEvent = { pathParameters: { index: 'fnord' } } as unknown as APIGatewayProxyEventV2
       await expect(getIdFromEvent(tempEvent)).rejects.toBeDefined()
     })
   })
 
   describe('getCorsHeaders', () => {
     test('expect correct CORS headers from event', () => {
-      const result = getCorsHeaders(getEventJson as unknown as APIGatewayEvent)
+      const result = getCorsHeaders(getEventJson as unknown as APIGatewayProxyEventV2)
       expect(result).toEqual({
         headers: {
           'Access-Control-Allow-Headers': 'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token',

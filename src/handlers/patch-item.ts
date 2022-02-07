@@ -3,11 +3,11 @@ import { applyPatch } from 'fast-json-patch'
 import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
 import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
 import status from '../utils/status'
-import { APIGatewayEvent, APIGatewayProxyResult, PatchOperation, Joke } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Joke } from '../types'
 import { extractJsonPatchFromEvent, getCorsHeaders, getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
-const patchById = async (index: number, patchOperations: PatchOperation[]): Promise<APIGatewayProxyResult> => {
+const patchById = async (index: number, patchOperations: PatchOperation[]): Promise<APIGatewayProxyResultV2<any>> => {
   const joke = (await getDataByIndex(index)) as Joke
   const updatedJoke = applyPatch(joke, patchOperations, throwOnInvalidJsonPatch, mutateObjectOnJsonPatch).newDocument
   try {
@@ -19,7 +19,7 @@ const patchById = async (index: number, patchOperations: PatchOperation[]): Prom
   }
 }
 
-export const patchItemHandler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const index = await getIdFromEvent(event)

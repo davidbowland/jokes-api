@@ -1,6 +1,6 @@
 import { randomCountMaximum } from '../config'
 import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
-import { APIGatewayEvent, APIGatewayProxyResult, Joke, JokeBatch } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke, JokeBatch } from '../types'
 import { getCorsHeaders } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
@@ -14,7 +14,7 @@ const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBa
     : { [index]: joke }
 }
 
-export const getRandomHandler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   const count =
     Math.max(Math.min(parseInt(event.queryStringParameters?.count, 10), randomCountMaximum), 1) || randomCountMaximum
@@ -24,7 +24,7 @@ export const getRandomHandler = async (event: APIGatewayEvent): Promise<APIGatew
     const highestIndex = await getHighestIndex()
     try {
       const indexList = Array.from({ length: highestIndex })
-        .map((_, index) => index)
+        .map((_, index) => index + 1)
         .filter((index) => filterList.every((avoid) => avoid !== index))
       const jokeList = await getRandomJoke(indexList, count - 1)
       return { ...getCorsHeaders(event), ...status.OK, body: JSON.stringify(jokeList) }
