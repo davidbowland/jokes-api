@@ -43,7 +43,7 @@ Resources:
       StageName: v1
       Auth:
         Authorizers:
-          OAuth2Authorizer:
+          CognitoAuthorizer:
             IdentitySource: $request.header.Authorization
             JwtConfiguration:
               issuer: !Sub
@@ -51,7 +51,7 @@ Resources:
                 - UserPool: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
               audience:
                 - !FindInMap [EnvironmentMap, !Ref Environment, userPoolClient]
-        DefaultAuthorizer: OAuth2Authorizer
+        DefaultAuthorizer: CognitoAuthorizer
       CorsConfiguration:
         AllowCredentials: true
         AllowHeaders:
@@ -101,7 +101,6 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -111,7 +110,7 @@ Resources:
             Path: /jokes/{index}
             Method: delete
             Auth:
-              Authorizer: OAuth2Authorizer
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -143,7 +142,6 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -153,7 +151,7 @@ Resources:
             Path: /jokes
             Method: get
             Auth:
-              Authorizer: OAuth2Authorizer
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -185,7 +183,6 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -195,7 +192,7 @@ Resources:
             Path: /jokes/{index}
             Method: get
             Auth:
-              Authorizer: OAuth2Authorizer
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -227,7 +224,6 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
           RANDOM_COUNT_MAXIMUM: 10
       Events:
@@ -270,7 +266,6 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -280,7 +275,7 @@ Resources:
             Path: /jokes/{index}
             Method: patch
             Auth:
-              Authorizer: OAuth2Authorizer
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -312,7 +307,6 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -322,7 +316,7 @@ Resources:
             Path: /jokes
             Method: post
             Auth:
-              Authorizer: OAuth2Authorizer
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -354,7 +348,6 @@ Resources:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          CORS_DOMAIN: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
@@ -364,7 +357,7 @@ Resources:
             Path: /jokes/{index}
             Method: put
             Auth:
-              Authorizer: OAuth2Authorizer
+              Authorizer: CognitoAuthorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'

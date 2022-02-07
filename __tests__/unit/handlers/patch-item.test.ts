@@ -19,7 +19,6 @@ describe('patch-item', () => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
     mocked(dynamodb).setDataByIndex.mockResolvedValue(undefined)
     mocked(events).extractJsonPatchFromEvent.mockImplementation((event) => JSON.parse(event.body))
-    mocked(events).getCorsHeaders.mockResolvedValue({})
     mocked(events).getIdFromEvent.mockResolvedValue(index)
   })
 

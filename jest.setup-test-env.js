@@ -1,7 +1,6 @@
 // API
 
 process.env.API_URL = 'https://jokes-api.bowland.link/v1/jokes'
-process.env.CORS_DOMAIN = 'https://jokes.bowland.link'
 
 // DynamoDB
 

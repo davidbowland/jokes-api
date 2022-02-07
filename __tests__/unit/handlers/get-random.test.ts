@@ -4,11 +4,9 @@ import { getRandomHandler } from '@handlers/get-random'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
 import { APIGatewayProxyEventV2 } from '@types'
-import * as events from '@utils/events'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
-jest.mock('@utils/events')
 jest.mock('@utils/logging')
 
 describe('get-random', () => {
@@ -18,7 +16,6 @@ describe('get-random', () => {
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
     mocked(dynamodb).getHighestIndex.mockResolvedValue(102)
-    mocked(events).getCorsHeaders.mockResolvedValue({})
     Math.random = jest.fn().mockReturnValue(index / 100)
   })
 

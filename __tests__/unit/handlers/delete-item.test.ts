@@ -19,7 +19,6 @@ describe('delete-item', () => {
     mocked(dynamodb).deleteDataByIndex.mockResolvedValue(undefined)
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
     mocked(dynamodb).getHighestIndex.mockResolvedValue(highestIndex)
-    mocked(events).getCorsHeaders.mockResolvedValue({})
     mocked(events).getIdFromEvent.mockResolvedValue(index)
   })
 
