@@ -1,10 +1,10 @@
 import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
 import status from '../utils/status'
-import { APIGatewayEvent, APIGatewayProxyResult, Joke } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { extractJokeFromEvent, getCorsHeaders, getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
-const setJoke = async (index: number, joke: Joke): Promise<APIGatewayProxyResult> => {
+const setJoke = async (index: number, joke: Joke): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     await getDataByIndex(index)
   } catch {
@@ -19,7 +19,7 @@ const setJoke = async (index: number, joke: Joke): Promise<APIGatewayProxyResult
   }
 }
 
-export const putItemHandler = async (event: APIGatewayEvent): Promise<APIGatewayProxyResult> => {
+export const putItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const index = await getIdFromEvent(event)

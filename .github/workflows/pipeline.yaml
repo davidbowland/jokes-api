@@ -14,7 +14,6 @@ env:
   TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-1LKE09NHNTT1L
   TESTING_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-CloudFormationExecutionR-4HD5AU9RBZAQ
   TESTING_ARTIFACTS_BUCKET: aws-sam-cli-managed-jokes-api-tes-artifactsbucket-yjq9qs54j7qj
-
   TESTING_REGION: us-east-2
   PROD_STACK_NAME: jokes-api
   PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-N4H8V9DCBMYM

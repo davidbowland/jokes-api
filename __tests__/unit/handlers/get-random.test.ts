@@ -3,7 +3,7 @@ import eventJson from '@events/get-random.json'
 import { getRandomHandler } from '@handlers/get-random'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
-import { APIGatewayEvent } from '@types'
+import { APIGatewayProxyEventV2 } from '@types'
 import * as events from '@utils/events'
 import status from '@utils/status'
 
@@ -12,7 +12,7 @@ jest.mock('@utils/events')
 jest.mock('@utils/logging')
 
 describe('get-random', () => {
-  const event = eventJson as unknown as APIGatewayEvent
+  const event = eventJson as unknown as APIGatewayProxyEventV2
   const mathRandom = Math.random
 
   beforeAll(() => {
@@ -41,38 +41,38 @@ describe('get-random', () => {
 
     test('expect OK and joke', async () => {
       const result = await getRandomHandler(event)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 42: joke }) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 44: joke }) })
     })
 
     test('expect count of jokes when count passed', async () => {
-      const tempEvent = { ...event, queryStringParameters: { count: '2' } } as unknown as APIGatewayEvent
+      const tempEvent = { ...event, queryStringParameters: { count: '2' } } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
-      expect(result).toEqual({ ...status.OK, body: '{"42":{"contents":"ROFL"},"43":{"contents":"ROFL"}}' })
+      expect(result).toEqual({ ...status.OK, body: '{"43":{"contents":"ROFL"},"44":{"contents":"ROFL"}}' })
     })
 
     test('expect max number of jokes when count passed is greater', async () => {
-      const tempEvent = { ...event, queryStringParameters: { count: '3' } } as unknown as APIGatewayEvent
+      const tempEvent = { ...event, queryStringParameters: { count: '3' } } as unknown as APIGatewayProxyEventV2
       mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(2)
 
       const result = await getRandomHandler(tempEvent)
-      expect(result).toEqual({ ...status.OK, body: '{"0":{"contents":"ROFL"},"1":{"contents":"ROFL"}}' })
+      expect(result).toEqual({ ...status.OK, body: '{"1":{"contents":"ROFL"},"2":{"contents":"ROFL"}}' })
     })
 
     test('expect max count of jokes when count passed is greater', async () => {
-      const tempEvent = { ...event, queryStringParameters: { count: '10' } } as unknown as APIGatewayEvent
+      const tempEvent = { ...event, queryStringParameters: { count: '10' } } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
       expect(result).toEqual({
         ...status.OK,
-        body: '{"42":{"contents":"ROFL"},"43":{"contents":"ROFL"},"44":{"contents":"ROFL"}}',
+        body: '{"43":{"contents":"ROFL"},"44":{"contents":"ROFL"},"45":{"contents":"ROFL"}}',
       })
     })
 
     test('expect max count of jokes when no count passed', async () => {
-      const tempEvent = { ...event, queryStringParameters: undefined } as unknown as APIGatewayEvent
+      const tempEvent = { ...event, queryStringParameters: undefined } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
       expect(result).toEqual({
         ...status.OK,
-        body: '{"42":{"contents":"ROFL"},"43":{"contents":"ROFL"},"44":{"contents":"ROFL"}}',
+        body: '{"43":{"contents":"ROFL"},"44":{"contents":"ROFL"},"45":{"contents":"ROFL"}}',
       })
     })
 
@@ -80,9 +80,9 @@ describe('get-random', () => {
       const tempEvent = {
         ...event,
         queryStringParameters: { avoid: '19,42,37', count: '1' },
-      } as unknown as APIGatewayEvent
+      } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 45: joke }) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 46: joke }) })
     })
   })
 })

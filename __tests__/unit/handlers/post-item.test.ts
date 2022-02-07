@@ -3,7 +3,7 @@ import eventJson from '@events/post-item.json'
 import { postItemHandler } from '@handlers/post-item'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
-import { APIGatewayEvent } from '@types'
+import { APIGatewayProxyEventV2 } from '@types'
 import * as events from '@utils/events'
 import status from '@utils/status'
 
@@ -12,7 +12,7 @@ jest.mock('@utils/events')
 jest.mock('@utils/logging')
 
 describe('post-item', () => {
-  const event = eventJson as unknown as APIGatewayEvent
+  const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
     mocked(dynamodb).getHighestIndex.mockResolvedValue(index - 1)

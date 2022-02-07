@@ -1,5 +1,10 @@
 {
-  "httpMethod": "PATCH",
   "body": "[{\"op\":\"replace\",\"path\":\"/contents\",\"value\":\"LOL\"}]",
-  "messageId": "42"
+  "messageId": "42",
+  "requestContext": {
+    "http": {
+      "method": "PATCH",
+      "path": "/v1/jokes"
+    }
+  }
 }

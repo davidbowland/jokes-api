@@ -20,73 +20,66 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
-      certificate: adce1a21-90b4-4120-8548-111215e582f0
+      certificate: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
       corsDomain: https://jokes.dbowland.com
       domain: jokes-api.dbowland.com
       table: jokes-api
-      userPool: us-east-2_JLHXqBLCP
+      userPool: us-east-2_cPuwPJkP8
+      userPoolClient: 5mujt7f6h9jh6pudk0t8ekngu
       zoneId: Z072422417XWM8PIXXSFA
     test:
-      certificate: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
+      certificate: 14a32175-0c26-4768-b71f-3fa611b8f5a2
       corsDomain: https://jokes.bowland.link
       domain: jokes-api.bowland.link
       table: jokes-api-test
-      userPool: us-east-2_JLHXqBLCP
+      userPool: us-east-2_BwzCUS5q1
+      userPoolClient: o86e0r33q0pfekelprpcvmdou
       zoneId: Z01312547RGU1BYKIJXY
 
 Resources:
-  Api:
-    Type: AWS::Serverless::Api
+  HttpApi:
+    Type: AWS::Serverless::HttpApi
     Properties:
       StageName: v1
       Auth:
         Authorizers:
-          CognitoAuth:
-            UserPoolArn: !Sub
-              - 'arn:aws:cognito-idp:us-east-2:${AccountId}:userpool/${UserPool}'
-              - UserPool: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
-            AuthType: 'COGNITO_USER_POOLS'
-      Cors:
-        AllowMethods: "'DELETE,GET,OPTIONS,PATCH,POST,PUT'"
-        AllowHeaders: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        AllowOrigin: !Sub
-          - "'${CorsDomain}'"
-          - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
+          OAuth2Authorizer:
+            IdentitySource: $request.header.Authorization
+            JwtConfiguration:
+              issuer: !Sub
+                - 'https://cognito-idp.us-east-2.amazonaws.com/${UserPool}'
+                - UserPool: !FindInMap [EnvironmentMap, !Ref Environment, userPool]
+              audience:
+                - !FindInMap [EnvironmentMap, !Ref Environment, userPoolClient]
+        DefaultAuthorizer: OAuth2Authorizer
+      CorsConfiguration:
         AllowCredentials: true
+        AllowHeaders:
+          - Authorization
+          - Content-Type
+          - X-Amz-Date
+          - X-Amz-Security-Token
+          - X-Api-Key
+        AllowMethods:
+          - DELETE
+          - GET
+          - OPTIONS
+          - PATCH
+          - POST
+          - PUT
+        AllowOrigins:
+          - !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
       Domain:
-        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-        CertificateArn: !Sub
-          - 'arn:aws:acm:us-east-1:${AccountId}:certificate/${Certificate}'
-          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
-        EndpointConfiguration: EDGE
-        Route53:
-          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
         BasePath:
           - /v1
-
-  Gateway400Response:
-    Type: AWS::ApiGateway::GatewayResponse
-    Properties:
-      ResponseParameters:
-        gatewayresponse.header.Access-Control-Allow-Origin: !Sub
-          - "'${CorsDomain}'"
-          - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
-        gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,GET,OPTIONS,PATCH,POST,PUT'"
-      ResponseType: DEFAULT_4XX
-      RestApiId: !Ref Api
-
-  Gateway500Response:
-    Type: AWS::ApiGateway::GatewayResponse
-    Properties:
-      ResponseParameters:
-        gatewayresponse.header.Access-Control-Allow-Origin: !Sub
-          - "'${CorsDomain}'"
-          - CorsDomain: !FindInMap [EnvironmentMap, !Ref Environment, corsDomain]
-        gatewayresponse.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
-        gatewayresponse.header.Access-Control-Allow-Methods: "'DELETE,GET,OPTIONS,PATCH,POST,PUT'"
-      ResponseType: DEFAULT_5XX
-      RestApiId: !Ref Api
+        CertificateArn: !Sub
+          - 'arn:aws:acm:us-east-2:${AccountId}:certificate/${Certificate}'
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
+        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+        EndpointConfiguration: REGIONAL
+        Route53:
+          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
+      FailOnWarnings: true
 
   DeleteItemFunction:
     Type: AWS::Serverless::Function
@@ -112,13 +105,13 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref Api
+            ApiId: !Ref HttpApi
             Path: /jokes/{index}
             Method: delete
             Auth:
-              Authorizer: CognitoAuth
+              Authorizer: OAuth2Authorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -154,13 +147,13 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref Api
+            ApiId: !Ref HttpApi
             Path: /jokes
             Method: get
             Auth:
-              Authorizer: CognitoAuth
+              Authorizer: OAuth2Authorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -196,13 +189,13 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref Api
+            ApiId: !Ref HttpApi
             Path: /jokes/{index}
             Method: get
             Auth:
-              Authorizer: CognitoAuth
+              Authorizer: OAuth2Authorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -239,11 +232,13 @@ Resources:
           RANDOM_COUNT_MAXIMUM: 10
       Events:
         NoAuth:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref Api
+            ApiId: !Ref HttpApi
             Path: /jokes/random
             Method: get
+            Auth:
+              Authorizer: NONE
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -279,13 +274,13 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref Api
+            ApiId: !Ref HttpApi
             Path: /jokes/{index}
             Method: patch
             Auth:
-              Authorizer: CognitoAuth
+              Authorizer: OAuth2Authorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -321,13 +316,13 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref Api
+            ApiId: !Ref HttpApi
             Path: /jokes
             Method: post
             Auth:
-              Authorizer: CognitoAuth
+              Authorizer: OAuth2Authorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -363,13 +358,13 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
         Api:
-          Type: Api
+          Type: HttpApi
           Properties:
-            RestApiId: !Ref Api
+            ApiId: !Ref HttpApi
             Path: /jokes/{index}
             Method: put
             Auth:
-              Authorizer: CognitoAuth
+              Authorizer: OAuth2Authorizer
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'

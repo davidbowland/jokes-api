@@ -3,7 +3,7 @@ import eventJson from '@events/patch-item.json'
 import { patchItemHandler } from '@handlers/patch-item'
 import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
-import { APIGatewayEvent, Joke, PatchOperation } from '@types'
+import { APIGatewayProxyEventV2, Joke, PatchOperation } from '@types'
 import * as events from '@utils/events'
 import status from '@utils/status'
 
@@ -12,7 +12,7 @@ jest.mock('@utils/events')
 jest.mock('@utils/logging')
 
 describe('patch-item', () => {
-  const event = eventJson as unknown as APIGatewayEvent
+  const event = eventJson as unknown as APIGatewayProxyEventV2
   const expectedResult = { ...joke, contents: 'LOL' } as Joke
 
   beforeAll(() => {

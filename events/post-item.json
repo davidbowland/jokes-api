@@ -1,4 +1,9 @@
 {
-  "httpMethod": "POST",
-  "body": "{\"contents\":\"ROFL\"}"
+  "body": "{\"contents\":\"ROFL\"}",
+  "requestContext": {
+    "http": {
+      "method": "POST",
+      "path": "/v1/jokes"
+    }
+  }
 }
