@@ -1,14 +1,11 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  jokes-api
+  API for jokes project
 
 Transform:
   - AWS::Serverless-2016-10-31
 
 Parameters:
-  AccountId:
-    Type: String
-    Description: AWS account ID
   Environment:
     Type: String
     Default: prod
@@ -23,6 +20,7 @@ Mappings:
       certificate: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
       corsDomain: https://jokes.dbowland.com
       domain: jokes-api.dbowland.com
+      logStreamFunction: log-subscriber-LogGroupSubscriber-vVxMCBqXplyr
       table: jokes-api
       userPool: us-east-2_cPuwPJkP8
       userPoolClient: 5mujt7f6h9jh6pudk0t8ekngu
@@ -31,12 +29,15 @@ Mappings:
       certificate: 14a32175-0c26-4768-b71f-3fa611b8f5a2
       corsDomain: https://jokes.bowland.link
       domain: jokes-api.bowland.link
+      logStreamFunction: log-subscriber-test-LogGroupSubscriber-pAJMIulEeHur
       table: jokes-api-test
       userPool: us-east-2_BwzCUS5q1
       userPoolClient: o86e0r33q0pfekelprpcvmdou
       zoneId: Z01312547RGU1BYKIJXY
 
 Resources:
+  # API Gateway
+
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
@@ -73,13 +74,15 @@ Resources:
         BasePath:
           - /v1
         CertificateArn: !Sub
-          - 'arn:aws:acm:us-east-2:${AccountId}:certificate/${Certificate}'
+          - 'arn:aws:acm:us-east-2:${AWS::AccountId}:certificate/${Certificate}'
           - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
         EndpointConfiguration: REGIONAL
         Route53:
           HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
       FailOnWarnings: true
+
+  # Lambda
 
   DeleteItemFunction:
     Type: AWS::Serverless::Function
@@ -122,6 +125,15 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${DeleteItemFunction}
       RetentionInDays: 30
 
+  DeleteLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref DeleteItemLogGroup
+
   GetAllItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -163,6 +175,15 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${GetAllItemsFunction}
       RetentionInDays: 30
 
+  GetAllItemsLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetAllItemsLogGroup
+
   GetByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -203,6 +224,15 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetByIdFunction}
       RetentionInDays: 30
+
+  GetByIdLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetByIdLogGroup
 
   GetRandomFunction:
     Type: AWS::Serverless::Function
@@ -246,6 +276,15 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${GetRandomFunction}
       RetentionInDays: 30
 
+  GetRandomLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetRandomLogGroup
+
   PatchItemFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -286,6 +325,15 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PatchItemFunction}
       RetentionInDays: 30
+
+  PatchLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PatchLogGroup
 
   PostItemFunction:
     Type: AWS::Serverless::Function
@@ -328,6 +376,15 @@ Resources:
       LogGroupName: !Sub /aws/lambda/${PostItemFunction}
       RetentionInDays: 30
 
+  PostLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PostLogGroup
+
   PutItemFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -368,6 +425,17 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PutItemFunction}
       RetentionInDays: 30
+
+  PutLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref PutLogGroup
+
+  # Database
 
   JokesTable:
     Type: AWS::Serverless::SimpleTable
