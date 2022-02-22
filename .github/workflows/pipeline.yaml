@@ -11,15 +11,15 @@ env:
   PIPELINE_USER_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
   SAM_TEMPLATE: template.yaml
   TESTING_STACK_NAME: jokes-api-test
-  TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-1LKE09NHNTT1L
-  TESTING_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-CloudFormationExecutionR-4HD5AU9RBZAQ
-  TESTING_ARTIFACTS_BUCKET: aws-sam-cli-managed-jokes-api-tes-artifactsbucket-yjq9qs54j7qj
-  TESTING_REGION: us-east-2
+  TESTING_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/jokes-pipeline-test
+  TESTING_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/jokes-cloudformation-test
+  TESTING_ARTIFACTS_BUCKET: jokes-lambda-test
+  TESTING_REGION: ${{ secrets.AWS_REGION }}
   PROD_STACK_NAME: jokes-api
-  PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-ap-PipelineExecutionRole-N4H8V9DCBMYM
-  PROD_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/aws-sam-cli-managed-jokes-CloudFormationExecutionR-QUGACQCR3P49
-  PROD_ARTIFACTS_BUCKET: aws-sam-cli-managed-jokes-api-pip-artifactsbucket-1nrmffau87vew
-  PROD_REGION: us-east-2
+  PROD_PIPELINE_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/jokes-pipeline
+  PROD_CLOUDFORMATION_EXECUTION_ROLE: arn:aws:iam::${{ secrets.AWS_ACCOUNT_ID }}:role/jokes-cloudformation
+  PROD_ARTIFACTS_BUCKET: jokes-lambda
+  PROD_REGION: ${{ secrets.AWS_REGION }}
 
 jobs:
   test:
@@ -82,6 +82,7 @@ jobs:
             --capabilities CAPABILITY_IAM \
             --region ${TESTING_REGION} \
             --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
+            --s3-prefix jokes-api-test \
             --no-fail-on-empty-changeset \
             --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE} \
             --parameter-overrides 'Environment=test'
@@ -125,6 +126,7 @@ jobs:
         run: |
           sam package \
             --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
+            --s3-prefix jokes-api-test \
             --region ${TESTING_REGION} \
             --output-template-file packaged-testing.yaml
 
@@ -148,6 +150,7 @@ jobs:
         run: |
           sam package \
             --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
+            --s3-prefix jokes-api \
             --region ${PROD_REGION} \
             --output-template-file packaged-prod.yaml
 
@@ -188,6 +191,7 @@ jobs:
             --capabilities CAPABILITY_IAM \
             --region ${TESTING_REGION} \
             --s3-bucket ${TESTING_ARTIFACTS_BUCKET} \
+            --s3-prefix jokes-api-test \
             --no-fail-on-empty-changeset \
             --role-arn ${TESTING_CLOUDFORMATION_EXECUTION_ROLE} \
             --parameter-overrides 'Environment=test'
@@ -224,6 +228,7 @@ jobs:
             --capabilities CAPABILITY_IAM \
             --region ${PROD_REGION} \
             --s3-bucket ${PROD_ARTIFACTS_BUCKET} \
+            --s3-prefix jokes-api \
             --no-fail-on-empty-changeset \
             --role-arn ${PROD_CLOUDFORMATION_EXECUTION_ROLE}
 
