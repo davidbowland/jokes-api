@@ -20,7 +20,7 @@ Mappings:
       certificate: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
       corsDomain: https://jokes.dbowland.com
       domain: jokes-api.dbowland.com
-      logStreamFunction: log-subscriber-LogGroupSubscriber-vVxMCBqXplyr
+      logStreamFunction: log-subscriber
       table: jokes-api
       userPool: us-east-2_cPuwPJkP8
       userPoolClient: 5mujt7f6h9jh6pudk0t8ekngu
@@ -29,7 +29,7 @@ Mappings:
       certificate: 14a32175-0c26-4768-b71f-3fa611b8f5a2
       corsDomain: https://jokes.bowland.link
       domain: jokes-api.bowland.link
-      logStreamFunction: log-subscriber-test-LogGroupSubscriber-pAJMIulEeHur
+      logStreamFunction: log-subscriber-test
       table: jokes-api-test
       userPool: us-east-2_BwzCUS5q1
       userPoolClient: o86e0r33q0pfekelprpcvmdou
