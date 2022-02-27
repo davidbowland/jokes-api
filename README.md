@@ -1,6 +1,6 @@
 # Lambdas for Jokes API
 
-Lambdas for jokes API, which is the back-end for joke-ui.
+Lambdas for jokes API, which is the back-end for jokes-ui.
 
 ## Setup
 
