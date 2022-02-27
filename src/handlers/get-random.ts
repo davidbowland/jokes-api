@@ -17,7 +17,9 @@ export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<A
   log('Received event', { ...event, body: undefined })
   const count =
     Math.max(Math.min(parseInt(event.queryStringParameters?.count, 10), randomCountMaximum), 1) || randomCountMaximum
-  const filterList = (event.queryStringParameters?.avoid?.split(',') ?? []).map((value) => parseInt(value, 10))
+  const filterList = (event.queryStringParameters?.avoid?.split(',') ?? [])
+    .map((value) => parseInt(value, 10))
+    .slice(0, count)
 
   try {
     const highestIndex = await getHighestIndex()

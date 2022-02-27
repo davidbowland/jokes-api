@@ -76,10 +76,10 @@ describe('get-random', () => {
     test('expect avoids to be honored', async () => {
       const tempEvent = {
         ...event,
-        queryStringParameters: { avoid: '19,42,37', count: '1' },
+        queryStringParameters: { avoid: '19,42,37', count: '3' },
       } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 46: joke }) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 45: joke, 46: joke, 47: joke }) })
     })
   })
 })
