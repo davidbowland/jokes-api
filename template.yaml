@@ -93,7 +93,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 30
+      Timeout: 10
       Description: jokes-api delete by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -193,7 +193,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 30
+      Timeout: 10
       Description: jokes-api get by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -243,7 +243,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 30
+      Timeout: 10
       Description: jokes-api get random jokes
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -294,7 +294,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 30
+      Timeout: 10
       Description: jokes-api patch item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -344,7 +344,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 30
+      Timeout: 10
       Description: jokes-api post item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -394,7 +394,7 @@ Resources:
       Architectures:
         - x86_64
       MemorySize: 128
-      Timeout: 30
+      Timeout: 10
       Description: jokes-api put item
       Policies:
         - AWSLambdaBasicExecutionRole
