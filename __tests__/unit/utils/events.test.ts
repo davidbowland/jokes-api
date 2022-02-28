@@ -9,12 +9,12 @@ describe('events', () => {
   describe('extractJokeFromEvent', () => {
     const event = putEventJson as unknown as APIGatewayProxyEventV2
 
-    test('expect email from event', async () => {
+    test('expect joke from event', async () => {
       const result = await extractJokeFromEvent(event)
       expect(result).toEqual(joke)
     })
 
-    test('expect email from event in base64', async () => {
+    test('expect joke from event in base64', async () => {
       const tempEvent = {
         ...event,
         body: Buffer.from(event.body).toString('base64'),
@@ -29,7 +29,7 @@ describe('events', () => {
       await expect(extractJokeFromEvent(tempEvent)).rejects.toBeDefined()
     })
 
-    test('expect email to be formatted', async () => {
+    test('expect joke to be formatted', async () => {
       const tempEmail = {
         ...joke,
         foo: 'bar',
