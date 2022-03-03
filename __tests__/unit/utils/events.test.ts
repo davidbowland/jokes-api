@@ -24,9 +24,9 @@ describe('events', () => {
       expect(result).toEqual(joke)
     })
 
-    test('expect reject on invalid event', async () => {
+    test('expect reject on invalid event', () => {
       const tempEvent = { ...event, body: JSON.stringify({}) } as unknown as APIGatewayProxyEventV2
-      await expect(extractJokeFromEvent(tempEvent)).rejects.toBeDefined()
+      expect(() => extractJokeFromEvent(tempEvent)).toThrow()
     })
 
     test('expect joke to be formatted', async () => {
@@ -53,14 +53,14 @@ describe('events', () => {
       expect(result).toEqual(index)
     })
 
-    test('expect reject on invalid ID', async () => {
+    test('expect reject on invalid ID', () => {
       const tempEvent = {} as unknown as APIGatewayProxyEventV2
-      await expect(getIdFromEvent(tempEvent)).rejects.toBeDefined()
+      expect(() => getIdFromEvent(tempEvent)).toThrow()
     })
 
-    test('expect reject on non-integer ID', async () => {
+    test('expect reject on non-integer ID', () => {
       const tempEvent = { pathParameters: { index: 'fnord' } } as unknown as APIGatewayProxyEventV2
-      await expect(getIdFromEvent(tempEvent)).rejects.toBeDefined()
+      expect(() => getIdFromEvent(tempEvent)).toThrow()
     })
   })
 })

@@ -22,11 +22,11 @@ const setJoke = async (index: number, joke: Joke): Promise<APIGatewayProxyResult
 export const putItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const index = await getIdFromEvent(event)
-    const joke = await extractJokeFromEvent(event)
+    const index = getIdFromEvent(event)
+    const joke = extractJokeFromEvent(event)
     const result = await setJoke(index, joke)
     return result
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

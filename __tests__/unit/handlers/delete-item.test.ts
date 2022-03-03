@@ -19,12 +19,14 @@ describe('delete-item', () => {
     mocked(dynamodb).deleteDataByIndex.mockResolvedValue(undefined)
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
     mocked(dynamodb).getHighestIndex.mockResolvedValue(highestIndex)
-    mocked(events).getIdFromEvent.mockResolvedValue(index)
+    mocked(events).getIdFromEvent.mockReturnValue(index)
   })
 
   describe('deleteByIdHandler', () => {
     test('expect BAD_REQUEST on invalid index', async () => {
-      mocked(events).getIdFromEvent.mockRejectedValueOnce('Bad request')
+      mocked(events).getIdFromEvent.mockImplementationOnce(() => {
+        throw new Error('Bad request')
+      })
       const result = await deleteByIdHandler(event)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })

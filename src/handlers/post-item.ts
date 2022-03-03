@@ -10,7 +10,7 @@ const getNextIndex = async (): Promise<number> => getHighestIndex().then((value)
 export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const joke = await extractJokeFromEvent(event)
+    const joke = extractJokeFromEvent(event)
     try {
       const index = await getNextIndex()
       await setDataByIndex(index, joke)
@@ -25,6 +25,6 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
       return status.INTERNAL_SERVER_ERROR
     }
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

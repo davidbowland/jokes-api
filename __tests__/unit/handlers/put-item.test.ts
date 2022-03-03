@@ -17,19 +17,23 @@ describe('put-item', () => {
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
     mocked(dynamodb).setDataByIndex.mockResolvedValue(undefined)
-    mocked(events).extractJokeFromEvent.mockResolvedValue(joke)
-    mocked(events).getIdFromEvent.mockResolvedValue(index)
+    mocked(events).extractJokeFromEvent.mockReturnValue(joke)
+    mocked(events).getIdFromEvent.mockReturnValue(index)
   })
 
   describe('putItemHandler', () => {
     test('expect BAD_REQUEST when invalid index', async () => {
-      mocked(events).getIdFromEvent.mockRejectedValueOnce('Bad request')
+      mocked(events).getIdFromEvent.mockImplementationOnce(() => {
+        throw new Error('Bad request')
+      })
       const result = await putItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
     test('expect BAD_REQUEST when joke is invalid', async () => {
-      mocked(events).extractJokeFromEvent.mockRejectedValueOnce('Bad request')
+      mocked(events).extractJokeFromEvent.mockImplementationOnce(() => {
+        throw new Error('Bad request')
+      })
       const result = await putItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })

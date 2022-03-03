@@ -16,10 +16,10 @@ const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<any>> =
 export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const index = await getIdFromEvent(event)
+    const index = getIdFromEvent(event)
     const result = await fetchById(index)
     return result
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

@@ -22,11 +22,11 @@ const patchById = async (index: number, patchOperations: PatchOperation[]): Prom
 export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const index = await getIdFromEvent(event)
-    const patchOperations = await extractJsonPatchFromEvent(event)
+    const index = getIdFromEvent(event)
+    const patchOperations = extractJsonPatchFromEvent(event)
     const result = await patchById(index, patchOperations)
     return result
   } catch (error) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

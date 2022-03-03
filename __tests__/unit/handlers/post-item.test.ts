@@ -17,12 +17,14 @@ describe('post-item', () => {
   beforeAll(() => {
     mocked(dynamodb).getHighestIndex.mockResolvedValue(index - 1)
     mocked(dynamodb).setDataByIndex.mockResolvedValue(undefined)
-    mocked(events).extractJokeFromEvent.mockResolvedValue(joke)
+    mocked(events).extractJokeFromEvent.mockReturnValue(joke)
   })
 
   describe('postItemHandler', () => {
     test('expect BAD_REQUEST when joke is invalid', async () => {
-      mocked(events).extractJokeFromEvent.mockRejectedValueOnce('Bad request')
+      mocked(events).extractJokeFromEvent.mockImplementationOnce(() => {
+        throw new Error('Bad request')
+      })
       const result = await postItemHandler(event)
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
