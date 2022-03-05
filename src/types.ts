@@ -10,7 +10,8 @@ export interface Joke {
 }
 
 export interface JokeBatch {
-  [key: number]: Joke
+  data: Joke
+  id: number
 }
 
 export interface StringObject {

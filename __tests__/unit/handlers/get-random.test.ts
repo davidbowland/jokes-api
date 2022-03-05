@@ -38,13 +38,19 @@ describe('get-random', () => {
 
     test('expect OK and joke', async () => {
       const result = await getRandomHandler(event)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 44: joke }) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify([{ id: 44, data: joke }]) })
     })
 
     test('expect count of jokes when count passed', async () => {
       const tempEvent = { ...event, queryStringParameters: { count: '2' } } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
-      expect(result).toEqual({ ...status.OK, body: '{"43":{"contents":"ROFL"},"44":{"contents":"ROFL"}}' })
+      expect(result).toEqual({
+        ...status.OK,
+        body: JSON.stringify([
+          { id: 43, data: joke },
+          { id: 44, data: joke },
+        ]),
+      })
     })
 
     test('expect max number of jokes when count passed is greater', async () => {
@@ -52,7 +58,13 @@ describe('get-random', () => {
       mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(2)
 
       const result = await getRandomHandler(tempEvent)
-      expect(result).toEqual({ ...status.OK, body: '{"1":{"contents":"ROFL"},"2":{"contents":"ROFL"}}' })
+      expect(result).toEqual({
+        ...status.OK,
+        body: JSON.stringify([
+          { id: 1, data: joke },
+          { id: 2, data: joke },
+        ]),
+      })
     })
 
     test('expect max count of jokes when count passed is greater', async () => {
@@ -60,7 +72,11 @@ describe('get-random', () => {
       const result = await getRandomHandler(tempEvent)
       expect(result).toEqual({
         ...status.OK,
-        body: '{"43":{"contents":"ROFL"},"44":{"contents":"ROFL"},"45":{"contents":"ROFL"}}',
+        body: JSON.stringify([
+          { id: 45, data: joke },
+          { id: 43, data: joke },
+          { id: 44, data: joke },
+        ]),
       })
     })
 
@@ -69,7 +85,11 @@ describe('get-random', () => {
       const result = await getRandomHandler(tempEvent)
       expect(result).toEqual({
         ...status.OK,
-        body: '{"43":{"contents":"ROFL"},"44":{"contents":"ROFL"},"45":{"contents":"ROFL"}}',
+        body: JSON.stringify([
+          { id: 45, data: joke },
+          { id: 43, data: joke },
+          { id: 44, data: joke },
+        ]),
       })
     })
 
@@ -79,7 +99,14 @@ describe('get-random', () => {
         queryStringParameters: { avoid: '19,42,37', count: '3' },
       } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ 45: joke, 46: joke, 47: joke }) })
+      expect(result).toEqual({
+        ...status.OK,
+        body: JSON.stringify([
+          { id: 47, data: joke },
+          { id: 45, data: joke },
+          { id: 46, data: joke },
+        ]),
+      })
     })
   })
 })
