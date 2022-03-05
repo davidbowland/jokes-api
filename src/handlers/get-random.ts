@@ -4,13 +4,13 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke, JokeBatch } from
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
-const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBatch> => {
+const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBatch[]> => {
   const index = indexList[Math.round(Math.random() * indexList.length)]
   const joke = (await getDataByIndex(index)) as Joke
   const filteredList = indexList.filter((value) => value !== index)
   return count > 0 && filteredList.length
-    ? { [index]: joke, ...(await getRandomJoke(filteredList, count - 1)) }
-    : { [index]: joke }
+    ? [...(await getRandomJoke(filteredList, count - 1)), { id: index, data: joke }]
+    : [{ id: index, data: joke }]
 }
 
 export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
