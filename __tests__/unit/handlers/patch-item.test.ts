@@ -47,6 +47,20 @@ describe('patch-item', () => {
       expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
     })
 
+    test('expect BAD_REQUEST when extractJsonPatchFromEvent throws', async () => {
+      mocked(events).extractJsonPatchFromEvent.mockImplementationOnce(() => {
+        throw new Error('Bad request')
+      })
+      const result = await patchItemHandler(event)
+      expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
+    })
+
+    test('expect NOT_FOUND on getDataByIndex reject', async () => {
+      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
+      const result = await patchItemHandler(event)
+      expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
+    })
+
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
       mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)

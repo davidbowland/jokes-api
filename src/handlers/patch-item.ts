@@ -7,8 +7,11 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Joke }
 import { extractJsonPatchFromEvent, getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 
-const patchById = async (index: number, patchOperations: PatchOperation[]): Promise<APIGatewayProxyResultV2<any>> => {
-  const joke = (await getDataByIndex(index)) as Joke
+const applyJsonPatch = async (
+  joke: Joke,
+  index: number,
+  patchOperations: PatchOperation[]
+): Promise<APIGatewayProxyResultV2<any>> => {
   const updatedJoke = applyPatch(joke, patchOperations, throwOnInvalidJsonPatch, mutateObjectOnJsonPatch).newDocument
   try {
     await setDataByIndex(index, updatedJoke)
@@ -16,6 +19,19 @@ const patchById = async (index: number, patchOperations: PatchOperation[]): Prom
   } catch (error) {
     logError(error)
     return status.INTERNAL_SERVER_ERROR
+  }
+}
+
+const patchById = async (index: number, patchOperations: PatchOperation[]): Promise<APIGatewayProxyResultV2<any>> => {
+  try {
+    const joke = (await getDataByIndex(index)) as Joke
+    try {
+      return await applyJsonPatch(joke, index, patchOperations)
+    } catch (error) {
+      return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
+    }
+  } catch {
+    return status.NOT_FOUND
   }
 }
 
