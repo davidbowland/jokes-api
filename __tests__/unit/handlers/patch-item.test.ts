@@ -1,10 +1,11 @@
+import { mocked } from 'jest-mock'
+
+import * as dynamodb from '@services/dynamodb'
+import * as events from '@utils/events'
+import { APIGatewayProxyEventV2, Joke, PatchOperation } from '@types'
 import { index, joke } from '../__mocks__'
 import eventJson from '@events/patch-item.json'
 import { patchItemHandler } from '@handlers/patch-item'
-import { mocked } from 'jest-mock'
-import * as dynamodb from '@services/dynamodb'
-import { APIGatewayProxyEventV2, Joke, PatchOperation } from '@types'
-import * as events from '@utils/events'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')

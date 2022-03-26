@@ -1,4 +1,3 @@
-import { index, joke } from '../__mocks__'
 import {
   deleteDataByIndex,
   getDataByIndex,
@@ -8,6 +7,7 @@ import {
   setDataByIndex,
   setHighestIndex,
 } from '@services/dynamodb'
+import { index, joke } from '../__mocks__'
 
 const mockBatchGetItem = jest.fn()
 const mockDeleteItem = jest.fn()
@@ -65,7 +65,7 @@ describe('dynamodb', () => {
   describe('getDataByIndexBatch', () => {
     beforeAll(() => {
       mockBatchGetItem.mockResolvedValue({
-        Responses: { 'jokes-table': [{ Index: { N: `${index}` }, Data: { S: JSON.stringify(joke) } }] },
+        Responses: { 'jokes-table': [{ Data: { S: JSON.stringify(joke) }, Index: { N: `${index}` } }] },
       })
     })
 
@@ -119,8 +119,8 @@ describe('dynamodb', () => {
     beforeAll(() => {
       mockScanTable.mockResolvedValue({
         Items: [
-          { Index: { N: '0' }, Data: { S: JSON.stringify({ count: index }) } },
-          { Index: { N: `${index}` }, Data: { S: JSON.stringify(joke) } },
+          { Data: { S: JSON.stringify({ count: index }) }, Index: { N: '0' } },
+          { Data: { S: JSON.stringify(joke) }, Index: { N: `${index}` } },
         ],
       })
     })
@@ -142,11 +142,11 @@ describe('dynamodb', () => {
       await setDataByIndex(index, joke)
       expect(mockPutItem).toHaveBeenCalledWith({
         Item: {
-          Index: {
-            N: `${index}`,
-          },
           Data: {
             S: JSON.stringify(joke),
+          },
+          Index: {
+            N: `${index}`,
           },
         },
         TableName: 'jokes-table',
@@ -161,11 +161,11 @@ describe('dynamodb', () => {
       await setHighestIndex(count)
       expect(mockPutItem).toHaveBeenCalledWith({
         Item: {
-          Index: {
-            N: '0',
-          },
           Data: {
             S: JSON.stringify({ count }),
+          },
+          Index: {
+            N: '0',
           },
         },
         TableName: 'jokes-table',

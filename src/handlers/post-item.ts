@@ -1,9 +1,9 @@
-import { apiUrl } from '../config'
-import { getHighestIndex, setDataByIndex, setHighestIndex } from '../services/dynamodb'
-import status from '../utils/status'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
-import { extractJokeFromEvent } from '../utils/events'
+import { getHighestIndex, setDataByIndex, setHighestIndex } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
+import { apiUrl } from '../config'
+import { extractJokeFromEvent } from '../utils/events'
+import status from '../utils/status'
 
 const getNextIndex = async (): Promise<number> => getHighestIndex().then((value) => value + 1)
 

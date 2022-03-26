@@ -1,11 +1,11 @@
 import { applyPatch } from 'fast-json-patch'
 
-import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
-import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
-import status from '../utils/status'
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, PatchOperation, Joke } from '../types'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke, PatchOperation } from '../types'
 import { extractJsonPatchFromEvent, getIdFromEvent } from '../utils/events'
+import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
+import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
+import status from '../utils/status'
 
 const applyJsonPatch = async (
   joke: Joke,

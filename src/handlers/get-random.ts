@@ -1,7 +1,7 @@
-import { randomCountMaximum } from '../config'
-import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke, JokeBatch } from '../types'
+import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
+import { randomCountMaximum } from '../config'
 import status from '../utils/status'
 
 const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBatch[]> => {
@@ -9,8 +9,8 @@ const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBa
   const joke = (await getDataByIndex(index)) as Joke
   const filteredList = indexList.filter((value) => value !== index)
   return count > 0 && filteredList.length
-    ? [...(await getRandomJoke(filteredList, count - 1)), { id: index, data: joke }]
-    : [{ id: index, data: joke }]
+    ? [...(await getRandomJoke(filteredList, count - 1)), { data: joke, id: index }]
+    : [{ data: joke, id: index }]
 }
 
 export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {

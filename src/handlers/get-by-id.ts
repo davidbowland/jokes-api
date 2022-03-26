@@ -1,5 +1,5 @@
-import { getDataByIndex } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
+import { getDataByIndex } from '../services/dynamodb'
 import { getIdFromEvent } from '../utils/events'
 import { log } from '../utils/logging'
 import status from '../utils/status'

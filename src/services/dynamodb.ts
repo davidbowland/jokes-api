@@ -1,7 +1,7 @@
 import { DynamoDB } from 'aws-sdk'
 
-import { dynamodbTableName } from '../config'
 import { Index, JokeBatch } from '../types'
+import { dynamodbTableName } from '../config'
 
 const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' })
 
@@ -87,11 +87,11 @@ export const setDataByIndex = (index: number, data: unknown): Promise<DynamoDB.T
   dynamodb
     .putItem({
       Item: {
-        Index: {
-          N: `${index}`,
-        },
         Data: {
           S: JSON.stringify(data),
+        },
+        Index: {
+          N: `${index}`,
         },
       },
       TableName: dynamodbTableName,

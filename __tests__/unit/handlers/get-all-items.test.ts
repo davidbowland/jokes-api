@@ -1,9 +1,10 @@
+import { mocked } from 'jest-mock'
+
+import * as dynamodb from '@services/dynamodb'
 import { index, joke } from '../__mocks__'
+import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/get-all-items.json'
 import { getAllItemsHandler } from '@handlers/get-all-items'
-import { mocked } from 'jest-mock'
-import * as dynamodb from '@services/dynamodb'
-import { APIGatewayProxyEventV2 } from '@types'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
@@ -13,7 +14,7 @@ describe('get-all-items', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
-    mocked(dynamodb).scanData.mockResolvedValue({ [index]: joke })
+    mocked(dynamodb).scanData.mockResolvedValue({ data: joke, id: index })
   })
 
   describe('getAllItemsHandler', () => {
@@ -25,7 +26,7 @@ describe('get-all-items', () => {
 
     test('expect OK and data', async () => {
       const result = await getAllItemsHandler(event)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ [index]: joke }) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ data: joke, id: index }) })
     })
   })
 })

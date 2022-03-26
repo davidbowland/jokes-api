@@ -1,8 +1,8 @@
-import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
-import status from '../utils/status'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { extractJokeFromEvent, getIdFromEvent } from '../utils/events'
+import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
+import status from '../utils/status'
 
 const setJoke = async (index: number, joke: Joke): Promise<APIGatewayProxyResultV2<any>> => {
   try {

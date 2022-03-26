@@ -1,3 +1,4 @@
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import {
   deleteDataByIndex,
   getDataByIndex,
@@ -5,9 +6,8 @@ import {
   setDataByIndex,
   setHighestIndex,
 } from '../services/dynamodb'
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
-import { getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
+import { getIdFromEvent } from '../utils/events'
 import status from '../utils/status'
 
 const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResultV2<any>> => {

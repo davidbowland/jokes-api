@@ -1,9 +1,9 @@
+import { extractJokeFromEvent, extractJsonPatchFromEvent, getIdFromEvent } from '@utils/events'
 import { index, joke, jsonPatchOperations } from '../__mocks__'
+import { APIGatewayProxyEventV2 } from '@types'
 import getEventJson from '@events/get-by-id.json'
 import patchEventJson from '@events/patch-item.json'
 import putEventJson from '@events/put-item.json'
-import { APIGatewayProxyEventV2 } from '@types'
-import { extractJokeFromEvent, extractJsonPatchFromEvent, getIdFromEvent } from '@utils/events'
 
 describe('events', () => {
   describe('extractJokeFromEvent', () => {
