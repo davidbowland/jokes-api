@@ -127,13 +127,13 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await scanData()
-      expect(result).toEqual({ [index]: joke })
+      expect(result).toEqual([{ data: { contents: 'ROFL' }, id: 42 }])
     })
 
     test('expect empty object with no data returned', async () => {
       mockScanTable.mockResolvedValueOnce({ Items: [] })
       const result = await scanData()
-      expect(result).toEqual({})
+      expect(result).toEqual([])
     })
   })
 

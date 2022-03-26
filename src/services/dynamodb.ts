@@ -66,13 +66,14 @@ export const getHighestIndex = (): Promise<number> =>
 
 /* Scan for items */
 
-const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): JokeBatch =>
+const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): JokeBatch[] =>
   response.Items.reduce(
-    (result, item) => (item.Index.N !== '0' ? { ...result, [item.Index.N]: JSON.parse(item.Data.S) } : result),
-    {} as JokeBatch
+    (result, item) =>
+      item.Index.N !== '0' ? [...result, { data: JSON.parse(item.Data.S), id: parseInt(item.Index.N, 10) }] : result,
+    [] as JokeBatch[]
   )
 
-export const scanData = (): Promise<JokeBatch> =>
+export const scanData = (): Promise<JokeBatch[]> =>
   dynamodb
     .scan({
       AttributesToGet: ['Data', 'Index'],

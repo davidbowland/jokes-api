@@ -14,7 +14,7 @@ describe('get-all-items', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
-    mocked(dynamodb).scanData.mockResolvedValue({ data: joke, id: index })
+    mocked(dynamodb).scanData.mockResolvedValue([{ data: joke, id: index }])
   })
 
   describe('getAllItemsHandler', () => {
@@ -26,7 +26,7 @@ describe('get-all-items', () => {
 
     test('expect OK and data', async () => {
       const result = await getAllItemsHandler(event)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ data: joke, id: index }) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify([{ data: joke, id: index }]) })
     })
   })
 })
