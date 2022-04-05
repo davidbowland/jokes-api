@@ -1,13 +1,20 @@
 {
   "name": "jokes-api",
   "version": "1.35.0",
-  "private": true,
   "description": "Lambda jokes API",
   "author": "David Bowland",
   "engines": {
     "node": "^14.0.0"
   },
   "license": "ISC",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/davidbowland/jokes-api.git"
+  },
+  "bugs": {
+    "url": "https://github.com/davidbowland/jokes-api/issues"
+  },
+  "homepage": "https://github.com/davidbowland/jokes-api#readme",
   "scripts": {
     "build": "npm run clean && tsc && cp package*.json dist/ && cd dist/ && HUSKY=0 NODE_ENV=production npm ci",
     "clean": "rm -rf dist coverage && NODE_ENV=test npm ci",
@@ -18,24 +25,6 @@
     "quick-start": "tsc && ./scripts/runLocal.sh",
     "test": "jest --colors"
   },
-  "lint-staged": {
-    "**/*.{js,jsx,ts,tsx}": [
-      "prettier --write --ignore-unknown",
-      "eslint --resolve-plugins-relative-to . --fix",
-      "jest --colors --findRelatedTests --coverageThreshold '{}'"
-    ],
-    "**/*": [
-      "prettier --write --ignore-unknown"
-    ]
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/davidbowland/jokes-api.git"
-  },
-  "bugs": {
-    "url": "https://github.com/davidbowland/jokes-api/issues"
-  },
-  "homepage": "https://github.com/davidbowland/jokes-api#readme",
   "dependencies": {
     "aws-sdk": "^2.923.0",
     "fast-json-patch": "^3.1.0"
@@ -58,5 +47,15 @@
     "prettier": "^2.3.1",
     "ts-node": "^10.2.1",
     "typescript": "^4.5.2"
+  },
+  "lint-staged": {
+    "**/*.{js,jsx,ts,tsx}": [
+      "prettier --write --ignore-unknown",
+      "eslint --resolve-plugins-relative-to . --fix",
+      "jest --colors --findRelatedTests --coverageThreshold '{}'"
+    ],
+    "**/*": [
+      "prettier --write --ignore-unknown"
+    ]
   }
 }

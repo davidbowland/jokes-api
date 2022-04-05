@@ -17,4 +17,4 @@ sam build --template ${SAM_TEMPLATE}
 # Start the API locally
 export API_URL='https://jokes-api.bowland.link'
 export DYNAMODB_TABLE_NAME=jokes-api-test
-sam local start-api --region=us-east-2 --force-image-build
+sam local start-api --region=us-east-2 --force-image-build --log-file local.log
