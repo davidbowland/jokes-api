@@ -117,6 +117,7 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   DeleteItemLogGroup:
     Type: AWS::Logs::LogGroup
@@ -124,6 +125,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${DeleteItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   DeleteLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -167,6 +175,7 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   GetAllItemsLogGroup:
     Type: AWS::Logs::LogGroup
@@ -174,6 +183,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetAllItemsFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetAllItemsLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -217,6 +233,7 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   GetByIdLogGroup:
     Type: AWS::Logs::LogGroup
@@ -224,6 +241,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetByIdFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetByIdLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -268,6 +292,7 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   GetRandomLogGroup:
     Type: AWS::Logs::LogGroup
@@ -275,6 +300,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${GetRandomFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   GetRandomLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -318,6 +350,7 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   PatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -325,6 +358,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PatchItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PatchLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -368,6 +408,7 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   PostLogGroup:
     Type: AWS::Logs::LogGroup
@@ -375,6 +416,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PostItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PostLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -418,6 +466,7 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
 
   PutLogGroup:
     Type: AWS::Logs::LogGroup
@@ -425,6 +474,13 @@ Resources:
     Properties:
       LogGroupName: !Sub /aws/lambda/${PutItemFunction}
       RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
 
   PutLogGroupSubscription:
     Type: AWS::Logs::SubscriptionFilter
@@ -447,3 +503,4 @@ Resources:
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
+        'environment': !Ref Environment
