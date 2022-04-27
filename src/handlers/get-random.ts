@@ -5,7 +5,7 @@ import { randomCountMaximum } from '../config'
 import status from '../utils/status'
 
 const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBatch[]> => {
-  const index = indexList[Math.round(Math.random() * indexList.length)]
+  const index = indexList[Math.round(Math.random() * (indexList.length - 1))]
   const joke = (await getDataByIndex(index)) as Joke
   const filteredList = indexList.filter((value) => value !== index)
   return count > 0 && filteredList.length

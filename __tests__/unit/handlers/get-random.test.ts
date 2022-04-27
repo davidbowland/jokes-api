@@ -48,8 +48,8 @@ describe('get-random', () => {
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
-          { data: joke, id: 43 },
           { data: joke, id: 44 },
+          { data: joke, id: 43 },
         ]),
       })
     })
@@ -62,8 +62,8 @@ describe('get-random', () => {
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
-          { data: joke, id: 1 },
           { data: joke, id: 2 },
+          { data: joke, id: 1 },
         ]),
       })
     })
@@ -75,8 +75,8 @@ describe('get-random', () => {
         ...status.OK,
         body: JSON.stringify([
           { data: joke, id: 45 },
-          { data: joke, id: 43 },
           { data: joke, id: 44 },
+          { data: joke, id: 43 },
         ]),
       })
     })
@@ -88,8 +88,8 @@ describe('get-random', () => {
         ...status.OK,
         body: JSON.stringify([
           { data: joke, id: 45 },
-          { data: joke, id: 43 },
           { data: joke, id: 44 },
+          { data: joke, id: 43 },
         ]),
       })
     })
@@ -103,9 +103,9 @@ describe('get-random', () => {
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
-          { data: joke, id: 47 },
-          { data: joke, id: 45 },
+          { data: joke, id: 44 },
           { data: joke, id: 46 },
+          { data: joke, id: 45 },
         ]),
       })
     })
