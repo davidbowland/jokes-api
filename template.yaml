@@ -258,6 +258,71 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetByIdLogGroup
 
+  GetTtsByIdFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-tts-by-id.getByIdHandler
+      CodeUri: './dist'
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Timeout: 30
+      Description: jokes-api get TTS by ID
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+        # Access to use Polly for TTS
+        - Version: 2012-10-17
+          Statement:
+            - Action:
+                - 'polly:SynthesizeSpeech'
+              Effect: Allow
+              Resource: '*'
+      Environment:
+        Variables:
+          API_URL: !Sub
+            - 'https://${Domain}/v1/jokes'
+            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        Api:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /jokes/{index}/tts
+            Method: get
+            Auth:
+              Authorizer: NONE
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+        'environment': !Ref Environment
+
+  GetTtsByIdLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetTtsByIdFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetTtsByIdFunction}
+      RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
+
+  GetTtsByIdLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetTtsByIdLogGroup
+
   GetRandomFunction:
     Type: AWS::Serverless::Function
     Properties:
