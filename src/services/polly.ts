@@ -3,12 +3,12 @@ import { SynthesizeSpeechOutput } from 'aws-sdk/clients/polly'
 
 import { Joke } from '../types'
 
-const polly = new Polly({ apiVersion: '2016-06-10', region: 'us-east-1' })
+const polly = new Polly({ apiVersion: '2016-06-10' })
 
 export const synthesizeSpeech = (joke: Joke): Promise<SynthesizeSpeechOutput> =>
   polly
     .synthesizeSpeech({
-      Engine: 'neural',
+      Engine: 'standard',
       LanguageCode: 'en-US',
       OutputFormat: 'ogg_vorbis',
       Text: joke.contents,

@@ -17,7 +17,7 @@ describe('polly', () => {
     test('expect text passed to synthesizeSpeech', async () => {
       await synthesizeSpeech(joke)
       expect(mockSynthesizeSpeech).toHaveBeenCalledWith({
-        Engine: 'neural',
+        Engine: 'standard',
         LanguageCode: 'en-US',
         OutputFormat: 'ogg_vorbis',
         Text: joke.contents,

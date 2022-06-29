@@ -3,7 +3,7 @@ import { mocked } from 'jest-mock'
 import * as dynamodb from '@services/dynamodb'
 import * as events from '@utils/events'
 import * as polly from '@services/polly'
-import { joke, synthesizeSpeechResult } from '../__mocks__'
+import { index, joke, jokeWithAudio, synthesizeSpeechResult } from '../__mocks__'
 import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/get-tts-by-id.json'
 import { getByIdHandler } from '@handlers/get-tts-by-id'
@@ -19,6 +19,7 @@ describe('get-tts-by-id', () => {
 
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(events).getIdFromEvent.mockReturnValue(index)
     mocked(polly).synthesizeSpeech.mockResolvedValue(synthesizeSpeechResult)
   })
 
@@ -37,13 +38,30 @@ describe('get-tts-by-id', () => {
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
+    test('expect OK and result when audio exists', async () => {
+      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithAudio)
+      const result = await getByIdHandler(event)
+
+      expect(mocked(polly).synthesizeSpeech).toHaveBeenCalledTimes(0)
+      expect(result).toEqual(
+        expect.objectContaining({
+          ...status.OK,
+          headers: {
+            'content-type': 'text/plain',
+          },
+          isBase64Encoded: true,
+        })
+      )
+      expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
+    })
+
     test('expect INTERNAL_SERVER_ERROR when synthesizeSpeech rejects', async () => {
       mocked(polly).synthesizeSpeech.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
       expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
     })
 
-    test('expect OK when index exists', async () => {
+    test('expect OK when no audio exists', async () => {
       const result = await getByIdHandler(event)
       expect(result).toEqual(
         expect.objectContaining({
@@ -55,6 +73,11 @@ describe('get-tts-by-id', () => {
         })
       )
       expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
+    })
+
+    test('expect setDataByIndex invoked when no audio exists', async () => {
+      await getByIdHandler(event)
+      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
     })
   })
 })

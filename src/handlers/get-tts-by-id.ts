@@ -1,29 +1,45 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
+import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
-import { getDataByIndex } from '../services/dynamodb'
 import { getIdFromEvent } from '../utils/events'
 import status from '../utils/status'
 import { synthesizeSpeech } from '../services/polly'
 
-const synthesize = async (joke: Joke): Promise<APIGatewayProxyResultV2<any>> => {
+const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> => {
+  if (joke.audio !== undefined) {
+    return joke
+  }
+
   try {
     const speech = await synthesizeSpeech(joke)
-    return {
-      ...status.OK,
-      body: speech.AudioStream.toString('base64'),
-      headers: { 'content-type': speech.ContentType },
-      isBase64Encoded: true,
+    const jokeWithAudio = {
+      ...joke,
+      audio: {
+        contentType: speech.ContentType,
+        data: speech.AudioStream.toString('base64'),
+      },
     }
+    await setDataByIndex(index, jokeWithAudio)
+    return jokeWithAudio
   } catch (error) {
     logError(error)
-    return status.INTERNAL_SERVER_ERROR
+    return undefined
   }
 }
 
 const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<any>> => {
   try {
     const joke = (await getDataByIndex(index)) as Joke
-    return synthesize(joke)
+    const jokeWithAudio = await synthesize(index, joke)
+    if (jokeWithAudio === undefined) {
+      return status.INTERNAL_SERVER_ERROR
+    }
+    return {
+      ...status.OK,
+      body: jokeWithAudio.audio?.data,
+      headers: { 'content-type': jokeWithAudio.audio?.contentType },
+      isBase64Encoded: true,
+    }
   } catch (error) {
     return status.NOT_FOUND
   }

@@ -2,10 +2,10 @@ import { mocked } from 'jest-mock'
 
 import * as dynamodb from '@services/dynamodb'
 import * as events from '@utils/events'
+import { index, joke } from '../__mocks__'
 import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/get-by-id.json'
 import { getByIdHandler } from '@handlers/get-by-id'
-import { joke } from '../__mocks__'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')
@@ -17,6 +17,7 @@ describe('get-by-id', () => {
 
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(events).getIdFromEvent.mockReturnValue(index)
   })
 
   describe('getByIdHandler', () => {
@@ -36,7 +37,7 @@ describe('get-by-id', () => {
 
     test('expect OK when index exists', async () => {
       const result = await getByIdHandler(event)
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify(joke) })
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...joke, index }) })
     })
   })
 })

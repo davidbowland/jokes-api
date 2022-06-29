@@ -5,7 +5,13 @@ export interface Index {
   count: number
 }
 
+export interface JokeAudio {
+  contentType: string
+  data: string
+}
+
 export interface Joke {
+  audio?: JokeAudio
   contents: string
 }
 
