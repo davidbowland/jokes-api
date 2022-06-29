@@ -1,6 +1,6 @@
 {
   "name": "jokes-api",
-  "version": "1.40.0",
+  "version": "1.41.0",
   "description": "Lambda jokes API",
   "author": "David Bowland",
   "engines": {
