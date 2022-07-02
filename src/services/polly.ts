@@ -2,8 +2,9 @@ import { Polly } from 'aws-sdk'
 import { SynthesizeSpeechOutput } from 'aws-sdk/clients/polly'
 
 import { Joke } from '../types'
+import { xrayCapture } from '../utils/logging'
 
-const polly = new Polly({ apiVersion: '2016-06-10' })
+const polly = xrayCapture(new Polly({ apiVersion: '2016-06-10' }))
 
 export const synthesizeSpeech = (joke: Joke): Promise<SynthesizeSpeechOutput> =>
   polly
