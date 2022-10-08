@@ -26,7 +26,7 @@ export const putItemHandler = async (event: APIGatewayProxyEventV2): Promise<API
     const joke = extractJokeFromEvent(event)
     const result = await setJoke(index, joke)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

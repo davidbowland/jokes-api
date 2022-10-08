@@ -24,7 +24,7 @@ export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchO
   parseEventBody(event) as PatchOperation[]
 
 export const getIdFromEvent = (event: APIGatewayProxyEventV2): number => {
-  const id = parseInt(event.pathParameters?.index, 10)
+  const id = parseInt(event.pathParameters?.index as string, 10)
   if (isNaN(id)) {
     throw new Error('Invalid joke index')
   }

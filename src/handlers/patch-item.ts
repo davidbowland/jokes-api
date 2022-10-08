@@ -27,7 +27,7 @@ const patchById = async (index: number, patchOperations: PatchOperation[]): Prom
     const joke = (await getDataByIndex(index)) as Joke
     try {
       return await applyJsonPatch(joke, index, patchOperations)
-    } catch (error) {
+    } catch (error: any) {
       return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
     }
   } catch {
@@ -42,7 +42,7 @@ export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<A
     const patchOperations = extractJsonPatchFromEvent(event)
     const result = await patchById(index, patchOperations)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

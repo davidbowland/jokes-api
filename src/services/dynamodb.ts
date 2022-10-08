@@ -22,7 +22,7 @@ export const deleteDataByIndex = (index: number): Promise<DynamoDB.Types.DeleteI
 
 /* Get single item */
 
-export const getDataByIndex = (index: number): Promise<unknown> =>
+export const getDataByIndex = (index: number): Promise<any> =>
   dynamodb
     .getItem({
       Key: {
@@ -33,13 +33,16 @@ export const getDataByIndex = (index: number): Promise<unknown> =>
       TableName: dynamodbTableName,
     })
     .promise()
-    .then((response) => response.Item.Data.S)
+    .then((response: any) => response.Item.Data.S)
     .then(JSON.parse)
 
 /* Batch get items */
 
 const getItemsFromBatch = (items: DynamoDB.Types.AttributeMap[]): JokeBatch =>
-  items.reduce((result, item) => ({ ...result, [item.Index.N]: JSON.parse(item.Data.S) }), {} as JokeBatch)
+  items.reduce(
+    (result, item) => ({ ...result, [item.Index.N as string]: JSON.parse(item.Data.S as string) }),
+    {} as JokeBatch
+  )
 
 export const getDataByIndexBatch = (indexes: number[]): Promise<JokeBatch> =>
   dynamodb
@@ -55,7 +58,7 @@ export const getDataByIndexBatch = (indexes: number[]): Promise<JokeBatch> =>
       },
     })
     .promise()
-    .then((response) => response.Responses[dynamodbTableName])
+    .then((response: any) => response.Responses[dynamodbTableName])
     .then(getItemsFromBatch)
 
 /* Get highest index */
@@ -68,11 +71,13 @@ export const getHighestIndex = (): Promise<number> =>
 /* Scan for items */
 
 const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): JokeBatch[] =>
-  response.Items.reduce(
+  response.Items?.reduce(
     (result, item) =>
-      item.Index.N !== '0' ? [...result, { data: JSON.parse(item.Data.S), id: parseInt(item.Index.N, 10) }] : result,
+      item.Index.N !== '0'
+        ? [...result, { data: JSON.parse(item.Data.S as string), id: parseInt(item.Index.N as string, 10) }]
+        : result,
     [] as JokeBatch[]
-  )
+  ) as JokeBatch[]
 
 export const scanData = (): Promise<JokeBatch[]> =>
   dynamodb
@@ -81,7 +86,7 @@ export const scanData = (): Promise<JokeBatch[]> =>
       TableName: dynamodbTableName,
     })
     .promise()
-    .then((response) => getItemsFromScan(response))
+    .then((response: any) => getItemsFromScan(response))
 
 /* Set item */
 

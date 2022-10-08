@@ -24,7 +24,7 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
       logError(error)
       return status.INTERNAL_SERVER_ERROR
     }
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

@@ -16,7 +16,8 @@ const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBa
 export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
   log('Received event', { ...event, body: undefined })
   const count =
-    Math.max(Math.min(parseInt(event.queryStringParameters?.count, 10), randomCountMaximum), 1) || randomCountMaximum
+    Math.max(Math.min(parseInt(event.queryStringParameters?.count as string, 10), randomCountMaximum), 1) ||
+    randomCountMaximum
   const filterList = (event.queryStringParameters?.avoid?.split(',') ?? [])
     .map((value) => parseInt(value, 10))
     .slice(0, count)

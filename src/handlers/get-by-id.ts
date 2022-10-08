@@ -19,7 +19,7 @@ export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<API
     const index = getIdFromEvent(event)
     const result = await fetchById(index)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

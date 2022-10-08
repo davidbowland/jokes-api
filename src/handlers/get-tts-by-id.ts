@@ -16,9 +16,9 @@ const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> 
       ...joke,
       audio: {
         contentType: speech.ContentType,
-        data: speech.AudioStream.toString('base64'),
+        data: speech.AudioStream?.toString('base64'),
       },
-    }
+    } as any
     await setDataByIndex(index, jokeWithAudio)
     return jokeWithAudio
   } catch (error) {
@@ -51,7 +51,7 @@ export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<API
     const index = getIdFromEvent(event)
     const result = await fetchById(index)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }

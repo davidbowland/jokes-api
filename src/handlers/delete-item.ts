@@ -39,7 +39,7 @@ export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<
     const index = getIdFromEvent(event)
     const result = await fetchDataThenDelete(index)
     return result
-  } catch (error) {
+  } catch (error: any) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
   }
 }
