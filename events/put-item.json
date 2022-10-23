@@ -6,7 +6,7 @@
   "requestContext": {
     "http": {
       "method": "PUT",
-      "path": "/v1/jokes"
+      "path": "/v1/jokes/42"
     }
   }
 }

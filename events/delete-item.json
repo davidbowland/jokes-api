@@ -5,7 +5,7 @@
   "requestContext": {
     "http": {
       "method": "DELETE",
-      "path": "/v1/jokes"
+      "path": "/v1/jokes/42"
     }
   }
 }
