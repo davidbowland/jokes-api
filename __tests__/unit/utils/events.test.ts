@@ -9,18 +9,18 @@ describe('events', () => {
   describe('extractJokeFromEvent', () => {
     const event = putEventJson as unknown as APIGatewayProxyEventV2
 
-    test('expect joke from event', async () => {
-      const result = await extractJokeFromEvent(event)
+    test('expect joke from event', () => {
+      const result = extractJokeFromEvent(event)
       expect(result).toEqual(joke)
     })
 
-    test('expect joke from event in base64', async () => {
+    test('expect joke from event in base64', () => {
       const tempEvent = {
         ...event,
         body: Buffer.from(event.body).toString('base64'),
         isBase64Encoded: true,
       } as unknown as APIGatewayProxyEventV2
-      const result = await extractJokeFromEvent(tempEvent)
+      const result = extractJokeFromEvent(tempEvent)
       expect(result).toEqual(joke)
     })
 
@@ -29,27 +29,27 @@ describe('events', () => {
       expect(() => extractJokeFromEvent(tempEvent)).toThrow()
     })
 
-    test('expect joke to be formatted', async () => {
-      const tempEmail = {
+    test('expect joke to be formatted', () => {
+      const tempJoke = {
         ...joke,
         foo: 'bar',
       }
-      const tempEvent = { ...event, body: JSON.stringify(tempEmail) } as unknown as APIGatewayProxyEventV2
-      const result = await extractJokeFromEvent(tempEvent)
+      const tempEvent = { ...event, body: JSON.stringify(tempJoke) } as unknown as APIGatewayProxyEventV2
+      const result = extractJokeFromEvent(tempEvent)
       expect(result).toEqual(joke)
     })
   })
 
   describe('extractJsonPatchFromEvent', () => {
-    test('expect preference from event', async () => {
-      const result = await extractJsonPatchFromEvent(patchEventJson as unknown as APIGatewayProxyEventV2)
+    test('expect preference from event', () => {
+      const result = extractJsonPatchFromEvent(patchEventJson as unknown as APIGatewayProxyEventV2)
       expect(result).toEqual(jsonPatchOperations)
     })
   })
 
   describe('getIdFromEvent', () => {
-    test('expect ID from event', async () => {
-      const result = await getIdFromEvent(getEventJson as unknown as APIGatewayProxyEventV2)
+    test('expect ID from event', () => {
+      const result = getIdFromEvent(getEventJson as unknown as APIGatewayProxyEventV2)
       expect(result).toEqual(index)
     })
 
