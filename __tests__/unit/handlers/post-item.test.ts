@@ -17,7 +17,6 @@ describe('post-item', () => {
 
   beforeAll(() => {
     mocked(dynamodb).getHighestIndex.mockResolvedValue(index - 1)
-    mocked(dynamodb).setDataByIndex.mockResolvedValue(undefined)
     mocked(events).extractJokeFromEvent.mockReturnValue(joke)
   })
 

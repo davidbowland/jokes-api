@@ -17,7 +17,6 @@ describe('delete-item', () => {
   const highestIndex = index * 2
 
   beforeAll(() => {
-    mocked(dynamodb).deleteDataByIndex.mockResolvedValue(undefined)
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
     mocked(dynamodb).getHighestIndex.mockResolvedValue(highestIndex)
     mocked(events).getIdFromEvent.mockReturnValue(index)

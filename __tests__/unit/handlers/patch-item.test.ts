@@ -18,7 +18,6 @@ describe('patch-item', () => {
 
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
-    mocked(dynamodb).setDataByIndex.mockResolvedValue(undefined)
     mocked(events).extractJsonPatchFromEvent.mockImplementation((event) => JSON.parse(event.body))
     mocked(events).getIdFromEvent.mockReturnValue(index)
   })
@@ -44,14 +43,6 @@ describe('patch-item', () => {
       mocked(events).extractJsonPatchFromEvent.mockReturnValueOnce([
         { op: 'replace', path: '/fnord' },
       ] as unknown[] as PatchOperation[])
-      const result = await patchItemHandler(event)
-      expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
-    })
-
-    test('expect BAD_REQUEST when extractJsonPatchFromEvent throws', async () => {
-      mocked(events).extractJsonPatchFromEvent.mockImplementationOnce(() => {
-        throw new Error('Bad request')
-      })
       const result = await patchItemHandler(event)
       expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
     })

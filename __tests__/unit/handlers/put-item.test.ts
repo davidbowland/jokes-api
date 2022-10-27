@@ -17,7 +17,6 @@ describe('put-item', () => {
 
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
-    mocked(dynamodb).setDataByIndex.mockResolvedValue(undefined)
     mocked(events).extractJokeFromEvent.mockReturnValue(joke)
     mocked(events).getIdFromEvent.mockReturnValue(index)
   })
