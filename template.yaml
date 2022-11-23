@@ -349,7 +349,7 @@ Resources:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
           RANDOM_COUNT_MAXIMUM: 10
       Events:
-        NoAuth:
+        Api:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
@@ -504,65 +504,6 @@ Resources:
         - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref PostLogGroup
-
-  PutItemFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: handlers/put-item.putItemHandler
-      CodeUri: './dist'
-      Runtime: nodejs16.x
-      Architectures:
-        - x86_64
-      MemorySize: 128
-      Description: jokes-api put item
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
-            TableName: !Ref JokesTable
-      Environment:
-        Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
-      Events:
-        Api:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApi
-            Path: /jokes/{index}
-            Method: put
-            Auth:
-              Authorizer: CognitoAuthorizer
-      Tags:
-        'created-by': 'jokes-api'
-        'created-for': 'jokes'
-        'environment': !Ref Environment
-      Timeout: 10
-      Tracing: Active
-
-  PutLogGroup:
-    Type: AWS::Logs::LogGroup
-    DependsOn: PutItemFunction
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${PutItemFunction}
-      RetentionInDays: 30
-      Tags:
-        - Key: 'created-by'
-          Value: 'jokes-api'
-        - Key: 'created-for'
-          Value: 'jokes'
-        - Key: 'environment'
-          Value: !Ref Environment
-
-  PutLogGroupSubscription:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      DestinationArn: !Sub
-        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
-        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
-      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
-      LogGroupName: !Ref PutLogGroup
 
   # Database
 

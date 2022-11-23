@@ -3,11 +3,11 @@ import { index, joke, jsonPatchOperations } from '../__mocks__'
 import { APIGatewayProxyEventV2 } from '@types'
 import getEventJson from '@events/get-by-id.json'
 import patchEventJson from '@events/patch-item.json'
-import putEventJson from '@events/put-item.json'
+import postEventJson from '@events/post-item.json'
 
 describe('events', () => {
   describe('extractJokeFromEvent', () => {
-    const event = putEventJson as unknown as APIGatewayProxyEventV2
+    const event = postEventJson as unknown as APIGatewayProxyEventV2
 
     test('expect joke from event', () => {
       const result = extractJokeFromEvent(event)
