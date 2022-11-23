@@ -17,18 +17,22 @@ Parameters:
 Mappings:
   EnvironmentMap:
     prod:
-      certificate: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
+      certificateEdge: adce1a21-90b4-4120-8548-111215e582f0
+      certificateRegional: 5d4db894-c9fc-42ca-8f80-3c5da6c1678e
       corsDomain: https://jokes.dbowland.com
       domain: jokes-api.dbowland.com
+      domainInternal: jokes-api-internal.dbowland.com
       logStreamFunction: log-subscriber
       table: jokes-api
       userPool: us-east-2_cPuwPJkP8
       userPoolClient: 5mujt7f6h9jh6pudk0t8ekngu
       zoneId: Z072422417XWM8PIXXSFA
     test:
-      certificate: 14a32175-0c26-4768-b71f-3fa611b8f5a2
+      certificateEdge: 6a48cba7-feb9-4de5-8cbf-d383140fcdef
+      certificateRegional: 14a32175-0c26-4768-b71f-3fa611b8f5a2
       corsDomain: https://jokes.bowland.link
       domain: jokes-api.bowland.link
+      domainInternal: jokes-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
       table: jokes-api-test
       userPool: us-east-2_BwzCUS5q1
@@ -38,10 +42,29 @@ Mappings:
 Resources:
   # API Gateway
 
+  Api:
+    Type: AWS::Serverless::Api
+    Properties:
+      StageName: v1
+      Auth:
+        ApiKeyRequired: true # sets for all methods
+        UsagePlan:
+          CreateUsagePlan: PER_API
+          Description: Usage plan for emails-email-api
+      Domain:
+        DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domainInternal]
+        CertificateArn: !Sub
+          - 'arn:aws:acm:us-east-1:${AWS::AccountId}:certificate/${Certificate}'
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificateEdge]
+        EndpointConfiguration: EDGE
+        Route53:
+          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
+        BasePath:
+          - /v1
+
   HttpApi:
     Type: AWS::Serverless::HttpApi
     Properties:
-      StageName: v1
       Auth:
         Authorizers:
           CognitoAuthorizer:
@@ -74,13 +97,23 @@ Resources:
         BasePath:
           - /v1
         CertificateArn: !Sub
-          - 'arn:aws:acm:us-east-2:${AWS::AccountId}:certificate/${Certificate}'
-          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificate]
+          - 'arn:aws:acm:${AWS::Region}:${AWS::AccountId}:certificate/${Certificate}'
+          - Certificate: !FindInMap [EnvironmentMap, !Ref Environment, certificateRegional]
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domain]
         EndpointConfiguration: REGIONAL
-        Route53:
-          HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
       FailOnWarnings: true
+      StageName: v1
+
+  # SAM won't create two Route53 records, so the HttpApi domain name is created separately
+  HttpRecordSet:
+    Type: AWS::Route53::RecordSet
+    Properties:
+      AliasTarget:
+        DNSName: !Sub '${HttpApi.DomainName.RegionalDomainName}'
+        HostedZoneId: !Sub '${HttpApi.DomainName.RegionalHostedZoneId}'
+      HostedZoneId: !FindInMap [EnvironmentMap, !Ref Environment, zoneId]
+      Name: !FindInMap [EnvironmentMap, !Ref Environment, domain]
+      Type: A
 
   # Lambda
 
@@ -100,12 +133,17 @@ Resources:
             TableName: !Ref JokesTable
       Environment:
         Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
-        Api:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}
+            Method: delete
+            Auth:
+              ApiKeyRequired: true
+        Http:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
@@ -159,12 +197,17 @@ Resources:
             TableName: !Ref JokesTable
       Environment:
         Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
-        Api:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
@@ -218,12 +261,17 @@ Resources:
             TableName: !Ref JokesTable
       Environment:
         Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
-        Api:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
@@ -284,12 +332,17 @@ Resources:
               Resource: '*'
       Environment:
         Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
-        Api:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}/tts
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
@@ -343,13 +396,18 @@ Resources:
             TableName: !Ref JokesTable
       Environment:
         Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
           RANDOM_COUNT_MAXIMUM: 10
       Events:
-        Api:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/random
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
@@ -403,12 +461,17 @@ Resources:
             TableName: !Ref JokesTable
       Environment:
         Variables:
-          API_URL: !Sub
-            - 'https://${Domain}/v1/jokes'
-            - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
-        Api:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/{index}
+            Method: patch
+            Auth:
+              ApiKeyRequired: true
+        Http:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
@@ -467,7 +530,15 @@ Resources:
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
       Events:
-        Api:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes
+            Method: post
+            Auth:
+              ApiKeyRequired: true
+        Http:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
