@@ -56,7 +56,7 @@ describe('patch-item', () => {
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
       mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
+      expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect setDataByIndex called with updated object', async () => {

@@ -278,7 +278,7 @@ Resources:
             Path: /jokes/{index}
             Method: get
             Auth:
-              Authorizer: CognitoAuthorizer
+              Authorizer: NONE
       Tags:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
@@ -379,6 +379,70 @@ Resources:
         - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetTtsByIdLogGroup
+
+  GetCountFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-count.getCountHandler
+      CodeUri: './dist'
+      Runtime: nodejs16.x
+      Architectures:
+        - x86_64
+      MemorySize: 128
+      Description: jokes-api get joke count
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/count
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /jokes/count
+            Method: get
+            Auth:
+              Authorizer: NONE
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+        'environment': !Ref Environment
+      Timeout: 10
+      Tracing: Active
+
+  GetCountLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetCountFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetCountFunction}
+      RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
+
+  GetCountLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetCountLogGroup
 
   GetRandomFunction:
     Type: AWS::Serverless::Function

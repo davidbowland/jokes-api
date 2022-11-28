@@ -37,7 +37,7 @@ describe('post-item', () => {
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
       mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
       const result = await postItemHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
+      expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect setHighestIndex called with new index', async () => {
@@ -48,7 +48,7 @@ describe('post-item', () => {
     test('expect INTERNAL_SERVER_ERROR on setHighestIndex reject', async () => {
       mocked(dynamodb).setHighestIndex.mockRejectedValueOnce(undefined)
       const result = await postItemHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
+      expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect CREATED and body', async () => {

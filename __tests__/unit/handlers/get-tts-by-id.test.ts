@@ -58,7 +58,7 @@ describe('get-tts-by-id', () => {
     test('expect INTERNAL_SERVER_ERROR when synthesizeSpeech rejects', async () => {
       mocked(polly).synthesizeSpeech.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
+      expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect OK when no audio exists', async () => {

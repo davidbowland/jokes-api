@@ -21,7 +21,7 @@ describe('get-all-items', () => {
     test('expect INTERNAL_SERVER_ERROR on scanData reject', async () => {
       mocked(dynamodb).scanData.mockRejectedValueOnce(undefined)
       const result = await getAllItemsHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
+      expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect OK and data', async () => {

@@ -12,16 +12,11 @@ jest.mock('@utils/logging')
 
 describe('get-random', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
-  const mathRandom = Math.random
 
   beforeAll(() => {
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
     mocked(dynamodb).getHighestIndex.mockResolvedValue(102)
     Math.random = jest.fn().mockReturnValue(index / 100)
-  })
-
-  afterAll(() => {
-    Math.random = mathRandom
   })
 
   describe('getRandomHandler', () => {
@@ -34,7 +29,7 @@ describe('get-random', () => {
     test('expect INTERNAL_SERVER_ERROR on getDataByIndex reject', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await getRandomHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
+      expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect OK and joke', async () => {

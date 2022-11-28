@@ -34,13 +34,13 @@ describe('delete-item', () => {
     test('expect INTERNAL_SERVER_ERROR on deleteDataByIndex reject', async () => {
       mocked(dynamodb).deleteDataByIndex.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.INTERNAL_SERVER_ERROR))
+      expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect NO_CONTENT when index is higher than max index', async () => {
       mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(index - 2)
       const result = await deleteByIdHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.NO_CONTENT))
+      expect(result).toEqual(status.NO_CONTENT)
     })
 
     test('expect setDataByIndex not called when index == highestIndex', async () => {
@@ -72,7 +72,7 @@ describe('delete-item', () => {
     test('expect NO_CONTENT when index does not exist', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
-      expect(result).toEqual(expect.objectContaining(status.NO_CONTENT))
+      expect(result).toEqual(status.NO_CONTENT)
     })
   })
 })
