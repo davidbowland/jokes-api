@@ -9,19 +9,17 @@ import {
 } from '@services/dynamodb'
 import { index, joke } from '../__mocks__'
 
-const mockBatchGetItem = jest.fn()
-const mockDeleteItem = jest.fn()
-const mockGetItem = jest.fn()
-const mockPutItem = jest.fn()
-const mockScanTable = jest.fn()
-jest.mock('aws-sdk', () => ({
+const mockSend = jest.fn()
+jest.mock('@aws-sdk/client-dynamodb', () => ({
+  BatchGetItemCommand: jest.fn().mockImplementation((x) => x),
+  DeleteItemCommand: jest.fn().mockImplementation((x) => x),
   DynamoDB: jest.fn(() => ({
-    batchGetItem: (...args) => ({ promise: () => mockBatchGetItem(...args) }),
-    deleteItem: (...args) => ({ promise: () => mockDeleteItem(...args) }),
-    getItem: (...args) => ({ promise: () => mockGetItem(...args) }),
-    putItem: (...args) => ({ promise: () => mockPutItem(...args) }),
-    scan: (...args) => ({ promise: () => mockScanTable(...args) }),
+    send: (...args) => mockSend(...args),
   })),
+  GetItemCommand: jest.fn().mockImplementation((x) => x),
+  PutItemCommand: jest.fn().mockImplementation((x) => x),
+  QueryCommand: jest.fn().mockImplementation((x) => x),
+  ScanCommand: jest.fn().mockImplementation((x) => x),
 }))
 jest.mock('@utils/logging', () => ({
   xrayCapture: jest.fn().mockImplementation((x) => x),
@@ -31,32 +29,38 @@ describe('dynamodb', () => {
   describe('deleteDataByIndex', () => {
     test('expect index passed to delete', async () => {
       await deleteDataByIndex(index)
-      expect(mockDeleteItem).toHaveBeenCalledWith({
-        Key: {
-          Index: {
-            N: `${index}`,
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            Index: {
+              N: `${index}`,
+            },
           },
-        },
-        TableName: 'jokes-table',
-      })
+          TableName: 'jokes-table',
+        })
+      )
     })
   })
 
   describe('getDataByIndex', () => {
     beforeAll(() => {
-      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify(joke) } } })
+      mockSend.mockResolvedValue({ Item: { Data: { S: JSON.stringify(joke) } } })
     })
 
     test('expect index passed to get', async () => {
       await getDataByIndex(index)
-      expect(mockGetItem).toHaveBeenCalledWith({
-        Key: {
-          Index: {
-            N: `${index}`,
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            Index: {
+              N: `${index}`,
+            },
           },
-        },
-        TableName: 'jokes-table',
-      })
+          TableName: 'jokes-table',
+        })
+      )
     })
 
     test('expect data parsed and returned', async () => {
@@ -67,26 +71,29 @@ describe('dynamodb', () => {
 
   describe('getDataByIndexBatch', () => {
     beforeAll(() => {
-      mockBatchGetItem.mockResolvedValue({
+      mockSend.mockResolvedValue({
         Responses: { 'jokes-table': [{ Data: { S: JSON.stringify(joke) }, Index: { N: `${index}` } }] },
       })
     })
 
     test('expect index passed to get', async () => {
       await getDataByIndexBatch([index])
-      expect(mockBatchGetItem).toHaveBeenCalledWith({
-        RequestItems: {
-          'jokes-table': {
-            Keys: [
-              {
-                Index: {
-                  N: `${index}`,
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          RequestItems: {
+            'jokes-table': {
+              Keys: [
+                {
+                  Index: {
+                    N: `${index}`,
+                  },
                 },
-              },
-            ],
+              ],
+            },
           },
-        },
-      })
+        })
+      )
     })
 
     test('expect data parsed and returned', async () => {
@@ -97,30 +104,39 @@ describe('dynamodb', () => {
 
   describe('getHighestIndex', () => {
     beforeAll(() => {
-      mockGetItem.mockResolvedValue({ Item: { Data: { S: JSON.stringify({ count: index }) } } })
+      mockSend.mockResolvedValue({ Item: { Data: { S: JSON.stringify({ count: index }) } } })
     })
 
     test('expect index passed to get', async () => {
       await getHighestIndex()
-      expect(mockGetItem).toHaveBeenCalledWith({
-        Key: {
-          Index: {
-            N: '0',
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            Index: {
+              N: '0',
+            },
           },
-        },
-        TableName: 'jokes-table',
-      })
+          TableName: 'jokes-table',
+        })
+      )
     })
 
     test('expect data parsed and returned', async () => {
       const result = await getHighestIndex()
       expect(result).toEqual(index)
     })
+
+    test('expect zero when get rejects', async () => {
+      mockSend.mockRejectedValueOnce(undefined)
+      const result = await getHighestIndex()
+      expect(result).toEqual(0)
+    })
   })
 
   describe('scanData', () => {
     beforeAll(() => {
-      mockScanTable.mockResolvedValue({
+      mockSend.mockResolvedValue({
         Items: [
           { Data: { S: JSON.stringify({ count: index }) }, Index: { N: '0' } },
           { Data: { S: JSON.stringify(joke) }, Index: { N: `${index}` } },
@@ -134,7 +150,7 @@ describe('dynamodb', () => {
     })
 
     test('expect empty object with no data returned', async () => {
-      mockScanTable.mockResolvedValueOnce({ Items: [] })
+      mockSend.mockResolvedValueOnce({ Items: [] })
       const result = await scanData()
       expect(result).toEqual([])
     })
@@ -143,17 +159,20 @@ describe('dynamodb', () => {
   describe('setDataByIndex', () => {
     test('expect index and data passed to put', async () => {
       await setDataByIndex(index, joke)
-      expect(mockPutItem).toHaveBeenCalledWith({
-        Item: {
-          Data: {
-            S: JSON.stringify(joke),
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Item: {
+            Data: {
+              S: JSON.stringify(joke),
+            },
+            Index: {
+              N: `${index}`,
+            },
           },
-          Index: {
-            N: `${index}`,
-          },
-        },
-        TableName: 'jokes-table',
-      })
+          TableName: 'jokes-table',
+        })
+      )
     })
   })
 
@@ -162,17 +181,20 @@ describe('dynamodb', () => {
 
     test('expect index and count passed to put', async () => {
       await setHighestIndex(count)
-      expect(mockPutItem).toHaveBeenCalledWith({
-        Item: {
-          Data: {
-            S: JSON.stringify({ count }),
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Item: {
+            Data: {
+              S: JSON.stringify({ count }),
+            },
+            Index: {
+              N: '0',
+            },
           },
-          Index: {
-            N: '0',
-          },
-        },
-        TableName: 'jokes-table',
-      })
+          TableName: 'jokes-table',
+        })
+      )
     })
   })
 })

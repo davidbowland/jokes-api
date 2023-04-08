@@ -1,5 +1,6 @@
-import { Joke, PatchOperation } from '@types'
-import { SynthesizeSpeechOutput } from 'aws-sdk/clients/polly'
+import { Joke, JokeAudio, PatchOperation } from '@types'
+import { Readable } from 'stream'
+import { SynthesizeSpeechOutput } from '@aws-sdk/client-polly'
 
 export const index = 42
 
@@ -7,17 +8,19 @@ export const joke: Joke = {
   contents: 'ROFL',
 }
 
-export const synthesizeSpeechResult: SynthesizeSpeechOutput = {
-  AudioStream: Buffer.from(joke.contents, 'utf-8'),
+export const synthesizeSpeechOutput: SynthesizeSpeechOutput = {
+  AudioStream: Buffer.from('ROFL') as unknown as Readable,
   ContentType: 'text/plain',
+}
+
+export const synthesizeSpeechResult: JokeAudio = {
+  base64: Buffer.from('ROFL').toString('base64'),
+  contentType: 'text/plain',
 }
 
 export const jokeWithAudio: Joke = {
   ...joke,
-  audio: {
-    contentType: synthesizeSpeechResult.ContentType,
-    data: synthesizeSpeechResult.AudioStream.toString('base64'),
-  },
+  audio: synthesizeSpeechResult,
 }
 
 export const jsonPatchOperations: PatchOperation[] = [{ op: 'replace', path: '/contents', value: 'LOL' }]

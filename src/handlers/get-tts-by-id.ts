@@ -11,14 +11,14 @@ const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> 
   }
 
   try {
-    const speech = await synthesizeSpeech(joke)
-    const jokeWithAudio = {
+    const { base64, contentType } = await synthesizeSpeech(joke)
+    const jokeWithAudio: Joke = {
       ...joke,
       audio: {
-        contentType: speech.ContentType,
-        data: speech.AudioStream?.toString('base64'),
+        base64,
+        contentType,
       },
-    } as any
+    }
     await setDataByIndex(index, jokeWithAudio)
     return jokeWithAudio
   } catch (error) {
@@ -36,7 +36,7 @@ const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<any>> =
     }
     return {
       ...status.OK,
-      body: jokeWithAudio.audio?.data,
+      body: jokeWithAudio.audio?.base64,
       headers: { 'content-type': jokeWithAudio.audio?.contentType },
       isBase64Encoded: true,
     }

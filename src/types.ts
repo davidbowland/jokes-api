@@ -5,14 +5,14 @@ export interface Index {
   count: number
 }
 
-export interface JokeAudio {
-  contentType: string
-  data: string
-}
-
 export interface Joke {
   audio?: JokeAudio
   contents: string
+}
+
+export interface JokeAudio {
+  base64: string
+  contentType: string
 }
 
 export interface JokeBatch {

@@ -1,4 +1,14 @@
-import { DynamoDB } from 'aws-sdk'
+import {
+  BatchGetItemCommand,
+  DeleteItemCommand,
+  DeleteItemOutput,
+  DynamoDB,
+  GetItemCommand,
+  PutItemCommand,
+  PutItemOutput,
+  ScanCommand,
+  ScanOutput,
+} from '@aws-sdk/client-dynamodb'
 
 import { Index, JokeBatch } from '../types'
 import { dynamodbTableName } from '../config'
@@ -8,69 +18,71 @@ const dynamodb = xrayCapture(new DynamoDB({ apiVersion: '2012-08-10' }))
 
 /* Delete item */
 
-export const deleteDataByIndex = (index: number): Promise<DynamoDB.Types.DeleteItemOutput> =>
-  dynamodb
-    .deleteItem({
-      Key: {
-        Index: {
-          N: `${index}`,
-        },
+export const deleteDataByIndex = async (index: number): Promise<DeleteItemOutput> => {
+  const command = new DeleteItemCommand({
+    Key: {
+      Index: {
+        N: `${index}`,
       },
-      TableName: dynamodbTableName,
-    })
-    .promise()
+    },
+    TableName: dynamodbTableName,
+  })
+  return dynamodb.send(command)
+}
 
 /* Get single item */
 
-export const getDataByIndex = (index: number): Promise<any> =>
-  dynamodb
-    .getItem({
-      Key: {
-        Index: {
-          N: `${index}`,
-        },
+export const getDataByIndex = async (index: number): Promise<any> => {
+  const command = new GetItemCommand({
+    Key: {
+      Index: {
+        N: `${index}`,
       },
-      TableName: dynamodbTableName,
-    })
-    .promise()
-    .then((response: any) => response.Item.Data.S)
-    .then(JSON.parse)
+    },
+    TableName: dynamodbTableName,
+  })
+  const response = await dynamodb.send(command)
+  return JSON.parse(response.Item.Data.S)
+}
 
 /* Batch get items */
 
-const getItemsFromBatch = (items: DynamoDB.Types.AttributeMap[]): JokeBatch =>
+const getItemsFromBatch = (items: any[]): JokeBatch =>
   items.reduce(
     (result, item) => ({ ...result, [item.Index.N as string]: JSON.parse(item.Data.S as string) }),
     {} as JokeBatch
   )
 
-export const getDataByIndexBatch = (indexes: number[]): Promise<JokeBatch> =>
-  dynamodb
-    .batchGetItem({
-      RequestItems: {
-        [dynamodbTableName]: {
-          Keys: indexes.map((index: number) => ({
-            Index: {
-              N: `${index}`,
-            },
-          })),
-        },
+export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch> => {
+  const command = new BatchGetItemCommand({
+    RequestItems: {
+      [dynamodbTableName]: {
+        Keys: indexes.map((index: number) => ({
+          Index: {
+            N: `${index}`,
+          },
+        })),
       },
-    })
-    .promise()
-    .then((response: any) => response.Responses[dynamodbTableName])
-    .then(getItemsFromBatch)
+    },
+  })
+  const response = await dynamodb.send(command)
+  return getItemsFromBatch(response.Responses[dynamodbTableName])
+}
 
 /* Get highest index */
 
-export const getHighestIndex = (): Promise<number> =>
-  getDataByIndex(0)
-    .then((data: Index) => data.count)
-    .catch(() => 0)
+export const getHighestIndex = async (): Promise<number> => {
+  try {
+    const data: Index = await getDataByIndex(0)
+    return data.count
+  } catch (e) {
+    return 0
+  }
+}
 
 /* Scan for items */
 
-const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): JokeBatch[] =>
+const getItemsFromScan = (response: ScanOutput): JokeBatch[] =>
   response.Items?.reduce(
     (result, item) =>
       item.Index.N !== '0'
@@ -79,32 +91,32 @@ const getItemsFromScan = (response: DynamoDB.Types.ScanOutput): JokeBatch[] =>
     [] as JokeBatch[]
   ) as JokeBatch[]
 
-export const scanData = (): Promise<JokeBatch[]> =>
-  dynamodb
-    .scan({
-      AttributesToGet: ['Data', 'Index'],
-      TableName: dynamodbTableName,
-    })
-    .promise()
-    .then((response: any) => getItemsFromScan(response))
+export const scanData = async (): Promise<JokeBatch[]> => {
+  const command = new ScanCommand({
+    AttributesToGet: ['Data', 'Index'],
+    TableName: dynamodbTableName,
+  })
+  const response = await dynamodb.send(command)
+  return getItemsFromScan(response)
+}
 
 /* Set item */
 
-export const setDataByIndex = (index: number, data: unknown): Promise<DynamoDB.Types.PutItemOutput> =>
-  dynamodb
-    .putItem({
-      Item: {
-        Data: {
-          S: JSON.stringify(data),
-        },
-        Index: {
-          N: `${index}`,
-        },
+export const setDataByIndex = async (index: number, data: unknown): Promise<PutItemOutput> => {
+  const command = new PutItemCommand({
+    Item: {
+      Data: {
+        S: JSON.stringify(data),
       },
-      TableName: dynamodbTableName,
-    })
-    .promise()
+      Index: {
+        N: `${index}`,
+      },
+    },
+    TableName: dynamodbTableName,
+  })
+  return dynamodb.send(command)
+}
 
 /* Set highest index */
 
-export const setHighestIndex = (count: number): Promise<DynamoDB.Types.PutItemOutput> => setDataByIndex(0, { count })
+export const setHighestIndex = async (count: number): Promise<PutItemOutput> => setDataByIndex(0, { count })
