@@ -4,7 +4,7 @@
   "description": "Lambda jokes API",
   "author": "David Bowland",
   "engines": {
-    "node": "^16.0.0"
+    "node": "^18.0.0"
   },
   "license": "ISC",
   "repository": {
@@ -28,8 +28,8 @@
     "update": "ncu -u --doctor && npm audit fix --audit-level=none && npm run test && npm dedupe"
   },
   "dependencies": {
-    "@aws-sdk/client-dynamodb": "^3.312.0",
-    "@aws-sdk/client-polly": "^3.312.0",
+    "@aws-sdk/client-dynamodb": "^3.315.0",
+    "@aws-sdk/client-polly": "^3.315.0",
     "aws-xray-sdk-core": "^3.5.0",
     "fast-json-patch": "^3.1.1"
   },
@@ -40,8 +40,8 @@
     "@types/aws-lambda": "^8.10.114",
     "@types/jest": "^29.5.0",
     "@types/node": "^18.15.11",
-    "@typescript-eslint/eslint-plugin": "^5.58.0",
-    "@typescript-eslint/parser": "^5.58.0",
+    "@typescript-eslint/eslint-plugin": "^5.59.0",
+    "@typescript-eslint/parser": "^5.59.0",
     "babel-jest": "^29.5.0",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",

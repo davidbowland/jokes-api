@@ -122,7 +122,7 @@ Resources:
     Properties:
       Handler: handlers/delete-item.deleteByIdHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -186,7 +186,7 @@ Resources:
     Properties:
       Handler: handlers/get-all-items.getAllItemsHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -250,7 +250,7 @@ Resources:
     Properties:
       Handler: handlers/get-by-id.getByIdHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -314,7 +314,7 @@ Resources:
     Properties:
       Handler: handlers/get-tts-by-id.getByIdHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -385,7 +385,7 @@ Resources:
     Properties:
       Handler: handlers/get-count.getCountHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -449,7 +449,7 @@ Resources:
     Properties:
       Handler: handlers/get-random.getRandomHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -514,7 +514,7 @@ Resources:
     Properties:
       Handler: handlers/patch-item.patchItemHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
@@ -578,7 +578,7 @@ Resources:
     Properties:
       Handler: handlers/post-item.postItemHandler
       CodeUri: './dist'
-      Runtime: nodejs16.x
+      Runtime: nodejs18.x
       Architectures:
         - x86_64
       MemorySize: 128
