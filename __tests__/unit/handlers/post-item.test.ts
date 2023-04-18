@@ -26,38 +26,45 @@ describe('post-item', () => {
         throw new Error('Bad request')
       })
       const result = await postItemHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
     test('expect index passed to setDataByIndex from getHighestIndex', async () => {
       await postItemHandler(event)
+
       expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, joke)
     })
 
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
       mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
       const result = await postItemHandler(event)
+
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect setHighestIndex called with new index', async () => {
       await postItemHandler(event)
+
       expect(mocked(dynamodb).setHighestIndex).toHaveBeenCalledWith(index)
     })
 
     test('expect INTERNAL_SERVER_ERROR on setHighestIndex reject', async () => {
       mocked(dynamodb).setHighestIndex.mockRejectedValueOnce(undefined)
       const result = await postItemHandler(event)
+
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect CREATED and body', async () => {
       const result = await postItemHandler(event)
+
       expect(result).toEqual(expect.objectContaining({ ...status.CREATED, body: JSON.stringify({ ...joke, index }) }))
     })
 
     test('expect Location header', async () => {
       const result = await postItemHandler(event)
+
       expect(result).toEqual(
         expect.objectContaining({ headers: { Location: 'https://jokes-api.bowland.link/v1/jokes/42' } })
       )

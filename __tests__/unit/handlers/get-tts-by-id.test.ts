@@ -29,12 +29,14 @@ describe('get-tts-by-id', () => {
         throw new Error('Bad request')
       })
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
     test('expect NOT_FOUND when getDataByIndex rejects', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
@@ -58,11 +60,13 @@ describe('get-tts-by-id', () => {
     test('expect INTERNAL_SERVER_ERROR when synthesizeSpeech rejects', async () => {
       mocked(polly).synthesizeSpeech.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect OK when no audio exists', async () => {
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(
         expect.objectContaining({
           ...status.OK,
@@ -77,6 +81,7 @@ describe('get-tts-by-id', () => {
 
     test('expect setDataByIndex invoked when no audio exists', async () => {
       await getByIdHandler(event)
+
       expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
     })
   })

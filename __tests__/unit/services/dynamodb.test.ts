@@ -65,6 +65,7 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await getDataByIndex(index)
+
       expect(result).toEqual(joke)
     })
   })
@@ -98,6 +99,7 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await getDataByIndexBatch([index])
+
       expect(result).toEqual({ [index]: joke })
     })
   })
@@ -124,12 +126,14 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await getHighestIndex()
+
       expect(result).toEqual(index)
     })
 
     test('expect zero when get rejects', async () => {
       mockSend.mockRejectedValueOnce(undefined)
       const result = await getHighestIndex()
+
       expect(result).toEqual(0)
     })
   })
@@ -146,12 +150,14 @@ describe('dynamodb', () => {
 
     test('expect data parsed and returned', async () => {
       const result = await scanData()
+
       expect(result).toEqual([{ data: { contents: 'ROFL' }, id: 42 }])
     })
 
     test('expect empty object with no data returned', async () => {
       mockSend.mockResolvedValueOnce({ Items: [] })
       const result = await scanData()
+
       expect(result).toEqual([])
     })
   })

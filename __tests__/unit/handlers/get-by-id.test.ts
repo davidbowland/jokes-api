@@ -26,17 +26,20 @@ describe('get-by-id', () => {
         throw new Error('Bad request')
       })
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
     test('expect NOT_FOUND on getDataByIndex reject', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
     test('expect OK when index exists', async () => {
       const result = await getByIdHandler(event)
+
       expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...joke, index }) })
     })
   })

@@ -16,8 +16,8 @@ describe('logging', () => {
       'expect logFunc to have been called with message',
       async (value) => {
         const message = `Log message for value ${JSON.stringify(value)}`
-
         await log(message)
+
         expect(console.log).toHaveBeenCalledWith(message)
       }
     )
@@ -29,8 +29,8 @@ describe('logging', () => {
       async (value) => {
         const message = `Error message for value ${JSON.stringify(value)}`
         const error = new Error(message)
-
         await logError(error)
+
         expect(console.error).toHaveBeenCalledWith(error)
       }
     )
@@ -47,6 +47,7 @@ describe('logging', () => {
     test('expect AWSXRay.captureAWSClient when x-ray is enabled (not running locally)', () => {
       process.env.AWS_SAM_LOCAL = 'false'
       const result = xrayCapture(dynamodb)
+
       expect(mocked(AWSXRay).captureAWSv3Client).toHaveBeenCalledWith(dynamodb)
       expect(result).toEqual(capturedDynamodb)
     })
@@ -54,6 +55,7 @@ describe('logging', () => {
     test('expect same object when x-ray is disabled (running locally)', () => {
       process.env.AWS_SAM_LOCAL = 'true'
       const result = xrayCapture(dynamodb)
+
       expect(mocked(AWSXRay).captureAWSv3Client).toHaveBeenCalledTimes(0)
       expect(result).toEqual(dynamodb)
     })

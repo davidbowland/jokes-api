@@ -28,6 +28,7 @@ describe('patch-item', () => {
         throw new Error('Bad request')
       })
       const result = await patchItemHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
@@ -36,6 +37,7 @@ describe('patch-item', () => {
         throw new Error('Bad request')
       })
       const result = await patchItemHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
@@ -44,28 +46,33 @@ describe('patch-item', () => {
         { op: 'replace', path: '/fnord' },
       ] as unknown[] as PatchOperation[])
       const result = await patchItemHandler(event)
+
       expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
     })
 
     test('expect NOT_FOUND on getDataByIndex reject', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
     test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
       mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)
+
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect setDataByIndex called with updated object', async () => {
       await patchItemHandler(event)
+
       expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, expectedResult)
     })
 
     test('expect OK and body', async () => {
       const result = await patchItemHandler(event)
+
       expect(result).toEqual(expect.objectContaining({ ...status.OK, body: JSON.stringify(expectedResult) }))
     })
   })

@@ -35,6 +35,7 @@ describe('polly', () => {
   describe('synthesizeSpeech', () => {
     test('expect text passed to synthesizeSpeech', async () => {
       await synthesizeSpeech(joke)
+
       expect(mockSend).toHaveBeenCalledWith({
         Engine: 'standard',
         LanguageCode: 'en-US',
@@ -47,6 +48,7 @@ describe('polly', () => {
 
     test('expect result returned from synthesizeSpeech', async () => {
       const result = await synthesizeSpeech(joke)
+
       expect(result).toEqual(synthesizeSpeechResult)
     })
   })

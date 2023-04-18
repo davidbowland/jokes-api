@@ -9,7 +9,7 @@ const polly = xrayCapture(new Polly({ apiVersion: '2016-06-10' }))
 const audioStreamToBase64 = (stream: Readable): Promise<string> =>
   new Promise<Buffer>((resolve, reject) => {
     const chunks: Buffer[] = []
-    stream.on('data', (chunk) => chunks.push(chunk))
+    stream.on('data', (chunk: any) => chunks.push(chunk))
     stream.on('error', reject)
     stream.on('end', () => resolve(Buffer.concat(chunks)))
   }).then((buffer) => buffer.toString('base64'))

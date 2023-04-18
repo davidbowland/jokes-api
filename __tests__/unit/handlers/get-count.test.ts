@@ -21,11 +21,13 @@ describe('get-count', () => {
     test('expect NOT_FOUND when no jokes', async () => {
       mocked(dynamodb).getHighestIndex.mockRejectedValueOnce(0)
       const result = await getCountHandler(event)
+
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect OK and count', async () => {
       const result = await getCountHandler(event)
+
       expect(result).toEqual({ ...status.OK, body: JSON.stringify({ count }) })
     })
   })

@@ -23,23 +23,27 @@ describe('get-random', () => {
     test('expect NOT_FOUND when no jokes', async () => {
       mocked(dynamodb).getHighestIndex.mockRejectedValueOnce(0)
       const result = await getRandomHandler(event)
+
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
     test('expect INTERNAL_SERVER_ERROR on getDataByIndex reject', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await getRandomHandler(event)
+
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
     test('expect OK and joke', async () => {
       const result = await getRandomHandler(event)
+
       expect(result).toEqual({ ...status.OK, body: JSON.stringify([{ data: joke, id: 44 }]) })
     })
 
     test('expect count of jokes when count passed', async () => {
       const tempEvent = { ...event, queryStringParameters: { count: '2' } } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
+
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
@@ -52,8 +56,8 @@ describe('get-random', () => {
     test('expect max number of jokes when count passed is greater', async () => {
       const tempEvent = { ...event, queryStringParameters: { count: '3' } } as unknown as APIGatewayProxyEventV2
       mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(2)
-
       const result = await getRandomHandler(tempEvent)
+
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
@@ -66,6 +70,7 @@ describe('get-random', () => {
     test('expect max count of jokes when count passed is greater', async () => {
       const tempEvent = { ...event, queryStringParameters: { count: '10' } } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
+
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
@@ -79,6 +84,7 @@ describe('get-random', () => {
     test('expect max count of jokes when no count passed', async () => {
       const tempEvent = { ...event, queryStringParameters: undefined } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
+
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
@@ -95,6 +101,7 @@ describe('get-random', () => {
         queryStringParameters: { avoid: '19,42,37', count: '3' },
       } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
+
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
