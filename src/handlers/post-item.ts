@@ -1,6 +1,6 @@
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
+import { extractRequestError, log, logError } from '../utils/logging'
 import { getHighestIndex, setDataByIndex, setHighestIndex } from '../services/dynamodb'
-import { log, logError } from '../utils/logging'
 import { apiUrl } from '../config'
 import { extractJokeFromEvent } from '../utils/events'
 import status from '../utils/status'
@@ -25,6 +25,6 @@ export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<AP
       return status.INTERNAL_SERVER_ERROR
     }
   } catch (error: any) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
+    return { ...status.BAD_REQUEST, body: JSON.stringify(extractRequestError(error.message)) }
   }
 }

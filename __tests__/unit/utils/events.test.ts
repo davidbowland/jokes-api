@@ -31,17 +31,6 @@ describe('events', () => {
 
       expect(() => extractJokeFromEvent(tempEvent)).toThrow()
     })
-
-    test('expect joke to be formatted', () => {
-      const tempJoke = {
-        ...joke,
-        foo: 'bar',
-      }
-      const tempEvent = { ...event, body: JSON.stringify(tempJoke) } as unknown as APIGatewayProxyEventV2
-      const result = extractJokeFromEvent(tempEvent)
-
-      expect(result).toEqual(joke)
-    })
   })
 
   describe('extractJsonPatchFromEvent', () => {

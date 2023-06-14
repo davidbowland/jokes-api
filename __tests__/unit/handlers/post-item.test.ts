@@ -2,6 +2,7 @@ import { mocked } from 'jest-mock'
 
 import * as dynamodb from '@services/dynamodb'
 import * as events from '@utils/events'
+import * as logging from '@utils/logging'
 import { index, joke } from '../__mocks__'
 import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/post-item.json'
@@ -18,6 +19,7 @@ describe('post-item', () => {
   beforeAll(() => {
     mocked(dynamodb).getHighestIndex.mockResolvedValue(index - 1)
     mocked(events).extractJokeFromEvent.mockReturnValue(joke)
+    mocked(logging).extractRequestError.mockImplementation((str) => ({ message: str }))
   })
 
   describe('postItemHandler', () => {

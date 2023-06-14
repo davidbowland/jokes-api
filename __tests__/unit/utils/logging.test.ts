@@ -1,5 +1,5 @@
 import * as AWSXRay from 'aws-xray-sdk-core'
-import { log, logError, xrayCapture } from '@utils/logging'
+import { extractRequestError, log, logError, xrayCapture } from '@utils/logging'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
 import { mocked } from 'jest-mock'
 
@@ -9,6 +9,22 @@ describe('logging', () => {
   beforeAll(() => {
     console.error = jest.fn()
     console.log = jest.fn()
+  })
+
+  describe('extractRequestError', () => {
+    test('expect JSON data is returned as an object', async () => {
+      const data = { hello: 'world' }
+
+      const output = extractRequestError(JSON.stringify(data))
+      expect(output).toEqual({ errors: data })
+    })
+
+    test('expect non-JSON data is returned as a string', async () => {
+      const data = 'fnord'
+
+      const output = extractRequestError(data)
+      expect(output).toEqual({ message: data })
+    })
   })
 
   describe('log', () => {

@@ -581,7 +581,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 192
       Description: jokes-api post item
       Policies:
         - AWSLambdaBasicExecutionRole
