@@ -125,7 +125,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 512
       Description: jokes-api delete by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -189,7 +189,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1024
       Description: jokes-api get all items
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -253,7 +253,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 2048
       Description: jokes-api get by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -317,7 +317,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1024
       Description: jokes-api get TTS by ID
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -388,7 +388,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1536
       Description: jokes-api get joke count
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -452,7 +452,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 1024
       Description: jokes-api get random jokes
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -517,7 +517,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 128
+      MemorySize: 512
       Description: jokes-api patch item
       Policies:
         - AWSLambdaBasicExecutionRole
@@ -581,7 +581,7 @@ Resources:
       Runtime: nodejs18.x
       Architectures:
         - x86_64
-      MemorySize: 192
+      MemorySize: 1024
       Description: jokes-api post item
       Policies:
         - AWSLambdaBasicExecutionRole
