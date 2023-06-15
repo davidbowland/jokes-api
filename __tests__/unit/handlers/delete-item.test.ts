@@ -32,6 +32,13 @@ describe('delete-item', () => {
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
+    test('expect NOT_FOUND on when index < 1', async () => {
+      mocked(events).getIdFromEvent.mockReturnValueOnce(0)
+      const result = await deleteByIdHandler(event)
+
+      expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
+    })
+
     test('expect INTERNAL_SERVER_ERROR on deleteDataByIndex reject', async () => {
       mocked(dynamodb).deleteDataByIndex.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)

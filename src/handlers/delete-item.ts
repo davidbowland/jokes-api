@@ -37,6 +37,10 @@ export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<
   log('Received event', { ...event, body: undefined })
   try {
     const index = getIdFromEvent(event)
+    if (index < 1) {
+      return status.NOT_FOUND
+    }
+
     const result = await fetchDataThenDelete(index)
     return result
   } catch (error: any) {

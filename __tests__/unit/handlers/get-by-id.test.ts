@@ -30,6 +30,13 @@ describe('get-by-id', () => {
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
+    test('expect NOT_FOUND when index < 1', async () => {
+      mocked(events).getIdFromEvent.mockReturnValueOnce(0)
+      const result = await getByIdHandler(event)
+
+      expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
+    })
+
     test('expect NOT_FOUND on getDataByIndex reject', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)

@@ -50,6 +50,13 @@ describe('patch-item', () => {
       expect(result.statusCode).toEqual(status.BAD_REQUEST.statusCode)
     })
 
+    test('expect NOT_FOUND when index < 1', async () => {
+      mocked(events).getIdFromEvent.mockReturnValueOnce(0)
+      const result = await patchItemHandler(event)
+
+      expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
+    })
+
     test('expect NOT_FOUND on getDataByIndex reject', async () => {
       mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)

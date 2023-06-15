@@ -49,6 +49,10 @@ export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<API
   log('Received event', { ...event, body: undefined })
   try {
     const index = getIdFromEvent(event)
+    if (index < 1) {
+      return status.NOT_FOUND
+    }
+
     const result = await fetchById(index)
     return result
   } catch (error: any) {

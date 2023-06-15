@@ -39,6 +39,10 @@ export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<A
   log('Received event', { ...event, body: undefined })
   try {
     const index = getIdFromEvent(event)
+    if (index < 1) {
+      return status.NOT_FOUND
+    }
+
     const patchOperations = extractJsonPatchFromEvent(event)
     const result = await patchById(index, patchOperations)
     return result
