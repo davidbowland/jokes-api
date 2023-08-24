@@ -28,7 +28,7 @@ export const formatJoke = (joke: JokeSchema): Joke => {
 
 const parseEventBody = (event: APIGatewayProxyEventV2): unknown =>
   JSON.parse(
-    event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string)
+    event.isBase64Encoded && event.body ? Buffer.from(event.body, 'base64').toString('utf8') : (event.body as string),
   )
 
 export const extractJokeFromEvent = (event: APIGatewayProxyEventV2): Joke =>

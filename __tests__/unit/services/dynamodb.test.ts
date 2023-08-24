@@ -38,7 +38,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'jokes-table',
-        })
+        }),
       )
     })
   })
@@ -59,7 +59,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'jokes-table',
-        })
+        }),
       )
     })
 
@@ -93,7 +93,7 @@ describe('dynamodb', () => {
               ],
             },
           },
-        })
+        }),
       )
     })
 
@@ -120,7 +120,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'jokes-table',
-        })
+        }),
       )
     })
 
@@ -177,7 +177,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'jokes-table',
-        })
+        }),
       )
     })
   })
@@ -199,7 +199,7 @@ describe('dynamodb', () => {
             },
           },
           TableName: 'jokes-table',
-        })
+        }),
       )
     })
   })

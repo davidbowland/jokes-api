@@ -444,6 +444,70 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetCountLogGroup
 
+  GetInitialFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: handlers/get-initial.getInitialHandler
+      CodeUri: './dist'
+      Runtime: nodejs18.x
+      Architectures:
+        - x86_64
+      MemorySize: 1024
+      Description: jokes-api get initial joke and count
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTable
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Ref JokesTable
+      Events:
+        ApiKey:
+          Type: Api
+          Properties:
+            RestApiId: !Ref Api
+            Path: /jokes/initial
+            Method: get
+            Auth:
+              ApiKeyRequired: true
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /jokes/initial
+            Method: get
+            Auth:
+              Authorizer: NONE
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+        'environment': !Ref Environment
+      Timeout: 30
+      Tracing: Active
+
+  GetInitialLogGroup:
+    Type: AWS::Logs::LogGroup
+    DependsOn: GetInitialFunction
+    Properties:
+      LogGroupName: !Sub /aws/lambda/${GetInitialFunction}
+      RetentionInDays: 30
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment
+
+  GetInitialLogGroupSubscription:
+    Type: AWS::Logs::SubscriptionFilter
+    Properties:
+      DestinationArn: !Sub
+        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
+        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
+      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
+      LogGroupName: !Ref GetInitialLogGroup
+
   GetRandomFunction:
     Type: AWS::Serverless::Function
     Properties:

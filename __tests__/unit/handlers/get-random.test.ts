@@ -1,3 +1,4 @@
+import crypto from 'crypto'
 import { mocked } from 'jest-mock'
 
 import * as dynamodb from '@services/dynamodb'
@@ -11,17 +12,21 @@ jest.mock('@services/dynamodb')
 jest.mock('@utils/logging')
 
 describe('get-random', () => {
+  const count = 102
   const event = eventJson as unknown as APIGatewayProxyEventV2
+  const mockRandomInt = jest.fn()
 
   beforeAll(() => {
+    mockRandomInt.mockReturnValue(index)
+    jest.spyOn(crypto, 'randomInt').mockImplementation((...args) => mockRandomInt(...args))
+
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
-    mocked(dynamodb).getHighestIndex.mockResolvedValue(102)
-    Math.random = jest.fn().mockReturnValue(index / 100)
+    mocked(dynamodb).getHighestIndex.mockResolvedValue(count)
   })
 
   describe('getRandomHandler', () => {
     test('expect NOT_FOUND when no jokes', async () => {
-      mocked(dynamodb).getHighestIndex.mockRejectedValueOnce(0)
+      mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(0)
       const result = await getRandomHandler(event)
 
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
@@ -56,6 +61,8 @@ describe('get-random', () => {
     test('expect max number of jokes when count passed is greater', async () => {
       const tempEvent = { ...event, queryStringParameters: { count: '3' } } as unknown as APIGatewayProxyEventV2
       mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(2)
+      mockRandomInt.mockReturnValueOnce(0)
+      mockRandomInt.mockReturnValueOnce(0)
       const result = await getRandomHandler(tempEvent)
 
       expect(result).toEqual({
@@ -98,14 +105,14 @@ describe('get-random', () => {
     test('expect avoids to be honored', async () => {
       const tempEvent = {
         ...event,
-        queryStringParameters: { avoid: '19,42,37', count: '3' },
+        queryStringParameters: { avoid: '19,47,37', count: '3' },
       } as unknown as APIGatewayProxyEventV2
       const result = await getRandomHandler(tempEvent)
 
       expect(result).toEqual({
         ...status.OK,
         body: JSON.stringify([
-          { data: joke, id: 44 },
+          { data: joke, id: 48 },
           { data: joke, id: 46 },
           { data: joke, id: 45 },
         ]),

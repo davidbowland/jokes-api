@@ -10,7 +10,7 @@ import status from '../utils/status'
 const applyJsonPatch = async (
   joke: Joke,
   index: number,
-  patchOperations: PatchOperation[]
+  patchOperations: PatchOperation[],
 ): Promise<APIGatewayProxyResultV2<any>> => {
   const updatedJoke = applyPatch(joke, patchOperations, throwOnInvalidJsonPatch, mutateObjectOnJsonPatch).newDocument
   try {

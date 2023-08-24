@@ -59,7 +59,7 @@ describe('get-tts-by-id', () => {
             'content-type': 'text/plain',
           },
           isBase64Encoded: true,
-        })
+        }),
       )
       expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
     })
@@ -81,7 +81,7 @@ describe('get-tts-by-id', () => {
             'content-type': 'text/plain',
           },
           isBase64Encoded: true,
-        })
+        }),
       )
       expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
     })

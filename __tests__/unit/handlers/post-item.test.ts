@@ -68,7 +68,7 @@ describe('post-item', () => {
       const result = await postItemHandler(event)
 
       expect(result).toEqual(
-        expect.objectContaining({ headers: { Location: 'https://jokes-api.bowland.link/v1/jokes/42' } })
+        expect.objectContaining({ headers: { Location: 'https://jokes-api.bowland.link/v1/jokes/42' } }),
       )
     })
   })

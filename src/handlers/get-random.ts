@@ -2,10 +2,11 @@ import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke, JokeBatch } from
 import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
 import { log, logError } from '../utils/logging'
 import { randomCountMaximum } from '../config'
+import { randomInt } from 'crypto'
 import status from '../utils/status'
 
 const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBatch[]> => {
-  const index = indexList[Math.round(Math.random() * (indexList.length - 1))]
+  const index = indexList[randomInt(indexList.length)]
   const joke = (await getDataByIndex(index)) as Joke
   const filteredList = indexList.filter((value) => value !== index)
   return count > 0 && filteredList.length
@@ -24,17 +25,16 @@ export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<A
 
   try {
     const highestIndex = await getHighestIndex()
-    try {
-      const indexList = Array.from({ length: highestIndex })
-        .map((_, index) => index + 1)
-        .filter((index) => filterList.every((avoid) => avoid !== index))
-      const jokeList = await getRandomJoke(indexList, count - 1)
-      return { ...status.OK, body: JSON.stringify(jokeList) }
-    } catch (error) {
-      logError(error)
-      return status.INTERNAL_SERVER_ERROR
+    if (highestIndex === 0) {
+      return status.NOT_FOUND
     }
-  } catch {
-    return status.NOT_FOUND
+    const indexList = Array.from({ length: highestIndex })
+      .map((_, index) => index + 1)
+      .filter((index) => filterList.every((avoid) => avoid !== index))
+    const jokeList = await getRandomJoke(indexList, count - 1)
+    return { ...status.OK, body: JSON.stringify(jokeList) }
+  } catch (error) {
+    logError(error)
+    return status.INTERNAL_SERVER_ERROR
   }
 }

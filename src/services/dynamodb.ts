@@ -50,7 +50,7 @@ export const getDataByIndex = async (index: number): Promise<any> => {
 const getItemsFromBatch = (items: any[]): JokeBatch =>
   items.reduce(
     (result, item) => ({ ...result, [item.Index.N as string]: JSON.parse(item.Data.S as string) }),
-    {} as JokeBatch
+    {} as JokeBatch,
   )
 
 export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch> => {
@@ -88,7 +88,7 @@ const getItemsFromScan = (response: ScanOutput): JokeBatch[] =>
       item.Index.N !== '0'
         ? [...result, { data: JSON.parse(item.Data.S as string), id: parseInt(item.Index.N as string, 10) }]
         : result,
-    [] as JokeBatch[]
+    [] as JokeBatch[],
   ) as JokeBatch[]
 
 export const scanData = async (): Promise<JokeBatch[]> => {
