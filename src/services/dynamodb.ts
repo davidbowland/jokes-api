@@ -85,9 +85,9 @@ export const getHighestIndex = async (): Promise<number> => {
 const getItemsFromScan = (response: ScanOutput): JokeBatch[] =>
   response.Items?.reduce(
     (result, item) =>
-      item.Index.N !== '0'
-        ? [...result, { data: JSON.parse(item.Data.S as string), id: parseInt(item.Index.N as string, 10) }]
-        : result,
+      item.Index.N === '0'
+        ? result
+        : [...result, { data: JSON.parse(item.Data.S as string), id: parseInt(item.Index.N as string, 10) }],
     [] as JokeBatch[],
   ) as JokeBatch[]
 
