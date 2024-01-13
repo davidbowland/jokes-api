@@ -122,7 +122,7 @@ Resources:
     Properties:
       Handler: handlers/delete-item.deleteByIdHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 512
@@ -186,7 +186,7 @@ Resources:
     Properties:
       Handler: handlers/get-all-items.getAllItemsHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -250,7 +250,7 @@ Resources:
     Properties:
       Handler: handlers/get-by-id.getByIdHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 2048
@@ -314,7 +314,7 @@ Resources:
     Properties:
       Handler: handlers/get-tts-by-id.getByIdHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -385,7 +385,7 @@ Resources:
     Properties:
       Handler: handlers/get-count.getCountHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 1536
@@ -449,7 +449,7 @@ Resources:
     Properties:
       Handler: handlers/get-initial.getInitialHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -513,7 +513,7 @@ Resources:
     Properties:
       Handler: handlers/get-random.getRandomHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -578,7 +578,7 @@ Resources:
     Properties:
       Handler: handlers/patch-item.patchItemHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 512
@@ -642,7 +642,7 @@ Resources:
     Properties:
       Handler: handlers/post-item.postItemHandler
       CodeUri: './dist'
-      Runtime: nodejs18.x
+      Runtime: nodejs20.x
       Architectures:
         - x86_64
       MemorySize: 1024
