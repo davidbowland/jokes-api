@@ -120,8 +120,7 @@ Resources:
   DeleteItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/delete-item.deleteByIdHandler
-      CodeUri: './dist'
+      Handler: src/handlers/delete-item.deleteByIdHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -157,6 +156,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 10
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/delete-item.ts
 
   DeleteItemLogGroup:
     Type: AWS::Logs::LogGroup
@@ -184,8 +191,7 @@ Resources:
   GetAllItemsFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/get-all-items.getAllItemsHandler
-      CodeUri: './dist'
+      Handler: src/handlers/get-all-items.getAllItemsHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -221,6 +227,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 30
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/get-all-items.ts
 
   GetAllItemsLogGroup:
     Type: AWS::Logs::LogGroup
@@ -248,8 +262,7 @@ Resources:
   GetByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/get-by-id.getByIdHandler
-      CodeUri: './dist'
+      Handler: src/handlers/get-by-id.getByIdHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -285,6 +298,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 10
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/get-by-id.ts
 
   GetByIdLogGroup:
     Type: AWS::Logs::LogGroup
@@ -312,8 +333,7 @@ Resources:
   GetTtsByIdFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/get-tts-by-id.getByIdHandler
-      CodeUri: './dist'
+      Handler: src/handlers/get-tts-by-id.getByIdHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -356,6 +376,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 30
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/get-tts-by-id.ts
 
   GetTtsByIdLogGroup:
     Type: AWS::Logs::LogGroup
@@ -383,8 +411,7 @@ Resources:
   GetCountFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/get-count.getCountHandler
-      CodeUri: './dist'
+      Handler: src/handlers/get-count.getCountHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -420,6 +447,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 10
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/get-count.ts
 
   GetCountLogGroup:
     Type: AWS::Logs::LogGroup
@@ -447,8 +482,7 @@ Resources:
   GetInitialFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/get-initial.getInitialHandler
-      CodeUri: './dist'
+      Handler: src/handlers/get-initial.getInitialHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -484,6 +518,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 30
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/get-initial.ts
 
   GetInitialLogGroup:
     Type: AWS::Logs::LogGroup
@@ -511,8 +553,7 @@ Resources:
   GetRandomFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/get-random.getRandomHandler
-      CodeUri: './dist'
+      Handler: src/handlers/get-random.getRandomHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -549,6 +590,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 10
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/get-random.ts
 
   GetRandomLogGroup:
     Type: AWS::Logs::LogGroup
@@ -576,8 +625,7 @@ Resources:
   PatchItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/patch-item.patchItemHandler
-      CodeUri: './dist'
+      Handler: src/handlers/patch-item.patchItemHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -613,6 +661,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 10
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/patch-item.ts
 
   PatchLogGroup:
     Type: AWS::Logs::LogGroup
@@ -640,8 +696,7 @@ Resources:
   PostItemFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: handlers/post-item.postItemHandler
-      CodeUri: './dist'
+      Handler: src/handlers/post-item.postItemHandler
       Runtime: nodejs20.x
       Architectures:
         - x86_64
@@ -680,6 +735,14 @@ Resources:
         'environment': !Ref Environment
       Timeout: 10
       Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/post-item.ts
 
   PostLogGroup:
     Type: AWS::Logs::LogGroup
