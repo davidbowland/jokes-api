@@ -199,7 +199,7 @@ Resources:
       Description: jokes-api get all items
       Policies:
         - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref JokesTable
       Environment:
         Variables:
@@ -270,7 +270,7 @@ Resources:
       Description: jokes-api get by ID
       Policies:
         - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref JokesTable
       Environment:
         Variables:
@@ -419,7 +419,7 @@ Resources:
       Description: jokes-api get joke count
       Policies:
         - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref JokesTable
       Environment:
         Variables:
@@ -490,7 +490,7 @@ Resources:
       Description: jokes-api get initial joke and count
       Policies:
         - AWSLambdaBasicExecutionRole
-        - DynamoDBCrudPolicy:
+        - DynamoDBReadPolicy:
             TableName: !Ref JokesTable
       Environment:
         Variables:
