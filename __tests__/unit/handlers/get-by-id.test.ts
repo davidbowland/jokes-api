@@ -2,7 +2,7 @@ import { mocked } from 'jest-mock'
 
 import * as dynamodb from '@services/dynamodb'
 import * as events from '@utils/events'
-import { index, joke } from '../__mocks__'
+import { index, joke, jokeWithAudio } from '../__mocks__'
 import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/get-by-id.json'
 import { getByIdHandler } from '@handlers/get-by-id'
@@ -45,6 +45,24 @@ describe('get-by-id', () => {
     })
 
     test('expect OK when index exists', async () => {
+      const result = await getByIdHandler(event)
+
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...joke, index }) })
+    })
+
+    test('expect OK when index exists and the joke has audio', async () => {
+      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithAudio)
+      const result = await getByIdHandler(event)
+
+      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...jokeWithAudio, index }) })
+    })
+
+    test("expect audio stripped from joke when audio version doesn't match polly version", async () => {
+      const jokeWithMismatchedAudioVersions = {
+        ...jokeWithAudio,
+        audio: { ...jokeWithAudio.audio, version: 'no_match' },
+      }
+      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithMismatchedAudioVersions)
       const result = await getByIdHandler(event)
 
       expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...joke, index }) })

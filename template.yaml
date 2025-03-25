@@ -284,6 +284,7 @@ Resources:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
+          POLLY_AUDIO_VERSION: !FindInMap [EnvironmentMap, !Ref Environment, pollyAudioVersion]
       Events:
         ApiKey:
           Type: Api
