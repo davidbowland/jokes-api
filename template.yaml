@@ -121,7 +121,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/delete-item.deleteByIdHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 512
@@ -133,6 +133,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
@@ -192,7 +193,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-all-items.getAllItemsHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -204,6 +205,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
@@ -263,7 +265,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-by-id.getByIdHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 2048
@@ -275,6 +277,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
@@ -334,7 +337,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-tts-by-id.getByIdHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -353,6 +356,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
@@ -412,7 +416,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-count.getCountHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 1536
@@ -424,6 +428,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
@@ -483,7 +488,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-initial.getInitialHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -495,6 +500,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
@@ -554,7 +560,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/get-random.getRandomHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -566,6 +572,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
           RANDOM_COUNT_MAXIMUM: 10
       Events:
         ApiKey:
@@ -626,7 +633,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/patch-item.patchItemHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 512
@@ -638,6 +645,7 @@ Resources:
       Environment:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
@@ -697,7 +705,7 @@ Resources:
     Type: AWS::Serverless::Function
     Properties:
       Handler: src/handlers/post-item.postItemHandler
-      Runtime: nodejs20.x
+      Runtime: nodejs22.x
       Architectures:
         - x86_64
       MemorySize: 1024
@@ -712,6 +720,7 @@ Resources:
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
