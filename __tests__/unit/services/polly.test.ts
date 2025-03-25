@@ -37,12 +37,12 @@ describe('polly', () => {
       await synthesizeSpeech(joke)
 
       expect(mockSend).toHaveBeenCalledWith({
-        Engine: 'standard',
+        Engine: 'generative',
         LanguageCode: 'en-US',
         OutputFormat: 'ogg_vorbis',
         Text: joke.contents,
         TextType: 'text',
-        VoiceId: 'Salli',
+        VoiceId: 'Ruth',
       })
     })
 

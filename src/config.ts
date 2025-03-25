@@ -11,3 +11,9 @@ export const randomCountMaximum = parseInt(process.env.RANDOM_COUNT_MAXIMUM as s
 
 export const throwOnInvalidJsonPatch = true
 export const mutateObjectOnJsonPatch = false
+
+// Polly
+
+export const pollyAudioVersion = process.env.POLLY_AUDIO_VERSION as string
+export const pollyEngine = process.env.POLLY_ENGINE as string
+export const pollyVoiceId = process.env.POLLY_VOICE_ID as string

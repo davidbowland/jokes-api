@@ -16,6 +16,7 @@ export const synthesizeSpeechOutput: SynthesizeSpeechOutput = {
 export const synthesizeSpeechResult: JokeAudio = {
   base64: Buffer.from('ROFL').toString('base64'),
   contentType: 'text/plain',
+  version: '42',
 }
 
 export const jokeWithAudio: Joke = {

@@ -84,11 +84,27 @@ describe('get-tts-by-id', () => {
         }),
       )
       expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
+      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
     })
 
-    test('expect setDataByIndex invoked when no audio exists', async () => {
-      await getByIdHandler(event)
+    test("expect audio is regenerated when audio versions don't match", async () => {
+      const jokeWithMismatchedAudioVersions = {
+        ...jokeWithAudio,
+        audio: { ...jokeWithAudio.audio, version: 'no_match' },
+      }
+      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithMismatchedAudioVersions)
+      const result = await getByIdHandler(event)
 
+      expect(result).toEqual(
+        expect.objectContaining({
+          ...status.OK,
+          headers: {
+            'content-type': 'text/plain',
+          },
+          isBase64Encoded: true,
+        }),
+      )
+      expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
       expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
     })
   })
