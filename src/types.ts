@@ -13,6 +13,7 @@ export interface Joke {
 export interface JokeAudio {
   base64: string
   contentType: string
+  version?: string
 }
 
 export interface JokeBatch {

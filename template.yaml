@@ -23,6 +23,9 @@ Mappings:
       domain: jokes-api.dbowland.com
       domainInternal: jokes-api-internal.dbowland.com
       logStreamFunction: log-subscriber
+      pollyAudioVersion: 2
+      pollyEngine: generative
+      pollyVoiceId: Ruth
       table: jokes-api
       userPool: us-east-2_cPuwPJkP8
       userPoolClient: 5mujt7f6h9jh6pudk0t8ekngu
@@ -34,6 +37,9 @@ Mappings:
       domain: jokes-api.bowland.link
       domainInternal: jokes-api-internal.bowland.link
       logStreamFunction: log-subscriber-test
+      pollyAudioVersion: 2
+      pollyEngine: generative
+      pollyVoiceId: Ruth
       table: jokes-api-test
       userPool: us-east-2_BwzCUS5q1
       userPoolClient: o86e0r33q0pfekelprpcvmdou
@@ -357,6 +363,9 @@ Resources:
         Variables:
           DYNAMODB_TABLE_NAME: !Ref JokesTable
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
+          POLLY_AUDIO_VERSION: !FindInMap [EnvironmentMap, !Ref Environment, pollyAudioVersion]
+          POLLY_ENGINE: !FindInMap [EnvironmentMap, !Ref Environment, pollyEngine]
+          POLLY_VOICE_ID: !FindInMap [EnvironmentMap, !Ref Environment, pollyVoiceId]
       Events:
         ApiKey:
           Type: Api
