@@ -1,0 +1,49 @@
+### Delete joke by ID
+
+DELETE https://{{jokes-api-host}}/v1/jokes/{{id}} HTTP/1.1
+Authorization: Bearer {{jokes-token}}
+
+### Fetch all jokes
+
+GET https://{{jokes-api-host}}/v1/jokes HTTP/1.1
+Authorization: Bearer {{jokes-token}}
+
+### Fetch a single joke
+
+GET https://{{jokes-api-host}}/v1/jokes/{{id}} HTTP/1.1
+
+### Fetch text-to-speech for a joke
+
+GET https://{{jokes-api-host}}/v1/jokes/{{id}}/tts HTTP/1.1
+
+### Fetch count of jokes
+
+GET https://{{jokes-api-host}}/v1/jokes/count HTTP/1.1
+
+### Request count and a random joke
+
+GET https://{{jokes-api-host}}/v1/jokes/initial HTTP/1.1
+
+### Request a random joke
+
+GET https://{{jokes-api-host}}/v1/jokes/random HTTP/1.1
+
+### Change a joke
+
+PATCH https://{{jokes-api-host}}/v1/jokes/{{id}} HTTP/1.1
+Authorization: Bearer {{jokes-token}}
+
+[
+  { "op": "replace", "path": "/contents", "value": "LOL" }
+]
+
+### Create a new joke
+
+POST https://{{jokes-api-host}}/v1/jokes HTTP/1.1
+Authorization: Bearer {{jokes-token}}
+
+{
+  "contents": "LOL"
+}
+
+###
