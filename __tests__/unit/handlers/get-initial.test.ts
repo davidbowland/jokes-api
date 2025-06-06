@@ -17,7 +17,7 @@ describe('get-initial', () => {
   const mockRandomInt = jest.fn()
 
   beforeAll(() => {
-    mockRandomInt.mockReturnValue(index)
+    mockRandomInt.mockReturnValue(index - 1)
     jest.spyOn(crypto, 'randomInt').mockImplementation((...args) => mockRandomInt(...args))
 
     mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)

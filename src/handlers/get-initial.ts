@@ -11,7 +11,7 @@ export const getInitialHandler = async (event: APIGatewayProxyEventV2): Promise<
     if (count === 0) {
       return status.NOT_FOUND
     }
-    const index = randomInt(count)
+    const index = randomInt(count) + 1 // Jokes start at index 1
     const joke = (await getDataByIndex(index)) as Joke
     return { ...status.OK, body: JSON.stringify({ count, joke: { data: joke, id: index } }) }
   } catch (error) {

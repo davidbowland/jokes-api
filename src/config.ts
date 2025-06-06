@@ -1,3 +1,5 @@
+import { Engine, VoiceId } from '@aws-sdk/client-polly'
+
 // API
 
 export const apiUrl = process.env.API_URL as string
@@ -15,5 +17,5 @@ export const mutateObjectOnJsonPatch = false
 // Polly
 
 export const pollyAudioVersion = process.env.POLLY_AUDIO_VERSION as string
-export const pollyEngine = process.env.POLLY_ENGINE as string
-export const pollyVoiceId = process.env.POLLY_VOICE_ID as string
+export const pollyEngine = process.env.POLLY_ENGINE as Engine
+export const pollyVoiceId = process.env.POLLY_VOICE_ID as VoiceId
