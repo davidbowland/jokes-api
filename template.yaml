@@ -56,7 +56,7 @@ Resources:
         ApiKeyRequired: true # sets for all methods
         UsagePlan:
           CreateUsagePlan: PER_API
-          Description: Usage plan for emails-email-api
+          Description: Usage plan for jokes-api
       Domain:
         DomainName: !FindInMap [EnvironmentMap, !Ref Environment, domainInternal]
         CertificateArn: !Sub
