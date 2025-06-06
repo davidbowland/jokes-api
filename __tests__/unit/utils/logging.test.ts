@@ -1,7 +1,8 @@
-import * as AWSXRay from 'aws-xray-sdk-core'
-import { extractRequestError, log, logError, xrayCapture } from '@utils/logging'
 import { DynamoDB } from '@aws-sdk/client-dynamodb'
+import * as AWSXRay from 'aws-xray-sdk-core'
 import { mocked } from 'jest-mock'
+
+import { extractRequestError, log, logError, xrayCapture } from '@utils/logging'
 
 jest.mock('aws-xray-sdk-core')
 

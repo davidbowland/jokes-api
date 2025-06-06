@@ -1,9 +1,9 @@
 import { mocked } from 'jest-mock'
 
-import * as dynamodb from '@services/dynamodb'
-import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/get-count.json'
 import { getCountHandler } from '@handlers/get-count'
+import * as dynamodb from '@services/dynamodb'
+import { APIGatewayProxyEventV2 } from '@types'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')

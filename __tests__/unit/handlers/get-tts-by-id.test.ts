@@ -1,12 +1,12 @@
 import { mocked } from 'jest-mock'
 
-import * as dynamodb from '@services/dynamodb'
-import * as events from '@utils/events'
-import * as polly from '@services/polly'
 import { index, joke, jokeWithAudio, synthesizeSpeechResult } from '../__mocks__'
-import { APIGatewayProxyEventV2 } from '@types'
 import eventJson from '@events/get-tts-by-id.json'
 import { getByIdHandler } from '@handlers/get-tts-by-id'
+import * as dynamodb from '@services/dynamodb'
+import * as polly from '@services/polly'
+import { APIGatewayProxyEventV2 } from '@types'
+import * as events from '@utils/events'
 import status from '@utils/status'
 
 jest.mock('@services/dynamodb')

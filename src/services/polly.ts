@@ -1,8 +1,8 @@
 import { Polly, SynthesizeSpeechCommand } from '@aws-sdk/client-polly'
 import { Readable } from 'stream'
 
-import { Joke, JokeAudio } from '../types'
 import { pollyAudioVersion, pollyEngine, pollyVoiceId } from '../config'
+import { Joke, JokeAudio } from '../types'
 import { xrayCapture } from '../utils/logging'
 
 const polly = xrayCapture(new Polly({ apiVersion: '2016-06-10', region: 'us-east-1' }))

@@ -1,10 +1,10 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
-import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
-import { log, logError } from '../utils/logging'
-import { getIdFromEvent } from '../utils/events'
 import { pollyAudioVersion } from '../config'
-import status from '../utils/status'
+import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
 import { synthesizeSpeech } from '../services/polly'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
+import { getIdFromEvent } from '../utils/events'
+import { log, logError } from '../utils/logging'
+import status from '../utils/status'
 
 const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> => {
   if (joke.audio?.version === pollyAudioVersion) {

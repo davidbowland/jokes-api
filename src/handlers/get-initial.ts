@@ -1,7 +1,8 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
-import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
-import { log, logError } from '../utils/logging'
 import { randomInt } from 'crypto'
+
+import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
+import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
 export const getInitialHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {

@@ -10,8 +10,8 @@ import {
   ScanOutput,
 } from '@aws-sdk/client-dynamodb'
 
-import { Index, JokeBatch } from '../types'
 import { dynamodbTableName } from '../config'
+import { Index, JokeBatch } from '../types'
 import { xrayCapture } from '../utils/logging'
 
 const dynamodb = xrayCapture(new DynamoDB({ apiVersion: '2012-08-10' }))

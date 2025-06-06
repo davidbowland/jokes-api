@@ -1,8 +1,8 @@
-import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
+import { pollyAudioVersion } from '../config'
 import { getDataByIndex } from '../services/dynamodb'
+import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getIdFromEvent } from '../utils/events'
 import { log } from '../utils/logging'
-import { pollyAudioVersion } from '../config'
 import status from '../utils/status'
 
 const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<any>> => {

@@ -1,3 +1,4 @@
+import { index, joke } from '../__mocks__'
 import {
   deleteDataByIndex,
   getDataByIndex,
@@ -7,7 +8,6 @@ import {
   setDataByIndex,
   setHighestIndex,
 } from '@services/dynamodb'
-import { index, joke } from '../__mocks__'
 
 const mockSend = jest.fn()
 jest.mock('@aws-sdk/client-dynamodb', () => ({

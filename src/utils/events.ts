@@ -1,5 +1,6 @@
-import { APIGatewayProxyEventV2, Joke, PatchOperation } from '../types'
 import AJV from 'ajv/dist/jtd'
+
+import { APIGatewayProxyEventV2, Joke, PatchOperation } from '../types'
 
 const ajv = new AJV({ allErrors: true })
 

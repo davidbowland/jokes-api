@@ -1,6 +1,7 @@
-import { Joke, JokeAudio, PatchOperation } from '@types'
-import { Readable } from 'stream'
 import { SynthesizeSpeechOutput } from '@aws-sdk/client-polly'
+import { Readable } from 'stream'
+
+import { Joke, JokeAudio, PatchOperation } from '@types'
 
 export const index = 42
 
