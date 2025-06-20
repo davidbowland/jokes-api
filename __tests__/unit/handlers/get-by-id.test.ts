@@ -16,7 +16,7 @@ describe('get-by-id', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
-    mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(dynamodb).getJokeByIndex.mockResolvedValue(joke)
     mocked(events).getIdFromEvent.mockReturnValue(index)
   })
 
@@ -37,8 +37,8 @@ describe('get-by-id', () => {
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect NOT_FOUND on getDataByIndex reject', async () => {
-      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
+    test('expect NOT_FOUND on getJokeByIndex reject', async () => {
+      mocked(dynamodb).getJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
 
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
@@ -51,7 +51,7 @@ describe('get-by-id', () => {
     })
 
     test('expect OK when index exists and the joke has audio', async () => {
-      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithAudio)
+      mocked(dynamodb).getJokeByIndex.mockResolvedValueOnce(jokeWithAudio)
       const result = await getByIdHandler(event)
 
       expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...jokeWithAudio, index }) })
@@ -62,7 +62,7 @@ describe('get-by-id', () => {
         ...jokeWithAudio,
         audio: { ...jokeWithAudio.audio, version: 'no_match' },
       }
-      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithMismatchedAudioVersions)
+      mocked(dynamodb).getJokeByIndex.mockResolvedValueOnce(jokeWithMismatchedAudioVersions)
       const result = await getByIdHandler(event)
 
       expect(result).toEqual({ ...status.OK, body: JSON.stringify({ ...joke, index }) })

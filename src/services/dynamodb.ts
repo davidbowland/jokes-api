@@ -11,14 +11,14 @@ import {
 } from '@aws-sdk/client-dynamodb'
 
 import { dynamodbTableName } from '../config'
-import { Index, JokeBatch } from '../types'
+import { Index, Joke, JokeBatch } from '../types'
 import { xrayCapture } from '../utils/logging'
 
 const dynamodb = xrayCapture(new DynamoDB({ apiVersion: '2012-08-10' }))
 
 /* Delete item */
 
-export const deleteDataByIndex = async (index: number): Promise<DeleteItemOutput> => {
+export const deleteJokeByIndex = async (index: number): Promise<DeleteItemOutput> => {
   const command = new DeleteItemCommand({
     Key: {
       Index: {
@@ -32,7 +32,20 @@ export const deleteDataByIndex = async (index: number): Promise<DeleteItemOutput
 
 /* Get single item */
 
-export const getDataByIndex = async (index: number): Promise<any> => {
+export const getJokeIndex = async (): Promise<Index> => {
+  const command = new GetItemCommand({
+    Key: {
+      Index: {
+        N: '0',
+      },
+    },
+    TableName: dynamodbTableName,
+  })
+  const response = await dynamodb.send(command)
+  return JSON.parse(response.Item.Data.S)
+}
+
+export const getJokeByIndex = async (index: number): Promise<Joke> => {
   const command = new GetItemCommand({
     Key: {
       Index: {
@@ -53,7 +66,7 @@ const getItemsFromBatch = (items: any[]): JokeBatch =>
     {} as JokeBatch,
   )
 
-export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch> => {
+export const getJokeByIndexBatch = async (indexes: number[]): Promise<JokeBatch> => {
   const command = new BatchGetItemCommand({
     RequestItems: {
       [dynamodbTableName]: {
@@ -73,7 +86,7 @@ export const getDataByIndexBatch = async (indexes: number[]): Promise<JokeBatch>
 
 export const getHighestIndex = async (): Promise<number> => {
   try {
-    const data: Index = await getDataByIndex(0)
+    const data = await getJokeIndex()
     return data.count
   } catch (e) {
     return 0
@@ -91,7 +104,7 @@ const getItemsFromScan = (response: ScanOutput): JokeBatch[] =>
     [] as JokeBatch[],
   ) as JokeBatch[]
 
-export const scanData = async (): Promise<JokeBatch[]> => {
+export const scanJokes = async (): Promise<JokeBatch[]> => {
   const command = new ScanCommand({
     AttributesToGet: ['Data', 'Index'],
     TableName: dynamodbTableName,
@@ -102,7 +115,22 @@ export const scanData = async (): Promise<JokeBatch[]> => {
 
 /* Set item */
 
-export const setDataByIndex = async (index: number, data: unknown): Promise<PutItemOutput> => {
+export const setJokeIndex = async (data: Index): Promise<PutItemOutput> => {
+  const command = new PutItemCommand({
+    Item: {
+      Data: {
+        S: JSON.stringify(data),
+      },
+      Index: {
+        N: '0',
+      },
+    },
+    TableName: dynamodbTableName,
+  })
+  return dynamodb.send(command)
+}
+
+export const setJokeByIndex = async (index: number, data: Joke): Promise<PutItemOutput> => {
   const command = new PutItemCommand({
     Item: {
       Data: {
@@ -119,4 +147,4 @@ export const setDataByIndex = async (index: number, data: unknown): Promise<PutI
 
 /* Set highest index */
 
-export const setHighestIndex = async (count: number): Promise<PutItemOutput> => setDataByIndex(0, { count })
+export const setHighestIndex = async (count: number): Promise<PutItemOutput> => setJokeIndex({ count })

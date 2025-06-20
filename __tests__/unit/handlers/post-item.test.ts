@@ -32,14 +32,14 @@ describe('post-item', () => {
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
-    test('expect index passed to setDataByIndex from getHighestIndex', async () => {
+    test('expect index passed to setJokeByIndex from getHighestIndex', async () => {
       await postItemHandler(event)
 
-      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, joke)
+      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledWith(index, joke)
     })
 
-    test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
-      mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on setJokeByIndex reject', async () => {
+      mocked(dynamodb).setJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await postItemHandler(event)
 
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)

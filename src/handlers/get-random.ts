@@ -1,21 +1,21 @@
 import { randomInt } from 'crypto'
 
 import { randomCountMaximum } from '../config'
-import { getDataByIndex, getHighestIndex } from '../services/dynamodb'
+import { getJokeByIndex, getHighestIndex } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke, JokeBatch } from '../types'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
 const getRandomJoke = async (indexList: number[], count: number): Promise<JokeBatch[]> => {
   const index = indexList[randomInt(indexList.length)]
-  const joke = (await getDataByIndex(index)) as Joke
+  const joke: Joke = await getJokeByIndex(index)
   const filteredList = indexList.filter((value) => value !== index)
   return count > 0 && filteredList.length
     ? [...(await getRandomJoke(filteredList, count - 1)), { data: joke, id: index }]
     : [{ data: joke, id: index }]
 }
 
-export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
+export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
   log('Received event', { ...event, body: undefined })
   const count =
     Math.max(Math.min(parseInt(event.queryStringParameters?.count as string, 10), randomCountMaximum), 1) ||

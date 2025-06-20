@@ -17,7 +17,7 @@ describe('delete-item', () => {
   const highestIndex = index * 2
 
   beforeAll(() => {
-    mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(dynamodb).getJokeByIndex.mockResolvedValue(joke)
     mocked(dynamodb).getHighestIndex.mockResolvedValue(highestIndex)
     mocked(events).getIdFromEvent.mockReturnValue(index)
   })
@@ -39,8 +39,8 @@ describe('delete-item', () => {
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect INTERNAL_SERVER_ERROR on deleteDataByIndex reject', async () => {
-      mocked(dynamodb).deleteDataByIndex.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on deleteJokeByIndex reject', async () => {
+      mocked(dynamodb).deleteJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
 
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
@@ -53,23 +53,23 @@ describe('delete-item', () => {
       expect(result).toEqual(status.NO_CONTENT)
     })
 
-    test('expect setDataByIndex not called when index == highestIndex', async () => {
+    test('expect setJokeByIndex not called when index == highestIndex', async () => {
       mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(index)
       await deleteByIdHandler(event)
 
-      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledTimes(0)
+      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledTimes(0)
     })
 
-    test('expect setDataByIndex called with joke', async () => {
+    test('expect setJokeByIndex called with joke', async () => {
       await deleteByIdHandler(event)
 
-      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, joke)
+      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledWith(index, joke)
     })
 
-    test('expect deleteDataByIndex called with highest index', async () => {
+    test('expect deleteJokeByIndex called with highest index', async () => {
       await deleteByIdHandler(event)
 
-      expect(mocked(dynamodb).deleteDataByIndex).toHaveBeenCalledWith(highestIndex)
+      expect(mocked(dynamodb).deleteJokeByIndex).toHaveBeenCalledWith(highestIndex)
     })
 
     test('expect setHighestIndex called with highest index - 1', async () => {
@@ -85,7 +85,7 @@ describe('delete-item', () => {
     })
 
     test('expect NO_CONTENT when index does not exist', async () => {
-      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
+      mocked(dynamodb).getJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
 
       expect(result).toEqual(status.NO_CONTENT)

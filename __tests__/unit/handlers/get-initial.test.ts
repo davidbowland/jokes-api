@@ -20,7 +20,7 @@ describe('get-initial', () => {
     mockRandomInt.mockReturnValue(index - 1)
     jest.spyOn(crypto, 'randomInt').mockImplementation((...args) => mockRandomInt(...args))
 
-    mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(dynamodb).getJokeByIndex.mockResolvedValue(joke)
     mocked(dynamodb).getHighestIndex.mockResolvedValue(count)
   })
 
@@ -32,8 +32,8 @@ describe('get-initial', () => {
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect INTERNAL_SERVER_ERROR on getDataByIndex reject', async () => {
-      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on getJokeByIndex reject', async () => {
+      mocked(dynamodb).getJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await getInitialHandler(event)
 
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)

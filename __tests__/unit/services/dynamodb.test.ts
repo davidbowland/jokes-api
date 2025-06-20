@@ -1,12 +1,14 @@
-import { index, joke } from '../__mocks__'
+import { index, joke, jokeIndex } from '../__mocks__'
 import {
-  deleteDataByIndex,
-  getDataByIndex,
-  getDataByIndexBatch,
+  deleteJokeByIndex,
+  getJokeByIndex,
+  getJokeByIndexBatch,
   getHighestIndex,
-  scanData,
-  setDataByIndex,
+  scanJokes,
+  setJokeByIndex,
   setHighestIndex,
+  getJokeIndex,
+  setJokeIndex,
 } from '@services/dynamodb'
 
 const mockSend = jest.fn()
@@ -26,9 +28,9 @@ jest.mock('@utils/logging', () => ({
 }))
 
 describe('dynamodb', () => {
-  describe('deleteDataByIndex', () => {
+  describe('deleteJokeByIndex', () => {
     test('expect index passed to delete', async () => {
-      await deleteDataByIndex(index)
+      await deleteJokeByIndex(index)
 
       expect(mockSend).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -43,13 +45,40 @@ describe('dynamodb', () => {
     })
   })
 
-  describe('getDataByIndex', () => {
+  describe('getJokeIndex', () => {
+    beforeAll(() => {
+      mockSend.mockResolvedValue({ Item: { Data: { S: JSON.stringify(jokeIndex) } } })
+    })
+
+    test('expect index passed to get', async () => {
+      await getJokeIndex()
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Key: {
+            Index: {
+              N: '0',
+            },
+          },
+          TableName: 'jokes-table',
+        }),
+      )
+    })
+
+    test('expect data parsed and returned', async () => {
+      const result = await getJokeIndex()
+
+      expect(result).toEqual(jokeIndex)
+    })
+  })
+
+  describe('getJokeByIndex', () => {
     beforeAll(() => {
       mockSend.mockResolvedValue({ Item: { Data: { S: JSON.stringify(joke) } } })
     })
 
     test('expect index passed to get', async () => {
-      await getDataByIndex(index)
+      await getJokeByIndex(index)
 
       expect(mockSend).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -64,13 +93,13 @@ describe('dynamodb', () => {
     })
 
     test('expect data parsed and returned', async () => {
-      const result = await getDataByIndex(index)
+      const result = await getJokeByIndex(index)
 
       expect(result).toEqual(joke)
     })
   })
 
-  describe('getDataByIndexBatch', () => {
+  describe('getJokeByIndexBatch', () => {
     beforeAll(() => {
       mockSend.mockResolvedValue({
         Responses: { 'jokes-table': [{ Data: { S: JSON.stringify(joke) }, Index: { N: `${index}` } }] },
@@ -78,7 +107,7 @@ describe('dynamodb', () => {
     })
 
     test('expect index passed to get', async () => {
-      await getDataByIndexBatch([index])
+      await getJokeByIndexBatch([index])
 
       expect(mockSend).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -98,7 +127,7 @@ describe('dynamodb', () => {
     })
 
     test('expect data parsed and returned', async () => {
-      const result = await getDataByIndexBatch([index])
+      const result = await getJokeByIndexBatch([index])
 
       expect(result).toEqual({ [index]: joke })
     })
@@ -138,7 +167,7 @@ describe('dynamodb', () => {
     })
   })
 
-  describe('scanData', () => {
+  describe('scanJokes', () => {
     beforeAll(() => {
       mockSend.mockResolvedValue({
         Items: [
@@ -149,22 +178,42 @@ describe('dynamodb', () => {
     })
 
     test('expect data parsed and returned', async () => {
-      const result = await scanData()
+      const result = await scanJokes()
 
       expect(result).toEqual([{ data: { contents: 'ROFL' }, id: 42 }])
     })
 
     test('expect empty object with no data returned', async () => {
       mockSend.mockResolvedValueOnce({ Items: [] })
-      const result = await scanData()
+      const result = await scanJokes()
 
       expect(result).toEqual([])
     })
   })
 
-  describe('setDataByIndex', () => {
+  describe('setJokeIndex', () => {
     test('expect index and data passed to put', async () => {
-      await setDataByIndex(index, joke)
+      await setJokeIndex(jokeIndex)
+
+      expect(mockSend).toHaveBeenCalledWith(
+        expect.objectContaining({
+          Item: {
+            Data: {
+              S: JSON.stringify(jokeIndex),
+            },
+            Index: {
+              N: '0',
+            },
+          },
+          TableName: 'jokes-table',
+        }),
+      )
+    })
+  })
+
+  describe('setJokeByIndex', () => {
+    test('expect index and data passed to put', async () => {
+      await setJokeByIndex(index, joke)
 
       expect(mockSend).toHaveBeenCalledWith(
         expect.objectContaining({

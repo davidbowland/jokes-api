@@ -17,7 +17,7 @@ describe('patch-item', () => {
   const expectedResult = { ...joke, contents: 'LOL' } as Joke
 
   beforeAll(() => {
-    mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(dynamodb).getJokeByIndex.mockResolvedValue(joke)
     mocked(events).extractJsonPatchFromEvent.mockImplementation((event) => JSON.parse(event.body))
     mocked(events).getIdFromEvent.mockReturnValue(index)
   })
@@ -57,24 +57,24 @@ describe('patch-item', () => {
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect NOT_FOUND on getDataByIndex reject', async () => {
-      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
+    test('expect NOT_FOUND on getJokeByIndex reject', async () => {
+      mocked(dynamodb).getJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)
 
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect INTERNAL_SERVER_ERROR on setDataByIndex reject', async () => {
-      mocked(dynamodb).setDataByIndex.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on setJokeByIndex reject', async () => {
+      mocked(dynamodb).setJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await patchItemHandler(event)
 
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
-    test('expect setDataByIndex called with updated object', async () => {
+    test('expect setJokeByIndex called with updated object', async () => {
       await patchItemHandler(event)
 
-      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, expectedResult)
+      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledWith(index, expectedResult)
     })
 
     test('expect OK and body', async () => {

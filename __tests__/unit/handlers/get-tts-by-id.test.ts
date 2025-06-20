@@ -18,7 +18,7 @@ describe('get-tts-by-id', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
 
   beforeAll(() => {
-    mocked(dynamodb).getDataByIndex.mockResolvedValue(joke)
+    mocked(dynamodb).getJokeByIndex.mockResolvedValue(joke)
     mocked(events).getIdFromEvent.mockReturnValue(index)
     mocked(polly).synthesizeSpeech.mockResolvedValue(synthesizeSpeechResult)
   })
@@ -40,15 +40,15 @@ describe('get-tts-by-id', () => {
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect NOT_FOUND when getDataByIndex rejects', async () => {
-      mocked(dynamodb).getDataByIndex.mockRejectedValueOnce(undefined)
+    test('expect NOT_FOUND when getJokeByIndex rejects', async () => {
+      mocked(dynamodb).getJokeByIndex.mockRejectedValueOnce(undefined)
       const result = await getByIdHandler(event)
 
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
     test('expect OK and result when audio exists', async () => {
-      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithAudio)
+      mocked(dynamodb).getJokeByIndex.mockResolvedValueOnce(jokeWithAudio)
       const result = await getByIdHandler(event)
 
       expect(mocked(polly).synthesizeSpeech).toHaveBeenCalledTimes(0)
@@ -84,7 +84,7 @@ describe('get-tts-by-id', () => {
         }),
       )
       expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
-      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
+      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
     })
 
     test("expect audio is regenerated when audio versions don't match", async () => {
@@ -92,7 +92,7 @@ describe('get-tts-by-id', () => {
         ...jokeWithAudio,
         audio: { ...jokeWithAudio.audio, version: 'no_match' },
       }
-      mocked(dynamodb).getDataByIndex.mockResolvedValueOnce(jokeWithMismatchedAudioVersions)
+      mocked(dynamodb).getJokeByIndex.mockResolvedValueOnce(jokeWithMismatchedAudioVersions)
       const result = await getByIdHandler(event)
 
       expect(result).toEqual(
@@ -105,7 +105,7 @@ describe('get-tts-by-id', () => {
         }),
       )
       expect(Buffer.from(result.body, 'base64').toString('utf8')).toEqual(joke.contents)
-      expect(mocked(dynamodb).setDataByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
+      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledWith(index, jokeWithAudio)
     })
   })
 })

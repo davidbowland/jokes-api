@@ -1,12 +1,16 @@
 import { SynthesizeSpeechOutput } from '@aws-sdk/client-polly'
 import { Readable } from 'stream'
 
-import { Joke, JokeAudio, PatchOperation } from '@types'
+import { Index, Joke, JokeAudio, PatchOperation } from '@types'
 
 export const index = 42
 
 export const joke: Joke = {
   contents: 'ROFL',
+}
+
+export const jokeIndex: Index = {
+  count: 50,
 }
 
 export const synthesizeSpeechOutput: SynthesizeSpeechOutput = {

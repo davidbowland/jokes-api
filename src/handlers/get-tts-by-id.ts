@@ -1,5 +1,5 @@
 import { pollyAudioVersion } from '../config'
-import { getDataByIndex, setDataByIndex } from '../services/dynamodb'
+import { getJokeByIndex, setJokeByIndex } from '../services/dynamodb'
 import { synthesizeSpeech } from '../services/polly'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getIdFromEvent } from '../utils/events'
@@ -21,7 +21,7 @@ const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> 
         version,
       },
     }
-    await setDataByIndex(index, jokeWithAudio)
+    await setJokeByIndex(index, jokeWithAudio)
     return jokeWithAudio
   } catch (error) {
     logError(error)
@@ -29,9 +29,9 @@ const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> 
   }
 }
 
-const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<any>> => {
+const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<unknown>> => {
   try {
-    const joke = (await getDataByIndex(index)) as Joke
+    const joke: Joke = await getJokeByIndex(index)
     const jokeWithAudio = await synthesize(index, joke)
     if (jokeWithAudio === undefined) {
       return status.INTERNAL_SERVER_ERROR
@@ -47,7 +47,7 @@ const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<any>> =
   }
 }
 
-export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
+export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const index = getIdFromEvent(event)
@@ -57,7 +57,7 @@ export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<API
 
     const result = await fetchById(index)
     return result
-  } catch (error: any) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
+  } catch (error: unknown) {
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: (error as Error).message }) }
   }
 }

@@ -1,8 +1,8 @@
 import {
-  deleteDataByIndex,
-  getDataByIndex,
+  deleteJokeByIndex,
+  getJokeByIndex,
   getHighestIndex,
-  setDataByIndex,
+  setJokeByIndex,
   setHighestIndex,
 } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
@@ -10,18 +10,18 @@ import { getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
-const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResultV2<any>> => {
+const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResultV2<unknown>> => {
   try {
-    const data = (await getDataByIndex(index)) as Joke
+    const data: Joke = await getJokeByIndex(index)
     try {
       const highestIndex = await getHighestIndex()
       if (index > highestIndex) {
         return status.NO_CONTENT
       } else if (highestIndex !== index) {
-        const highestData = await getDataByIndex(highestIndex)
-        await setDataByIndex(index, highestData)
+        const highestData = await getJokeByIndex(highestIndex)
+        await setJokeByIndex(index, highestData)
       }
-      await deleteDataByIndex(highestIndex)
+      await deleteJokeByIndex(highestIndex)
       await setHighestIndex(highestIndex - 1)
       return { ...status.OK, body: JSON.stringify(data) }
     } catch (error) {
@@ -33,7 +33,7 @@ const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResult
   }
 }
 
-export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<any>> => {
+export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
   log('Received event', { ...event, body: undefined })
   try {
     const index = getIdFromEvent(event)
@@ -43,7 +43,7 @@ export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<
 
     const result = await fetchDataThenDelete(index)
     return result
-  } catch (error: any) {
-    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: error.message }) }
+  } catch (error: unknown) {
+    return { ...status.BAD_REQUEST, body: JSON.stringify({ message: (error as Error).message }) }
   }
 }
