@@ -7,7 +7,7 @@ const ajv = new AJV({ allErrors: true })
 /* Jokes */
 
 // eslint-disable-next-line @typescript-eslint/no-empty-interface
-export interface JokeSchema extends Omit<Joke, 'audio'> {}
+export interface JokeSchema extends Omit<Joke, 'audio' | 'version'> {}
 
 export const formatJoke = (joke: JokeSchema): Joke => {
   const jsonTypeDefinition = {
@@ -22,6 +22,7 @@ export const formatJoke = (joke: JokeSchema): Joke => {
 
   return {
     contents: joke.contents,
+    version: 1,
   }
 }
 
@@ -38,10 +39,10 @@ export const extractJokeFromEvent = (event: APIGatewayProxyEventV2): Joke =>
 export const extractJsonPatchFromEvent = (event: APIGatewayProxyEventV2): PatchOperation[] =>
   parseEventBody(event) as PatchOperation[]
 
-export const getIdFromEvent = (event: APIGatewayProxyEventV2): number => {
-  const id = parseInt(event.pathParameters?.index as string, 10)
-  if (isNaN(id)) {
-    throw new Error('Invalid joke index')
+export const getIdFromEvent = (event: APIGatewayProxyEventV2): string => {
+  const id = event.pathParameters?.id
+  if (!id) {
+    throw new Error('Invalid joke ID')
   }
   return id
 }

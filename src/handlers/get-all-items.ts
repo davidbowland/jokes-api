@@ -7,7 +7,8 @@ export const getAllItemsHandler = async (event: APIGatewayProxyEventV2): Promise
   log('Received event', event)
   try {
     const data = await scanJokes()
-    return { ...status.OK, body: JSON.stringify(data) }
+    const response = data.map(({ data: { version: _, ...joke }, id }) => ({ data: joke, id }))
+    return { ...status.OK, body: JSON.stringify(response) }
   } catch (error) {
     logError(error)
     return status.INTERNAL_SERVER_ERROR

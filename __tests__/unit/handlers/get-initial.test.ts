@@ -1,7 +1,7 @@
 import crypto from 'crypto'
 import { mocked } from 'jest-mock'
 
-import { index, joke } from '../__mocks__'
+import { id, joke } from '../__mocks__'
 import eventJson from '@events/get-initial.json'
 import { getInitialHandler } from '@handlers/get-initial'
 import * as dynamodb from '@services/dynamodb'
@@ -12,28 +12,28 @@ jest.mock('@services/dynamodb')
 jest.mock('@utils/logging')
 
 describe('get-initial', () => {
-  const count = 102
+  const roster = [id, 'abc123', 'def456']
   const event = eventJson as unknown as APIGatewayProxyEventV2
   const mockRandomInt = jest.fn()
 
   beforeAll(() => {
-    mockRandomInt.mockReturnValue(index - 1)
+    mockRandomInt.mockReturnValue(0)
     jest.spyOn(crypto, 'randomInt').mockImplementation((...args) => mockRandomInt(...args))
 
-    mocked(dynamodb).getJokeByIndex.mockResolvedValue(joke)
-    mocked(dynamodb).getHighestIndex.mockResolvedValue(count)
+    mocked(dynamodb).getJokeById.mockResolvedValue(joke)
+    mocked(dynamodb).getRoster.mockResolvedValue(roster)
   })
 
   describe('getInitialHandler', () => {
     test('expect NOT_FOUND when no jokes', async () => {
-      mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(0)
+      mocked(dynamodb).getRoster.mockResolvedValueOnce([])
       const result = await getInitialHandler(event)
 
       expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
     })
 
-    test('expect INTERNAL_SERVER_ERROR on getJokeByIndex reject', async () => {
-      mocked(dynamodb).getJokeByIndex.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on getJokeById reject', async () => {
+      mocked(dynamodb).getJokeById.mockRejectedValueOnce(undefined)
       const result = await getInitialHandler(event)
 
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
@@ -41,8 +41,12 @@ describe('get-initial', () => {
 
     test('expect OK, count, and joke', async () => {
       const result = await getInitialHandler(event)
+      const { version: _, ...jokeWithoutVersion } = joke
 
-      expect(result).toEqual({ ...status.OK, body: JSON.stringify({ count, joke: { data: joke, id: index } }) })
+      expect(result).toEqual({
+        ...status.OK,
+        body: JSON.stringify({ count: 3, joke: { data: jokeWithoutVersion, id } }),
+      })
     })
   })
 })

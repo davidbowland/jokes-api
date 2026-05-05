@@ -1,28 +1,27 @@
-import {
-  deleteJokeByIndex,
-  getJokeByIndex,
-  getHighestIndex,
-  setJokeByIndex,
-  setHighestIndex,
-} from '../services/dynamodb'
+import { ConditionalCheckFailedException, deleteJoke, getJokeById, removeFromRoster } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
-const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResultV2<unknown>> => {
+const MAX_ROSTER_RETRIES = 3
+
+const fetchDataThenDelete = async (id: string): Promise<APIGatewayProxyResultV2<unknown>> => {
   try {
-    const data: Joke = await getJokeByIndex(index)
+    const data: Joke = await getJokeById(id)
     try {
-      const highestIndex = await getHighestIndex()
-      if (index > highestIndex) {
-        return status.NO_CONTENT
-      } else if (highestIndex !== index) {
-        const highestData = await getJokeByIndex(highestIndex)
-        await setJokeByIndex(index, highestData)
+      await deleteJoke(id)
+      for (let attempt = 0; attempt < MAX_ROSTER_RETRIES; attempt++) {
+        try {
+          await removeFromRoster(id)
+          break
+        } catch (error) {
+          if (error instanceof ConditionalCheckFailedException && attempt < MAX_ROSTER_RETRIES - 1) {
+            continue
+          }
+          throw error
+        }
       }
-      await deleteJokeByIndex(highestIndex)
-      await setHighestIndex(highestIndex - 1)
       return { ...status.OK, body: JSON.stringify(data) }
     } catch (error) {
       logError(error)
@@ -36,12 +35,8 @@ const fetchDataThenDelete = async (index: number): Promise<APIGatewayProxyResult
 export const deleteByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const index = getIdFromEvent(event)
-    if (index < 1) {
-      return status.NOT_FOUND
-    }
-
-    const result = await fetchDataThenDelete(index)
+    const id = getIdFromEvent(event)
+    const result = await fetchDataThenDelete(id)
     return result
   } catch (error: unknown) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: (error as Error).message }) }
