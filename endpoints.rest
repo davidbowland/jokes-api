@@ -61,29 +61,6 @@ GET https://{{jokes-api-host}}/v1/jokes/{{id}} HTTP/1.1
 
 GET https://{{jokes-api-host}}/v1/jokes/{{id}}/tts HTTP/1.1
 
-### Fetch count of jokes
-# Auth: None
-# Response 200:
-#   { "count": number }
-# Response 500: { "message": "Internal server error" }
-
-GET https://{{jokes-api-host}}/v1/jokes/count HTTP/1.1
-
-### Request count and a random joke (initial load)
-# Auth: None
-# Response 200:
-#   {
-#     "count": number,
-#     "joke": {
-#       "data": { "contents": "string", "audio": { ... } | undefined },
-#       "id": number
-#     }
-#   }
-# Response 404: { "message": "Not found" } (no jokes exist)
-# Response 500: { "message": "Internal server error" }
-
-GET https://{{jokes-api-host}}/v1/jokes/initial HTTP/1.1
-
 ### Request random jokes
 # Auth: None
 # Query params:
