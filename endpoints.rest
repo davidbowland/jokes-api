@@ -1,49 +1,147 @@
+###############################################################################
+# Jokes API - Endpoints
+#
+# Variables:
+#   {{jokes-api-host}} - API host (e.g. jokes-api.bowland.link)
+#   {{jokes-token}}    - Bearer token (Cognito JWT)
+#   {{id}}             - Joke index (integer >= 1)
+###############################################################################
+
 ### Delete joke by ID
+# Auth: Required (Bearer token)
+# Path params: {index} - integer, the joke index to delete
+# Response 200:
+#   {
+#     "contents": "string",
+#     "audio": { "base64": "string", "contentType": "string", "version": "string" } | undefined
+#   }
+# Response 204: No content (joke not found or index out of range)
+# Response 400: { "message": "string" } (invalid index)
+# Response 404: { "message": "Not found" } (index < 1)
 
 DELETE https://{{jokes-api-host}}/v1/jokes/{{id}} HTTP/1.1
 Authorization: Bearer {{jokes-token}}
 
 ### Fetch all jokes
+# Auth: Required (Bearer token)
+# Response 200:
+#   [
+#     { "Index": number, "contents": "string", "audio": { ... } | undefined },
+#     ...
+#   ]
+# Response 500: { "message": "Internal server error" }
 
 GET https://{{jokes-api-host}}/v1/jokes HTTP/1.1
 Authorization: Bearer {{jokes-token}}
 
-### Fetch a single joke
+### Fetch a single joke by ID
+# Auth: None
+# Path params: {index} - integer, the joke index
+# Response 200:
+#   {
+#     "contents": "string",
+#     "audio": { "base64": "string", "contentType": "string", "version": "string" } | undefined,
+#     "index": number
+#   }
+# Response 400: { "message": "string" } (invalid index)
+# Response 404: { "message": "Not found" } (index < 1 or joke not found)
 
 GET https://{{jokes-api-host}}/v1/jokes/{{id}} HTTP/1.1
 
-### Fetch text-to-speech for a joke
+### Fetch text-to-speech audio for a joke
+# Auth: None
+# Path params: {index} - integer, the joke index
+# Response 200:
+#   Body: base64-encoded audio binary
+#   Headers: { "content-type": "audio/mpeg" (or similar) }
+#   isBase64Encoded: true
+# Response 400: { "message": "string" } (invalid index)
+# Response 404: { "message": "Not found" } (index < 1 or joke not found)
+# Response 500: { "message": "Internal server error" } (Polly synthesis failed)
 
 GET https://{{jokes-api-host}}/v1/jokes/{{id}}/tts HTTP/1.1
 
 ### Fetch count of jokes
+# Auth: None
+# Response 200:
+#   { "count": number }
+# Response 500: { "message": "Internal server error" }
 
 GET https://{{jokes-api-host}}/v1/jokes/count HTTP/1.1
 
-### Request count and a random joke
+### Request count and a random joke (initial load)
+# Auth: None
+# Response 200:
+#   {
+#     "count": number,
+#     "joke": {
+#       "data": { "contents": "string", "audio": { ... } | undefined },
+#       "id": number
+#     }
+#   }
+# Response 404: { "message": "Not found" } (no jokes exist)
+# Response 500: { "message": "Internal server error" }
 
 GET https://{{jokes-api-host}}/v1/jokes/initial HTTP/1.1
 
-### Request a random joke
+### Request random jokes
+# Auth: None
+# Query params:
+#   count - integer, number of jokes to return (1 to 10, default 10)
+#   avoid - comma-separated list of joke indexes to exclude
+# Response 200:
+#   [
+#     { "data": { "contents": "string", "audio": { ... } | undefined }, "id": number },
+#     ...
+#   ]
+# Response 404: { "message": "Not found" } (no jokes exist)
+# Response 500: { "message": "Internal server error" }
 
-GET https://{{jokes-api-host}}/v1/jokes/random HTTP/1.1
+GET https://{{jokes-api-host}}/v1/jokes/random?count=5&avoid=1,2,3 HTTP/1.1
 
-### Change a joke
+### Change a joke (JSON Patch)
+# Auth: Required (Bearer token)
+# Path params: {index} - integer, the joke index
+# Content-Type: application/json
+# Request body (JSON Patch array):
+#   [
+#     { "op": "replace"|"add"|"remove"|"move"|"copy"|"test", "path": "string", "value": any }
+#   ]
+# Response 200:
+#   { "contents": "string", "audio": { ... } | undefined }
+# Response 400: { "message": "string" } (invalid index or invalid patch)
+# Response 404: { "message": "Not found" } (index < 1 or joke not found)
+# Response 500: { "message": "Internal server error" }
 
 PATCH https://{{jokes-api-host}}/v1/jokes/{{id}} HTTP/1.1
 Authorization: Bearer {{jokes-token}}
+Content-Type: application/json
 
 [
   { "op": "replace", "path": "/contents", "value": "LOL" }
 ]
 
 ### Create a new joke
+# Auth: Required (Bearer token)
+# Content-Type: application/json
+# Request body:
+#   { "contents": "string" }
+# Response 201:
+#   { "contents": "string", "index": number }
+#   Headers: { "Location": "https://{host}/v1/jokes/{index}" }
+# Response 400: { "message": "string" } (invalid body / validation error)
+# Response 500: { "message": "Internal server error" }
 
 POST https://{{jokes-api-host}}/v1/jokes HTTP/1.1
 Authorization: Bearer {{jokes-token}}
+Content-Type: application/json
 
 {
   "contents": "LOL"
 }
 
-###
+### Migrate jokes (temporary)
+# Auth: None
+# Response 200: migration result
+
+POST https://{{jokes-api-host}}/v1/jokes/migrate HTTP/1.1

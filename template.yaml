@@ -730,6 +730,8 @@ Resources:
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
           DYNAMODB_TABLE_NAME: !Ref JokesTable
+          ID_MAX_LENGTH: 8
+          ID_MIN_LENGTH: 6
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
