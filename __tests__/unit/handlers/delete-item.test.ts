@@ -1,6 +1,6 @@
 import { mocked } from 'jest-mock'
 
-import { index, joke } from '../__mocks__'
+import { id, joke } from '../__mocks__'
 import eventJson from '@events/delete-item.json'
 import { deleteByIdHandler } from '@handlers/delete-item'
 import * as dynamodb from '@services/dynamodb'
@@ -14,16 +14,14 @@ jest.mock('@utils/logging')
 
 describe('delete-item', () => {
   const event = eventJson as unknown as APIGatewayProxyEventV2
-  const highestIndex = index * 2
 
   beforeAll(() => {
-    mocked(dynamodb).getJokeByIndex.mockResolvedValue(joke)
-    mocked(dynamodb).getHighestIndex.mockResolvedValue(highestIndex)
-    mocked(events).getIdFromEvent.mockReturnValue(index)
+    mocked(dynamodb).getJokeById.mockResolvedValue(joke)
+    mocked(events).getIdFromEvent.mockReturnValue(id)
   })
 
   describe('deleteByIdHandler', () => {
-    test('expect BAD_REQUEST on invalid index', async () => {
+    test('expect BAD_REQUEST on invalid id', async () => {
       mocked(events).getIdFromEvent.mockImplementationOnce(() => {
         throw new Error('Bad request')
       })
@@ -32,60 +30,33 @@ describe('delete-item', () => {
       expect(result).toEqual(expect.objectContaining(status.BAD_REQUEST))
     })
 
-    test('expect NOT_FOUND on when index < 1', async () => {
-      mocked(events).getIdFromEvent.mockReturnValueOnce(0)
-      const result = await deleteByIdHandler(event)
-
-      expect(result).toEqual(expect.objectContaining(status.NOT_FOUND))
-    })
-
-    test('expect INTERNAL_SERVER_ERROR on deleteJokeByIndex reject', async () => {
-      mocked(dynamodb).deleteJokeByIndex.mockRejectedValueOnce(undefined)
+    test('expect INTERNAL_SERVER_ERROR on deleteJoke reject', async () => {
+      mocked(dynamodb).deleteJoke.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
 
       expect(result).toEqual(status.INTERNAL_SERVER_ERROR)
     })
 
-    test('expect NO_CONTENT when index is higher than max index', async () => {
-      mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(index - 2)
-      const result = await deleteByIdHandler(event)
-
-      expect(result).toEqual(status.NO_CONTENT)
-    })
-
-    test('expect setJokeByIndex not called when index == highestIndex', async () => {
-      mocked(dynamodb).getHighestIndex.mockResolvedValueOnce(index)
+    test('expect deleteJoke called with id', async () => {
       await deleteByIdHandler(event)
 
-      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledTimes(0)
+      expect(mocked(dynamodb).deleteJoke).toHaveBeenCalledWith(id)
     })
 
-    test('expect setJokeByIndex called with joke', async () => {
+    test('expect removeFromRoster called with id', async () => {
       await deleteByIdHandler(event)
 
-      expect(mocked(dynamodb).setJokeByIndex).toHaveBeenCalledWith(index, joke)
+      expect(mocked(dynamodb).removeFromRoster).toHaveBeenCalledWith(id)
     })
 
-    test('expect deleteJokeByIndex called with highest index', async () => {
-      await deleteByIdHandler(event)
-
-      expect(mocked(dynamodb).deleteJokeByIndex).toHaveBeenCalledWith(highestIndex)
-    })
-
-    test('expect setHighestIndex called with highest index - 1', async () => {
-      await deleteByIdHandler(event)
-
-      expect(mocked(dynamodb).setHighestIndex).toHaveBeenCalledWith(highestIndex - 1)
-    })
-
-    test('expect OK when index exists', async () => {
+    test('expect OK when id exists', async () => {
       const result = await deleteByIdHandler(event)
 
       expect(result).toEqual({ ...status.OK, body: JSON.stringify(joke) })
     })
 
-    test('expect NO_CONTENT when index does not exist', async () => {
-      mocked(dynamodb).getJokeByIndex.mockRejectedValueOnce(undefined)
+    test('expect NO_CONTENT when id does not exist', async () => {
+      mocked(dynamodb).getJokeById.mockRejectedValueOnce(undefined)
       const result = await deleteByIdHandler(event)
 
       expect(result).toEqual(status.NO_CONTENT)

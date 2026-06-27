@@ -135,17 +135,17 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
-            TableName: !Ref JokesTable
+            TableName: !Ref JokesTableNew
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          DYNAMODB_TABLE_NAME: !Ref JokesTableNew
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
           Properties:
             RestApiId: !Ref Api
-            Path: /jokes/{index}
+            Path: /jokes/{id}
             Method: delete
             Auth:
               ApiKeyRequired: true
@@ -153,7 +153,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
-            Path: /jokes/{index}
+            Path: /jokes/{id}
             Method: delete
             Auth:
               Authorizer: CognitoAuthorizer
@@ -207,10 +207,10 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBReadPolicy:
-            TableName: !Ref JokesTable
+            TableName: !Ref JokesTableNew
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          DYNAMODB_TABLE_NAME: !Ref JokesTableNew
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
@@ -279,10 +279,10 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBReadPolicy:
-            TableName: !Ref JokesTable
+            TableName: !Ref JokesTableNew
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          DYNAMODB_TABLE_NAME: !Ref JokesTableNew
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
           POLLY_AUDIO_VERSION: !FindInMap [EnvironmentMap, !Ref Environment, pollyAudioVersion]
       Events:
@@ -290,7 +290,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref Api
-            Path: /jokes/{index}
+            Path: /jokes/{id}
             Method: get
             Auth:
               ApiKeyRequired: true
@@ -298,7 +298,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
-            Path: /jokes/{index}
+            Path: /jokes/{id}
             Method: get
             Auth:
               Authorizer: NONE
@@ -352,7 +352,7 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
-            TableName: !Ref JokesTable
+            TableName: !Ref JokesTableNew
         # Access to use Polly for TTS
         - Version: 2012-10-17
           Statement:
@@ -362,7 +362,7 @@ Resources:
               Resource: '*'
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          DYNAMODB_TABLE_NAME: !Ref JokesTableNew
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
           POLLY_AUDIO_VERSION: !FindInMap [EnvironmentMap, !Ref Environment, pollyAudioVersion]
           POLLY_ENGINE: !FindInMap [EnvironmentMap, !Ref Environment, pollyEngine]
@@ -372,7 +372,7 @@ Resources:
           Type: Api
           Properties:
             RestApiId: !Ref Api
-            Path: /jokes/{index}/tts
+            Path: /jokes/{id}/tts
             Method: get
             Auth:
               ApiKeyRequired: true
@@ -380,7 +380,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
-            Path: /jokes/{index}/tts
+            Path: /jokes/{id}/tts
             Method: get
             Auth:
               Authorizer: NONE
@@ -422,150 +422,6 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref GetTtsByIdLogGroup
 
-  GetCountFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/handlers/get-count.getCountHandler
-      Runtime: nodejs24.x
-      Architectures:
-        - x86_64
-      MemorySize: 1536
-      Description: jokes-api get joke count
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBReadPolicy:
-            TableName: !Ref JokesTable
-      Environment:
-        Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
-          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
-      Events:
-        ApiKey:
-          Type: Api
-          Properties:
-            RestApiId: !Ref Api
-            Path: /jokes/count
-            Method: get
-            Auth:
-              ApiKeyRequired: true
-        Http:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApi
-            Path: /jokes/count
-            Method: get
-            Auth:
-              Authorizer: NONE
-      Tags:
-        'created-by': 'jokes-api'
-        'created-for': 'jokes'
-        'environment': !Ref Environment
-      Timeout: 10
-      Tracing: Active
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: 'es2020'
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/get-count.ts
-
-  GetCountLogGroup:
-    Type: AWS::Logs::LogGroup
-    DependsOn: GetCountFunction
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${GetCountFunction}
-      RetentionInDays: 30
-      Tags:
-        - Key: 'created-by'
-          Value: 'jokes-api'
-        - Key: 'created-for'
-          Value: 'jokes'
-        - Key: 'environment'
-          Value: !Ref Environment
-
-  GetCountLogGroupSubscription:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      DestinationArn: !Sub
-        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
-        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
-      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
-      LogGroupName: !Ref GetCountLogGroup
-
-  GetInitialFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/handlers/get-initial.getInitialHandler
-      Runtime: nodejs24.x
-      Architectures:
-        - x86_64
-      MemorySize: 1024
-      Description: jokes-api get initial joke and count
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBReadPolicy:
-            TableName: !Ref JokesTable
-      Environment:
-        Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
-          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
-      Events:
-        ApiKey:
-          Type: Api
-          Properties:
-            RestApiId: !Ref Api
-            Path: /jokes/initial
-            Method: get
-            Auth:
-              ApiKeyRequired: true
-        Http:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApi
-            Path: /jokes/initial
-            Method: get
-            Auth:
-              Authorizer: NONE
-      Tags:
-        'created-by': 'jokes-api'
-        'created-for': 'jokes'
-        'environment': !Ref Environment
-      Timeout: 30
-      Tracing: Active
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: 'es2020'
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/get-initial.ts
-
-  GetInitialLogGroup:
-    Type: AWS::Logs::LogGroup
-    DependsOn: GetInitialFunction
-    Properties:
-      LogGroupName: !Sub /aws/lambda/${GetInitialFunction}
-      RetentionInDays: 30
-      Tags:
-        - Key: 'created-by'
-          Value: 'jokes-api'
-        - Key: 'created-for'
-          Value: 'jokes'
-        - Key: 'environment'
-          Value: !Ref Environment
-
-  GetInitialLogGroupSubscription:
-    Type: AWS::Logs::SubscriptionFilter
-    Properties:
-      DestinationArn: !Sub
-        - 'arn:aws:lambda:${AWS::Region}:${AWS::AccountId}:function:${Function}'
-        - Function: !FindInMap [EnvironmentMap, !Ref Environment, logStreamFunction]
-      FilterPattern: '[timestamp, uuid, level="ERROR", message]'
-      LogGroupName: !Ref GetInitialLogGroup
-
   GetRandomFunction:
     Type: AWS::Serverless::Function
     Properties:
@@ -578,10 +434,10 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
-            TableName: !Ref JokesTable
+            TableName: !Ref JokesTableNew
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          DYNAMODB_TABLE_NAME: !Ref JokesTableNew
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
           RANDOM_COUNT_MAXIMUM: 10
       Events:
@@ -651,17 +507,17 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
-            TableName: !Ref JokesTable
+            TableName: !Ref JokesTableNew
       Environment:
         Variables:
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          DYNAMODB_TABLE_NAME: !Ref JokesTableNew
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
           Type: Api
           Properties:
             RestApiId: !Ref Api
-            Path: /jokes/{index}
+            Path: /jokes/{id}
             Method: patch
             Auth:
               ApiKeyRequired: true
@@ -669,7 +525,7 @@ Resources:
           Type: HttpApi
           Properties:
             ApiId: !Ref HttpApi
-            Path: /jokes/{index}
+            Path: /jokes/{id}
             Method: patch
             Auth:
               Authorizer: CognitoAuthorizer
@@ -723,13 +579,15 @@ Resources:
       Policies:
         - AWSLambdaBasicExecutionRole
         - DynamoDBCrudPolicy:
-            TableName: !Ref JokesTable
+            TableName: !Ref JokesTableNew
       Environment:
         Variables:
           API_URL: !Sub
             - 'https://${Domain}/v1/jokes'
             - Domain: !FindInMap [EnvironmentMap, !Ref Environment, domain]
-          DYNAMODB_TABLE_NAME: !Ref JokesTable
+          DYNAMODB_TABLE_NAME: !Ref JokesTableNew
+          ID_MAX_LENGTH: 8
+          ID_MIN_LENGTH: 6
           NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
       Events:
         ApiKey:
@@ -786,6 +644,56 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref PostLogGroup
 
+  # Migration (temporary — remove after migration)
+
+  MigrateFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: src/handlers/migrate.migrateHandler
+      Runtime: nodejs24.x
+      Architectures:
+        - x86_64
+      MemorySize: 1024
+      Description: jokes-api data migration (temporary)
+      Policies:
+        - AWSLambdaBasicExecutionRole
+        - DynamoDBReadPolicy:
+            TableName: !Ref JokesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref JokesTableNew
+      Environment:
+        Variables:
+          DYNAMODB_TABLE_NAME: !Sub
+            - '${Table}-v2'
+            - Table: !FindInMap [EnvironmentMap, !Ref Environment, table]
+          ID_MAX_LENGTH: 8
+          ID_MIN_LENGTH: 6
+          MIGRATION_SOURCE_TABLE: !FindInMap [EnvironmentMap, !Ref Environment, table]
+          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
+      Events:
+        Http:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref HttpApi
+            Path: /jokes/migrate
+            Method: post
+            Auth:
+              Authorizer: NONE
+      Tags:
+        'created-by': 'jokes-api'
+        'created-for': 'jokes'
+        'environment': !Ref Environment
+      Timeout: 300
+      Tracing: Active
+    Metadata:
+      BuildMethod: esbuild
+      BuildProperties:
+        Minify: true
+        Target: 'es2020'
+        Sourcemap: true
+        EntryPoints:
+          - src/handlers/migrate.ts
+
   # Database
 
   JokesTable:
@@ -799,3 +707,24 @@ Resources:
         'created-by': 'jokes-api'
         'created-for': 'jokes'
         'environment': !Ref Environment
+
+  JokesTableNew:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      AttributeDefinitions:
+        - AttributeName: Id
+          AttributeType: S
+      BillingMode: PAY_PER_REQUEST
+      KeySchema:
+        - AttributeName: Id
+          KeyType: HASH
+      TableName: !Sub
+        - '${Table}-v2'
+        - Table: !FindInMap [EnvironmentMap, !Ref Environment, table]
+      Tags:
+        - Key: 'created-by'
+          Value: 'jokes-api'
+        - Key: 'created-for'
+          Value: 'jokes'
+        - Key: 'environment'
+          Value: !Ref Environment

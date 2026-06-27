@@ -1,13 +1,10 @@
 export * from 'aws-lambda'
 export { Operation as PatchOperation } from 'fast-json-patch'
 
-export interface Index {
-  count: number
-}
-
 export interface Joke {
   audio?: JokeAudio
   contents: string
+  version: number
 }
 
 export interface JokeAudio {
@@ -18,7 +15,7 @@ export interface JokeAudio {
 
 export interface JokeBatch {
   data: Joke
-  id: number
+  id: string
 }
 
 export interface StringObject {

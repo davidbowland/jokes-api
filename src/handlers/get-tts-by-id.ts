@@ -1,12 +1,12 @@
 import { pollyAudioVersion } from '../config'
-import { getJokeByIndex, setJokeByIndex } from '../services/dynamodb'
+import { getJokeById, updateJoke } from '../services/dynamodb'
 import { synthesizeSpeech } from '../services/polly'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getIdFromEvent } from '../utils/events'
 import { log, logError } from '../utils/logging'
 import status from '../utils/status'
 
-const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> => {
+const synthesize = async (id: string, joke: Joke): Promise<Joke | undefined> => {
   if (joke.audio?.version === pollyAudioVersion) {
     return joke
   }
@@ -21,7 +21,11 @@ const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> 
         version,
       },
     }
-    await setJokeByIndex(index, jokeWithAudio)
+    try {
+      await updateJoke(id, jokeWithAudio, joke.version)
+    } catch {
+      // Version conflict means another request already updated — safe to ignore
+    }
     return jokeWithAudio
   } catch (error) {
     logError(error)
@@ -29,10 +33,10 @@ const synthesize = async (index: number, joke: Joke): Promise<Joke | undefined> 
   }
 }
 
-const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<unknown>> => {
+const fetchById = async (id: string): Promise<APIGatewayProxyResultV2<unknown>> => {
   try {
-    const joke: Joke = await getJokeByIndex(index)
-    const jokeWithAudio = await synthesize(index, joke)
+    const joke: Joke = await getJokeById(id)
+    const jokeWithAudio = await synthesize(id, joke)
     if (jokeWithAudio === undefined) {
       return status.INTERNAL_SERVER_ERROR
     }
@@ -50,12 +54,8 @@ const fetchById = async (index: number): Promise<APIGatewayProxyResultV2<unknown
 export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
   log('Received event', { ...event, body: undefined })
   try {
-    const index = getIdFromEvent(event)
-    if (index < 1) {
-      return status.NOT_FOUND
-    }
-
-    const result = await fetchById(index)
+    const id = getIdFromEvent(event)
+    const result = await fetchById(id)
     return result
   } catch (error: unknown) {
     return { ...status.BAD_REQUEST, body: JSON.stringify({ message: (error as Error).message }) }

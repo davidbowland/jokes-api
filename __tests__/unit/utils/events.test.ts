@@ -1,63 +1,60 @@
-import { index, joke, jsonPatchOperations } from '../__mocks__'
-import getEventJson from '@events/get-by-id.json'
-import patchEventJson from '@events/patch-item.json'
-import postEventJson from '@events/post-item.json'
 import { APIGatewayProxyEventV2 } from '@types'
-import { extractJokeFromEvent, extractJsonPatchFromEvent, getIdFromEvent } from '@utils/events'
+import { extractJokeFromEvent, extractJsonPatchFromEvent, formatJoke, getIdFromEvent } from '@utils/events'
 
 describe('events', () => {
-  describe('extractJokeFromEvent', () => {
-    const event = postEventJson as unknown as APIGatewayProxyEventV2
+  describe('formatJoke', () => {
+    test('expect valid joke to pass', () => {
+      const result = formatJoke({ contents: 'LOL' })
 
-    test('expect joke from event', () => {
+      expect(result).toEqual({ contents: 'LOL', version: 1 })
+    })
+
+    test('expect invalid joke to throw', () => {
+      expect(() => formatJoke({} as any)).toThrow()
+    })
+  })
+
+  describe('extractJokeFromEvent', () => {
+    test('expect joke extracted from event body', () => {
+      const event = { body: JSON.stringify({ contents: 'LOL' }) } as unknown as APIGatewayProxyEventV2
       const result = extractJokeFromEvent(event)
 
-      expect(result).toEqual(joke)
+      expect(result).toEqual({ contents: 'LOL', version: 1 })
     })
 
-    test('expect joke from event in base64', () => {
-      const tempEvent = {
-        ...event,
-        body: Buffer.from(event.body).toString('base64'),
+    test('expect base64 body decoded', () => {
+      const event = {
+        body: Buffer.from(JSON.stringify({ contents: 'LOL' })).toString('base64'),
         isBase64Encoded: true,
       } as unknown as APIGatewayProxyEventV2
-      const result = extractJokeFromEvent(tempEvent)
+      const result = extractJokeFromEvent(event)
 
-      expect(result).toEqual(joke)
-    })
-
-    test('expect reject on invalid event', () => {
-      const tempEvent = { ...event, body: JSON.stringify({}) } as unknown as APIGatewayProxyEventV2
-
-      expect(() => extractJokeFromEvent(tempEvent)).toThrow()
+      expect(result).toEqual({ contents: 'LOL', version: 1 })
     })
   })
 
   describe('extractJsonPatchFromEvent', () => {
-    test('expect preference from event', () => {
-      const result = extractJsonPatchFromEvent(patchEventJson as unknown as APIGatewayProxyEventV2)
+    test('expect patch operations extracted from event body', () => {
+      const ops = [{ op: 'replace', path: '/contents', value: 'LOL' }]
+      const event = { body: JSON.stringify(ops) } as unknown as APIGatewayProxyEventV2
+      const result = extractJsonPatchFromEvent(event)
 
-      expect(result).toEqual(jsonPatchOperations)
+      expect(result).toEqual(ops)
     })
   })
 
   describe('getIdFromEvent', () => {
-    test('expect ID from event', () => {
-      const result = getIdFromEvent(getEventJson as unknown as APIGatewayProxyEventV2)
+    test('expect id returned from path parameters', () => {
+      const event = { pathParameters: { id: 'j7b2mx' } } as unknown as APIGatewayProxyEventV2
+      const result = getIdFromEvent(event)
 
-      expect(result).toEqual(index)
+      expect(result).toEqual('j7b2mx')
     })
 
-    test('expect reject on invalid ID', () => {
-      const tempEvent = {} as unknown as APIGatewayProxyEventV2
+    test('expect error when id is missing', () => {
+      const event = { pathParameters: {} } as unknown as APIGatewayProxyEventV2
 
-      expect(() => getIdFromEvent(tempEvent)).toThrow()
-    })
-
-    test('expect reject on non-integer ID', () => {
-      const tempEvent = { pathParameters: { index: 'fnord' } } as unknown as APIGatewayProxyEventV2
-
-      expect(() => getIdFromEvent(tempEvent)).toThrow()
+      expect(() => getIdFromEvent(event)).toThrow('Invalid joke ID')
     })
   })
 })

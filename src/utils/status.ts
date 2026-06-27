@@ -7,5 +7,6 @@ export default {
   BAD_REQUEST: { statusCode: 400, body: '{"message":"Bad request"}' },
   FORBIDDEN: { statusCode: 403 },
   NOT_FOUND: { statusCode: 404, body: '{"message":"Not found"}' },
+  CONFLICT: { statusCode: 409, body: '{"message":"Conflict"}' },
   INTERNAL_SERVER_ERROR: { statusCode: 500, body: '{"message":"Internal server error"}' },
 }
