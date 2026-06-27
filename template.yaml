@@ -644,69 +644,7 @@ Resources:
       FilterPattern: '[timestamp, uuid, level="ERROR", message]'
       LogGroupName: !Ref PostLogGroup
 
-  # Migration (temporary — remove after migration)
-
-  MigrateFunction:
-    Type: AWS::Serverless::Function
-    Properties:
-      Handler: src/handlers/migrate.migrateHandler
-      Runtime: nodejs24.x
-      Architectures:
-        - x86_64
-      MemorySize: 1024
-      Description: jokes-api data migration (temporary)
-      Policies:
-        - AWSLambdaBasicExecutionRole
-        - DynamoDBReadPolicy:
-            TableName: !Ref JokesTable
-        - DynamoDBCrudPolicy:
-            TableName: !Ref JokesTableNew
-      Environment:
-        Variables:
-          DYNAMODB_TABLE_NAME: !Sub
-            - '${Table}-v2'
-            - Table: !FindInMap [EnvironmentMap, !Ref Environment, table]
-          ID_MAX_LENGTH: 8
-          ID_MIN_LENGTH: 6
-          MIGRATION_SOURCE_TABLE: !FindInMap [EnvironmentMap, !Ref Environment, table]
-          NODE_OPTIONS: '--disable-warning DEP0040' # Disable punycode warning
-      Events:
-        Http:
-          Type: HttpApi
-          Properties:
-            ApiId: !Ref HttpApi
-            Path: /jokes/migrate
-            Method: post
-            Auth:
-              Authorizer: NONE
-      Tags:
-        'created-by': 'jokes-api'
-        'created-for': 'jokes'
-        'environment': !Ref Environment
-      Timeout: 300
-      Tracing: Active
-    Metadata:
-      BuildMethod: esbuild
-      BuildProperties:
-        Minify: true
-        Target: 'es2020'
-        Sourcemap: true
-        EntryPoints:
-          - src/handlers/migrate.ts
-
   # Database
-
-  JokesTable:
-    Type: AWS::Serverless::SimpleTable
-    Properties:
-      PrimaryKey:
-        Name: Index
-        Type: Number
-      TableName: !FindInMap [EnvironmentMap, !Ref Environment, table]
-      Tags:
-        'created-by': 'jokes-api'
-        'created-for': 'jokes'
-        'environment': !Ref Environment
 
   JokesTableNew:
     Type: AWS::DynamoDB::Table

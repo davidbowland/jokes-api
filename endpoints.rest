@@ -114,11 +114,3 @@ Content-Type: application/json
 {
   "contents": "LOL"
 }
-
-### Migrate jokes (temporary)
-# Auth: None
-# Response 200:
-#   { "migrated": number, "ids": ["string", ...] }
-# Response 500: { "message": "Migration failed", "error": "string" }
-
-POST https://{{jokes-api-host}}/v1/jokes/migrate HTTP/1.1
