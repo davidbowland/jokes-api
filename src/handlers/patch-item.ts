@@ -4,7 +4,7 @@ import { mutateObjectOnJsonPatch, throwOnInvalidJsonPatch } from '../config'
 import { ConditionalCheckFailedException, getJokeById, updateJoke } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke, PatchOperation } from '../types'
 import { extractJsonPatchFromEvent, getIdFromEvent } from '../utils/events'
-import { log, logError } from '../utils/logging'
+import { log, logError, redactEvent } from '../utils/logging'
 import status from '../utils/status'
 
 const applyJsonPatch = async (
@@ -40,7 +40,7 @@ const patchById = async (id: string, patchOperations: PatchOperation[]): Promise
 }
 
 export const patchItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
-  log('Received event', { ...event, body: undefined })
+  log('Received event', redactEvent(event))
   try {
     const id = getIdFromEvent(event)
     const patchOperations = extractJsonPatchFromEvent(event)

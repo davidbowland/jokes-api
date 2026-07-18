@@ -3,7 +3,7 @@ import { randomInt } from 'crypto'
 import { randomCountMaximum } from '../config'
 import { getJokesByIds, getRoster } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
-import { log, logError } from '../utils/logging'
+import { log, logError, redactEvent } from '../utils/logging'
 import status from '../utils/status'
 
 const pickRandom = (list: string[], count: number): string[] => {
@@ -21,7 +21,7 @@ const pickRandom = (list: string[], count: number): string[] => {
 }
 
 export const getRandomHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
-  log('Received event', { ...event, body: undefined })
+  log('Received event', redactEvent(event))
   const count =
     Math.max(Math.min(parseInt(event.queryStringParameters?.count as string, 10), randomCountMaximum), 1) ||
     randomCountMaximum

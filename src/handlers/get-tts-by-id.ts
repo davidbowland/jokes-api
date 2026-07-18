@@ -3,7 +3,7 @@ import { getJokeById, updateJoke } from '../services/dynamodb'
 import { synthesizeSpeech } from '../services/polly'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getIdFromEvent } from '../utils/events'
-import { log, logError } from '../utils/logging'
+import { log, logError, redactEvent } from '../utils/logging'
 import status from '../utils/status'
 
 const synthesize = async (id: string, joke: Joke): Promise<Joke | undefined> => {
@@ -52,7 +52,7 @@ const fetchById = async (id: string): Promise<APIGatewayProxyResultV2<unknown>> 
 }
 
 export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
-  log('Received event', { ...event, body: undefined })
+  log('Received event', redactEvent(event))
   try {
     const id = getIdFromEvent(event)
     const result = await fetchById(id)

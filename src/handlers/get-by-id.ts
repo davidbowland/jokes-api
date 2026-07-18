@@ -2,7 +2,7 @@ import { pollyAudioVersion } from '../config'
 import { getJokeById } from '../services/dynamodb'
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2, Joke } from '../types'
 import { getIdFromEvent } from '../utils/events'
-import { log } from '../utils/logging'
+import { log, redactEvent } from '../utils/logging'
 import status from '../utils/status'
 
 const fetchById = async (id: string): Promise<APIGatewayProxyResultV2<unknown>> => {
@@ -23,7 +23,7 @@ const fetchById = async (id: string): Promise<APIGatewayProxyResultV2<unknown>> 
 }
 
 export const getByIdHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
-  log('Received event', { ...event, body: undefined })
+  log('Received event', redactEvent(event))
   try {
     const id = getIdFromEvent(event)
     const result = await fetchById(id)

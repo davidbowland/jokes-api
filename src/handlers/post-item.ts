@@ -3,7 +3,7 @@ import { addToRoster, ConditionalCheckFailedException, putJoke } from '../servic
 import { APIGatewayProxyEventV2, APIGatewayProxyResultV2 } from '../types'
 import { extractJokeFromEvent } from '../utils/events'
 import { generateId } from '../utils/id-generator'
-import { extractRequestError, log, logError } from '../utils/logging'
+import { extractRequestError, log, logError, redactEvent } from '../utils/logging'
 import status from '../utils/status'
 
 const MAX_ID_ATTEMPTS = 5
@@ -25,7 +25,7 @@ const createJoke = async (joke: ReturnType<typeof extractJokeFromEvent>): Promis
 }
 
 export const postItemHandler = async (event: APIGatewayProxyEventV2): Promise<APIGatewayProxyResultV2<unknown>> => {
-  log('Received event', { ...event, body: undefined })
+  log('Received event', redactEvent(event))
   try {
     const joke = extractJokeFromEvent(event)
     try {
