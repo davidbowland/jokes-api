@@ -4,6 +4,8 @@
 
 **Always commit changes** after completing work unless explicitly told not to.
 
+Use functional programming style where practical, including dependency injection, avoiding mutating objects or values, etc.
+
 ## Testing Standards
 
 **Jest clears all mocks automatically** (`clearMocks: true` in jest.config.ts). Never manually clear mocks.
@@ -24,11 +26,17 @@ it('sets createdAt', () => {
 
 **Fake timers:** Use `jest.useFakeTimers()` in `beforeAll` (and `jest.useRealTimers()` in `afterAll`) when the code under test calls `setTimeout`, `setInterval`, or `Date` internally without injection.
 
-**No CSS or style assertions.** Test observable behavior: return values, thrown errors, calls to collaborators.
-
 **No `if` statements in tests.** No live `Date.now()` or `Math.random()` calls in test bodies. No date arithmetic that depends on the current wall-clock time.
 
 **Deterministic above all.** A test that passes today and fails tomorrow is broken.
+
+## Security
+
+**Validate all external inputs** at API boundaries — schema, type, and length — before passing to downstream services.
+
+**Bearer tokens** (Cognito JWTs, API keys) are the sole access control on this API's routes. Never log the `Authorization` or `x-api-key` header value (see `redactEvent` in `src/utils/logging.ts`); when generating tokens elsewhere, always use `crypto.randomInt` (CSPRNG), never `Math.random()`.
+
+**OWASP Top 10.** Primary exposure for Lambda APIs: A01 Broken Access Control (token-as-sole-auth), A03 Injection (NoSQL injection for DynamoDB; validate patch operations before applying), A05 Security Misconfiguration (IAM — avoid `Resource: "*"` and unnecessary actions; scope to specific ARNs).
 
 ## Module Aliases
 

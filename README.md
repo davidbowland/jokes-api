@@ -68,17 +68,19 @@ npm run lint
 
 ### Deploying to Production
 
-When a pull request is merged into `master`, the lambda code is transpiled to commonjs, zipped, and then copied to S3. Afterwards, the infrastructure portion of the project is deployed, which picks up the new versions in S3 and updates each lambda.
+Deployment is handled by the GitHub Actions pipeline (`.github/workflows/pipeline.yaml`). On every push, unit tests run first. Pushes to `master` then `sam build` (esbuild, bundling each handler) and `sam package` the stack, deploy it to the testing account, and finally deploy the same packaged template to production. Feature branches instead build and deploy directly to a per-branch stack in the testing account. After a successful production deploy, a final job bumps the package version and pushes the tag.
 
-In extreme cases, lambdas can be transpiled, zipped, and uploaded locally with:
+To build and deploy manually (requires the `developer` role, see Setup above):
 
 ```bash
 npm run deploy
 ```
 
+This runs `sam build --use-container` followed by `sam deploy` against the testing stack (see `scripts/deploy.sh`).
+
 ## Infrastructure
 
-See the template.yaml file for information on updating infrastructure.
+See the template.yaml file for information on updating infrastructure. The stack defines both a legacy REST API (API-key auth, for non-browser consumers) and an HTTP API (Cognito JWT auth, used by jokes-ui) fronting the same seven Lambda functions. See `endpoints.rest` for a documented list of routes and expected responses.
 
 ## Additional Documentation
 
