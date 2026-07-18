@@ -27,7 +27,7 @@ const fetchDataThenDelete = async (id: string): Promise<APIGatewayProxyResultV2<
       logError(error)
       return status.INTERNAL_SERVER_ERROR
     }
-  } catch (error) {
+  } catch {
     return status.NO_CONTENT
   }
 }

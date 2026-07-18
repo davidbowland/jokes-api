@@ -5,7 +5,7 @@ import { APIGatewayProxyEventV2 } from '../types'
 export const extractRequestError = (message: string): { errors?: Error; message?: string } => {
   try {
     return { errors: JSON.parse(message) }
-  } catch (e: unknown) {
+  } catch {
     return { message }
   }
 }

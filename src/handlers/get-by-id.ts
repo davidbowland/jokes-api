@@ -17,7 +17,7 @@ const fetchById = async (id: string): Promise<APIGatewayProxyResultV2<unknown>> 
         id,
       }),
     }
-  } catch (error) {
+  } catch {
     return status.NOT_FOUND
   }
 }

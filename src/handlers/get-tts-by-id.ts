@@ -46,7 +46,7 @@ const fetchById = async (id: string): Promise<APIGatewayProxyResultV2<unknown>> 
       headers: { 'content-type': jokeWithAudio.audio?.contentType },
       isBase64Encoded: true,
     }
-  } catch (error) {
+  } catch {
     return status.NOT_FOUND
   }
 }
