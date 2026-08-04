@@ -3,9 +3,8 @@ import { Readable } from 'stream'
 
 import { pollyAudioVersion, pollyEngine, pollyVoiceId } from '../config'
 import { Joke, JokeAudio } from '../types'
-import { xrayCapture } from '../utils/logging'
 
-const polly = xrayCapture(new Polly({ apiVersion: '2016-06-10', region: 'us-east-1' }))
+const polly = new Polly({ apiVersion: '2016-06-10', region: 'us-east-1' })
 
 const audioStreamToBase64 = (stream: Readable): Promise<string> =>
   new Promise<Buffer>((resolve, reject) => {

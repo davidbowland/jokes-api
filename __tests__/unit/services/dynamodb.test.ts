@@ -24,9 +24,6 @@ jest.mock('@aws-sdk/client-dynamodb', () => ({
   ScanCommand: jest.fn().mockImplementation((x) => x),
   UpdateItemCommand: jest.fn().mockImplementation((x) => x),
 }))
-jest.mock('@utils/logging', () => ({
-  xrayCapture: jest.fn().mockImplementation((x) => x),
-}))
 
 describe('dynamodb', () => {
   describe('getJokeById', () => {

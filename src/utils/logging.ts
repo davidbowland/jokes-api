@@ -1,5 +1,3 @@
-import AWSXRay from 'aws-xray-sdk-core'
-
 import { APIGatewayProxyEventV2 } from '../types'
 
 export const extractRequestError = (message: string): { errors?: Error; message?: string } => {
@@ -13,8 +11,6 @@ export const extractRequestError = (message: string): { errors?: Error; message?
 export const log = (...args: unknown[]): unknown => console.log(...args)
 
 export const logError = (...args: unknown[]): unknown => console.error(...args)
-
-export const xrayCapture = (x: any) => (process.env.AWS_SAM_LOCAL === 'true' ? x : AWSXRay.captureAWSv3Client(x))
 
 // x-api-key covers the REST API (Auth.ApiKeyRequired); authorization covers the HTTP API's Cognito JWT bearer token.
 const REDACTED_HEADERS = new Set(['authorization', 'x-api-key'])

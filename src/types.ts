@@ -9,7 +9,8 @@ export interface Joke {
 
 export interface JokeAudio {
   base64: string
-  contentType: string
+  // Polly's SynthesizeSpeech response declares ContentType as optional, so this can be absent
+  contentType?: string
   version?: string
 }
 

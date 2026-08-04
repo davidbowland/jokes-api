@@ -162,7 +162,6 @@ Resources:
         'created-for': 'jokes'
         'environment': !Ref Environment
       Timeout: 10
-      Tracing: Active
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -234,7 +233,6 @@ Resources:
         'created-for': 'jokes'
         'environment': !Ref Environment
       Timeout: 30
-      Tracing: Active
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -307,7 +305,6 @@ Resources:
         'created-for': 'jokes'
         'environment': !Ref Environment
       Timeout: 10
-      Tracing: Active
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -389,7 +386,6 @@ Resources:
         'created-for': 'jokes'
         'environment': !Ref Environment
       Timeout: 30
-      Tracing: Active
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -462,7 +458,6 @@ Resources:
         'created-for': 'jokes'
         'environment': !Ref Environment
       Timeout: 10
-      Tracing: Active
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -534,7 +529,6 @@ Resources:
         'created-for': 'jokes'
         'environment': !Ref Environment
       Timeout: 10
-      Tracing: Active
     Metadata:
       BuildMethod: esbuild
       BuildProperties:
@@ -611,7 +605,6 @@ Resources:
         'created-for': 'jokes'
         'environment': !Ref Environment
       Timeout: 10
-      Tracing: Active
     Metadata:
       BuildMethod: esbuild
       BuildProperties:

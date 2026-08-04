@@ -12,9 +12,8 @@ import {
 
 import { dynamodbTableName } from '../config'
 import { Joke, JokeBatch } from '../types'
-import { xrayCapture } from '../utils/logging'
 
-const dynamodb = xrayCapture(new DynamoDB({ apiVersion: '2012-08-10' }))
+const dynamodb = new DynamoDB({ apiVersion: '2012-08-10' })
 
 /* Get items */
 
@@ -30,10 +29,10 @@ export const getJokeById = async (id: string): Promise<Joke> => {
   return {
     audio: response.Item.audioBase64?.S
       ? {
-        base64: response.Item.audioBase64.S,
-        contentType: response.Item.audioContentType?.S ?? '',
-        version: response.Item.audioVersion?.S,
-      }
+          base64: response.Item.audioBase64.S,
+          contentType: response.Item.audioContentType?.S ?? '',
+          version: response.Item.audioVersion?.S,
+        }
       : undefined,
     contents: response.Item.contents.S as string,
     version: parseInt(response.Item.version.N as string, 10),
@@ -57,10 +56,10 @@ export const getJokesByIds = async (ids: string[]): Promise<JokeBatch[]> => {
     data: {
       audio: item.audioBase64?.S
         ? {
-          base64: item.audioBase64.S,
-          contentType: item.audioContentType?.S ?? '',
-          version: item.audioVersion?.S,
-        }
+            base64: item.audioBase64.S,
+            contentType: item.audioContentType?.S ?? '',
+            version: item.audioVersion?.S,
+          }
         : undefined,
       contents: item.contents.S as string,
       version: parseInt(item.version.N as string, 10),
